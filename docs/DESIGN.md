@@ -4,7 +4,8 @@ k8s.elections is operated via GitOps model, just like the other kubernetes proje
 
 This document helps in understanding the different design aspects of the application, such as:
 - [Architecture](#Architecture)
-- [Specification](#Specifications)
+- [Specifications](#specifications)
+- [UI Markups](#ui-markups)
 - [Workflow](#Workflow)
 <!-- - [ERD](#ERD) -->
 
@@ -19,9 +20,13 @@ After rasing a pull request, the gitops-bot will push events to the **k8s.electi
 
 The voters can only interact (browse/vote elections) with the application only after authenticated by an external OAuth vendor (ex - github, gitlab). The results of these ballots are stored in a MySQL Database running as GCP Service.
 
-## Specification
+## Specifications
 
 The detailed proposed specifications can be found at this [doc](https://docs.google.com/document/d/e/2PACX-1vQ4Z3jOpIsGZHaBy9Xa6me6IyL_rj-JZgAl-xRO-M2KacWhcRexcV3mILjwclsc9QI4ghRfic2ESFtB/pub). 
+
+### UI Markups
+
+The UI markups can be found at this figma [doc](https://www.figma.com/file/Sav9lAC86Vb3vO64sI0xbi/Untitled?node-id=0%3A1)
 
 ## Workflow
 
