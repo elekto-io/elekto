@@ -14,20 +14,13 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-from flask import Flask, render_template, request
+import os
+from dotenv import load_dotenv
 
-APP = Flask(__name__)
-APP.config.from_object('config')
-
-
-@APP.before_request
-def before_request():
-    # When you import jinja2 macros, they get cached which is annoying for
-    # local development, so wipe the cache every request.
-    if APP.config.get('DEBUG') or 'localhost' in request.host_url:
-        APP.jinja_env.cache = {}
+# Load the custom environment file into the program
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 
-@APP.route('/')
-def welcome():
-    return render_template('welcome.html', name=APP.config.get('NAME'))
+def env(key, default=None):
+    v = os.getenv(key)
+    return default if v is None or v == '' else v

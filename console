@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright 2020 Manish Sahani
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +23,20 @@ from k8s_elections import APP
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
-parser.add_argument(
-    '--port', '-p', default=5005,
-    help='Port for the flask application.')
-parser.add_argument(
-    '--host', default="127.0.0.1",
-    help='Hostname to listen on. When set to 0.0.0.0 the server is available \
-    externally. Defaults to 127.0.0.1 making the it only visable on localhost')
+parser.add_argument('--port', '-p',
+                    default=5005,
+                    help='Port for the flask application.')
+parser.add_argument('--host',
+                    default="127.0.0.1",
+                    help='Hostname to listen on. When set to 0.0.0.0 the \
+                    server is available externally. Defaults to 127.0.0.1 \
+                    making the it only visable on localhost')
 
 args = parser.parse_args()
 
-APP.run(host=args.host, port=args.port)
+DEBUG = APP.config.get('DEBUG')
+
+APP.jinja_env.auto_reload = DEBUG
+APP.run(debug=DEBUG,
+        host=args.host,
+        port=args.port)
