@@ -53,7 +53,7 @@ a {
 
 .f-login {
     position: absolute;
-    max-width: 325px;
+    width: 310px;
     height: 450px;
     left: 50%;
     top: 50%;
@@ -61,7 +61,7 @@ a {
     box-shadow: 0px 9px 46px rgba(0, 0, 0, 0.13), 0px 2.01027px 10.2747px rgba(0, 0, 0, 0.0774939),
         0px 0.598509px 3.05905px rgba(0, 0, 0, 0.0525061);
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 4rem 2.5rem;
 }
 
 .f-brand_logo {
@@ -90,12 +90,17 @@ a {
 
 .btn-github {
     height: 43.46px;
-    width: 100%;
+    width: 324px;
     font-size: 16px;
     line-height: 19px;
     color: #ffffff;
     background: #24292e;
     border: none;
+}
+
+.btn-github:hover {
+    cursor: hand;
+    cursor: pointer;
 }
 
 .f-login__foot {
@@ -105,6 +110,13 @@ a {
     line-height: 18px;
 
     /* identical to box height */
-
     color: #a8a8a8;
+}
+
+@media screen and (max-width: 400px) and (orientation: portrait) {
+    .f-login {
+        width: 290px;
+        box-shadow: none;
+        padding: 4rem 0;
+    }
 }

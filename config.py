@@ -40,3 +40,13 @@ DEBUG = env('APP_DEBUG', True)
 # Enable templates auto reloading, when the template is changed C + R will
 # update the template code in the browser.
 TEMPLATES_AUTO_RELOAD = True if DEBUG is True else False
+
+# Third Party Integrations
+#
+# This section is for storing the credentials for third party integrations
+# such as Github, Gitlab and more.
+GITHUB = {
+    'client_id': env('GITHUB_CLIENT_ID'),
+    'client_secret': env('GITHUB_CLIENT_SECRET'),
+    'redirect': env('GITHUB_REDIRECT')
+}

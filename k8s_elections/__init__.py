@@ -14,10 +14,14 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+from authlib.integrations.requests_client import OAuth2Session
 
 APP = Flask(__name__)
 APP.config.from_object('config')
+
+# config
+github = APP.config.get('GITHUB')
 
 
 @APP.before_request
@@ -31,3 +35,31 @@ def before_request():
 @APP.route('/')
 def welcome():
     return render_template('welcome.html', name=APP.config.get('NAME'))
+
+
+@APP.route('/login', methods=['POST'])
+def login():
+    scope = 'user:email'
+    client = OAuth2Session(github['client_id'],
+                           github['client_secret'],
+                           scope=scope)
+    authorization_endpoint = 'https://github.com/login/oauth/authorize'
+    uri, state = client.create_authorization_url(authorization_endpoint)
+
+    return redirect(uri)
+
+
+@APP.route(github['redirect'])
+def github_redirect():
+    scope = 'user:email'
+    client = OAuth2Session(github['client_id'],
+                           github['client_secret'],
+                           scope=scope)
+    token_endpoint = 'https://github.com/login/oauth/access_token'
+    token = client.fetch_token(
+        token_endpoint, authorization_response=request.url)
+    return redirect('/app')
+
+@APP.route('/app')
+def app():
+    return 'Dashboard'
