@@ -20,6 +20,7 @@
 import argparse
 
 from k8s_elections import APP
+from k8s_elections.models import migrate
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
@@ -31,10 +32,18 @@ parser.add_argument('--host',
                     help='Hostname to listen on. When set to 0.0.0.0 the \
                     server is available externally. Defaults to 127.0.0.1 \
                     making the it only visable on localhost')
+parser.add_argument('--migrate',
+                    help='Create the database tables', action='store_true')
 
 args = parser.parse_args()
 
+# Application debug mode
 DEBUG = APP.config.get('DEBUG')
+
+if args.migrate:
+    print('migrating - creating the database tables')
+    migrate(APP.config.get('DATABASE_URL'))
+
 
 APP.jinja_env.auto_reload = DEBUG
 APP.run(debug=DEBUG,

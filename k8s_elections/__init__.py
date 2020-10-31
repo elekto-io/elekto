@@ -32,12 +32,12 @@ def before_request():
         APP.jinja_env.cache = {}
 
 
-@APP.route('/')
+@APP.route('/login')
 def welcome():
-    return render_template('welcome.html', name=APP.config.get('NAME'))
+    return render_template('login.html', name=APP.config.get('NAME'))
 
 
-@APP.route('/login', methods=['POST'])
+@APP.route('/oauth/github/login', methods=['POST'])
 def login():
     scope = 'user:email'
     client = OAuth2Session(github['client_id'],
@@ -59,6 +59,7 @@ def github_redirect():
     token = client.fetch_token(
         token_endpoint, authorization_response=request.url)
     return redirect('/app')
+
 
 @APP.route('/app')
 def app():

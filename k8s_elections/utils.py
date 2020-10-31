@@ -13,12 +13,3 @@
 # limitations under the License.
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
-
-
-def env(key):
-    """
-    Get the env varible with the given key.
-    """
-    # Read the .env and return the value for the key
-
-    return ""

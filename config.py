@@ -41,6 +41,21 @@ DEBUG = env('APP_DEBUG', True)
 # update the template code in the browser.
 TEMPLATES_AUTO_RELOAD = True if DEBUG is True else False
 
+# Default Database Connection
+# 
+# Here is the database connection is specified, currently the application
+# supports MySQL and can be extended to any other SQLAlchemy supported data-
+# base, the format for database connection url is 
+#   <engine>://<user>:<password>@<host>/<dbname>
+DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
+    engine=env('DB_CONNECTION', 'mysql'),
+    user=env('DB_USERNAME', 'root'),
+    password=env('DB_PASSWORD', ''),
+    host=env('DB_HOST', 'localhost'),
+    port=env('DB_PORT', 3306),
+    dbname=env('DB_DATABASE')
+)
+
 # Third Party Integrations
 #
 # This section is for storing the credentials for third party integrations
