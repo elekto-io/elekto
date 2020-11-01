@@ -16,11 +16,28 @@
 
 import sqlalchemy as S
 
-from datetime import datetime
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
 BASE = declarative_base()
+
+
+def create_session(url):
+    """
+    Create the session object to use to query the database
+
+    Args:
+        url (string): the URL used to connect the application to the
+            database. The URL contains information with regards to the database
+            engine, the host, user and password and the database name.
+            ie: <engine>://<user>:<password>@<host>/<dbname>
+    Returns:
+        (scoped_session): session for the database
+    """
+    engine = S.create_engine(url)
+    session = scoped_session(sessionmaker(bind=engine))
+
+    return session
 
 
 def migrate(url):
@@ -28,7 +45,7 @@ def migrate(url):
     Create the tables in the database using the url
 
     Args:
-        db_string (string): the URL used to connect the application to the
+        url (string): the URL used to connect the application to the
             database. The URL contains information with regards to the database
             engine, the host, user and password and the database name.
             ie: <engine>://<user>:<password>@<host>/<dbname>
@@ -37,13 +54,11 @@ def migrate(url):
     BASE.metadata.create_all(bind=engine)
 
     session = scoped_session(sessionmaker(bind=engine,
-                                             autocommit=False,
-                                             autoflush=False))
+                                          autocommit=False,
+                                          autoflush=False))
     return session
 
 
-class Election(BASE):
-    __tablename__ = 'elections'
-
-    id = S.Column(S.Integer, primary_key=True)
-    name = S.Column(S.Unicode(295), nullable=False)
+# These circular imports are fine
+import k8s_elections.models.users  # noqa
+import k8s_elections.models.elections  # noqa

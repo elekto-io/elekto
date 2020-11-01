@@ -53,7 +53,7 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
     password=env('DB_PASSWORD', ''),
     host=env('DB_HOST', 'localhost'),
     port=env('DB_PORT', 3306),
-    dbname=env('DB_DATABASE')
+    dbname=env('DB_DATABASE'),
 )
 
 # Third Party Integrations
@@ -63,5 +63,6 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
 GITHUB = {
     'client_id': env('GITHUB_CLIENT_ID'),
     'client_secret': env('GITHUB_CLIENT_SECRET'),
-    'redirect': env('GITHUB_REDIRECT')
+    'redirect': env('GITHUB_REDIRECT'),
+    'scope': 'read:user',
 }

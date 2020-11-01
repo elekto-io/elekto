@@ -14,51 +14,48 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-from flask import Flask, render_template, request, redirect
-from authlib.integrations.requests_client import OAuth2Session
+import flask as F
 
-APP = Flask(__name__)
+from k8s_elections import models, constants
+
+APP = F.Flask(__name__)
 APP.config.from_object('config')
 
-# config
-github = APP.config.get('GITHUB')
+SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
 
 @APP.before_request
 def before_request():
     # When you import jinja2 macros, they get cached which is annoying for
     # local development, so wipe the cache every request.
-    if APP.config.get('DEBUG') or 'localhost' in request.host_url:
+    if APP.config.get('DEBUG') or 'localhost' in F.request.host_url:
         APP.jinja_env.cache = {}
 
-
-@APP.route('/login')
-def welcome():
-    return render_template('login.html', name=APP.config.get('NAME'))
-
-
-@APP.route('/oauth/github/login', methods=['POST'])
-def login():
-    scope = 'user:email'
-    client = OAuth2Session(github['client_id'],
-                           github['client_secret'],
-                           scope=scope)
-    authorization_endpoint = 'https://github.com/login/oauth/authorize'
-    uri, state = client.create_authorization_url(authorization_endpoint)
-
-    return redirect(uri)
+    # Set Session
+    #
+    # Add the loggedin user in the global request object g
+    F.session.permanent = True
+    if 'token' in F.session.keys() and F.session['token'] is not None:
+        # F.request.headers['token'] = F.session['token']
+        # user = F.request.get('https://api.github.com/user').content
+        print('')
+    else:
+        F.g.token = None
 
 
-@APP.route(github['redirect'])
-def github_redirect():
-    scope = 'user:email'
-    client = OAuth2Session(github['client_id'],
-                           github['client_secret'],
-                           scope=scope)
-    token_endpoint = 'https://github.com/login/oauth/access_token'
-    token = client.fetch_token(
-        token_endpoint, authorization_response=request.url)
-    return redirect('/app')
+@APP.teardown_appcontext
+def destroy_session(exception=None):
+    # Remove the database session
+    SESSION.remove()
+
+
+# Authentication
+#
+# This section is where the authentication routes are defined, the application
+# is developed for only authentication user via an external vendor, currently
+# github OAuth is supported.
+
+import k8s_elections.controllers.authentication  # noqa
 
 
 @APP.route('/app')
