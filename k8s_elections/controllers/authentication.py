@@ -81,7 +81,7 @@ def render_login_page():
     if check():
         return F.redirect('/app')
 
-    return F.render_template('login.html', name=APP.config.get('NAME'))
+    return F.render_template('login.html')
 
 
 @APP.route('/logout', methods=['GET', 'POST'])

@@ -26,6 +26,10 @@ SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
 @APP.before_request
 def before_request():
+    # Add APP name and other organization based configration in the global
+    # request object
+    F.g.NAME = APP.config.get('NAME')
+
     # When you import jinja2 macros, they get cached which is annoying for
     # local development, so wipe the cache every request.
     if APP.config.get('DEBUG') or 'localhost' in F.request.host_url:

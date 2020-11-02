@@ -4,39 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>k8s.elections</title>
-    <link rel="stylesheet" href="/static/css/main.css">
+    <title>Login | {{ g.NAME }}</title>
+    <!-- Theme css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
 <body>
-    <section class="h-100">
-        <div class="f-welcome">
-            <div class="f-login">
-                <div class="f-brand">
-                    <img class="f-brand_logo"
-                        src="https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png" alt=""
-                        srcset="">
-                </div>
-                <div class="f-brand_txt">
+    <section class="h--100 center-y">
+        <div class="boxed login space--xl">
+            <div class="login__brand">
+                <img class="login__brand-img"
+                    src="https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png" alt="" srcset="">
+                <span class="login__brand-subtitle">
                     Community wide application for conducting elections
-                </div>
-                <div class="f-brand_title">
-                    Login to {{name}}
-                </div>
-                <div style="margin-bottom: 1.4rem;">
-                    <form action="/oauth/github/login" method="POST">
-                        <button type="submit" class="btn-github">Sign in with Github</button>
-                    </form>
-                </div>
-                <div style="display: flex; margin-bottom: 2rem;">
-                    <div style="border-bottom: 1px solid #DCDCDC; width: 43%; height: 0; margin: .75rem 20px 1rem 0;">
+                </span>
+                <span class="login__brand-title">
+                    Login to {{g.NAME}}
+                </span>
+            </div>
+            <div class="login__action">
+                <form action="{{ url_for('oauth_github_login') }}" method="POST">
+                    <button type="submit" class="btn btn__login">
+                        <span>
+                            Sign in with Github
+                        </span>
+                    </button>
+                </form>
+                <hr>
+                <div class="login__action-break center-y">
+                    <div class="border--bottom login__action-break-line"></div>
+                    <span>or</span>
+                    <div class="border--bottom login__action-break-line"></div>
                     </div>
-                    <span style="display: inline-block; color: #B3B3B3;">or</span>
-                    <div style="border-bottom: 1px solid #DCDCDC; width: 43%; height: 0; margin: .75rem 0 1rem 20px;">
-                    </div>
                 </div>
-                <div class="f-login__foot">
-                    See community voting guidelines
+                <div class="login__footer">
+                    <span>
+                        See community voting
+                    </span>
+                    <span class="text-dark">
+                        guidelines
+                    </span>
                 </div>
             </div>
         </div>

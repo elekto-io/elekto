@@ -1,0 +1,11 @@
+body {
+    font-family: $primary-font;
+    font-size: $font-size-body;
+    color: var(--body-color);
+}
+
+p {
+    line-height: 1.9em;
+    font-weight: 400;
+    font-size: $font-size-para;
+}

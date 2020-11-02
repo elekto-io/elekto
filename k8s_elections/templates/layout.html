@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | k8s.elections</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <div style="position: relative;">
+        <div class="f-sidebar">
+            <div class="f-sidebar__user">
+                <img src="{{ g.user['avatar_url'] }}" alt="" srcset="" class="f-sidebar__user_img">
+                <h3 class="f-sidebar__user_title">
+                    {{ g.user['name'] }}
+                </h3>
+            </div>
+        </div>
+        <!-- <section class="content">
+            <header>
+                {% block header %}{% endblock %}
+            </header>
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
+        </section> -->
+    </div>
+</body>
+
+</html>
+
+<!-- <nav>
+    <h1>Flaskr</h1>
+    <ul>
+        {% if g.user %}
+        <li><span>{{ g.user['login'] }}</span>
+        <li><a href="{{ url_for('logout') }}">Log Out</a>
+            {% else %}
+        <li><a href="{{ url_for('render_login_page') }}">Log In</a>
+            {% endif %}
+    </ul>
+
+</nav> -->
