@@ -18,8 +18,7 @@
 The module is responsible for handling all the user authentication related
 queries, and user's session management
 """
-import json
-import requests
+
 import flask as F
 
 from authlib.integrations.requests_client import OAuth2Session
@@ -33,7 +32,7 @@ def check():
     Returns:
         (bool)
     """
-    return hasattr(F.g, constants.AUTH_STATE) and F.g.token is not None
+    return hasattr(F.g, 'user') and F.g.user is not None
 
 
 def csrf_protection(ses, req):
@@ -49,8 +48,8 @@ def csrf_protection(ses, req):
     """
     if constants.CSRF_STATE not in req.args.keys() \
             or constants.CSRF_STATE not in ses.keys() \
-            or req.arg[constants.CSRF_STATE] != ses[constants.CSRF_STATE]:
-        return F.redirect(F.url_for(constants.ROUTE_LOGIN))
+            or req.args[constants.CSRF_STATE] != ses[constants.CSRF_STATE]:
+        return F.redirect(F.url_for('render_login_page'))
 
 
 def oauth_session(vendor):
@@ -68,6 +67,9 @@ def oauth_session(vendor):
                          scope=github['scope'])
 
 
+# Common Login Routes
+
+
 @APP.route('/login', methods=['GET'])
 def render_login_page():
     """
@@ -82,7 +84,7 @@ def render_login_page():
     return F.render_template('login.html', name=APP.config.get('NAME'))
 
 
-@APP.route('/logout', methods=['POST'])
+@APP.route('/logout', methods=['GET', 'POST'])
 def logout():
     """
     Logout the authenticated user and destory his session
@@ -90,7 +92,7 @@ def logout():
     Returns:
         F.redirect: redirect to the login page.
     """
-    # F.session.pop('token')
+    F.session.pop(constants.AUTH_STATE)
     return F.redirect('/login')
 
 
@@ -130,19 +132,13 @@ def oauth_github_redirect():
         F.redirect: redirect to application's dashboard
     """
     # CSRF protection with the previously store state
-    csrf_protection(F.session, F.request.args)
+    csrf_protection(F.session, F.request)
 
     client = oauth_session(github)
     token = client.fetch_token(constants.GITHUB_ACCESS,
                                authorization_response=F.request.url)
 
     # Add user's authentication token to the flask session
-    headers = {'Authorization': 'token {}'.format(token['access_token'])}
-    user = requests.get('https://api.github.com/user', headers=headers).content
-    user = json.loads(user)
-    F.session['auth'] = {'username': user['login'],
-                         'token': token['access_token']}
-    # u = models.User(user['login'], token['access_token'])
-    # SESSION.add(u)
-    # SESSION.commit()
+    F.session[constants.AUTH_STATE] = token
+
     return F.redirect('/app')

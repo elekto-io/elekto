@@ -17,10 +17,10 @@
 import flask as F
 
 from k8s_elections import models, constants
+from authlib.integrations.requests_client import OAuth2Session
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
-
 SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
 
@@ -35,12 +35,17 @@ def before_request():
     #
     # Add the loggedin user in the global request object g
     F.session.permanent = True
-    if 'token' in F.session.keys() and F.session['token'] is not None:
-        # F.request.headers['token'] = F.session['token']
-        # user = F.request.get('https://api.github.com/user').content
-        print('')
+    if constants.AUTH_STATE in F.session.keys() and \
+            F.session[constants.AUTH_STATE] is not None:
+        # Authenticate with every request if the user's token correct or not
+        github = APP.config.get('GITHUB')
+        user = OAuth2Session(client_id=github['client_id'],
+                             client_secret=github['client_secret'],
+                             token=F.session[constants.AUTH_STATE])
+        # print(user.get(constants.GITHUB_PROFILE).json())
+        F.g.user = user.get(constants.GITHUB_PROFILE).json()
     else:
-        F.g.token = None
+        F.g.user = None
 
 
 @APP.teardown_appcontext
@@ -60,4 +65,4 @@ import k8s_elections.controllers.authentication  # noqa
 
 @APP.route('/app')
 def app():
-    return 'Dashboard'
+    return F.render_template('views/dashboard.html')

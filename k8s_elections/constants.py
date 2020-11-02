@@ -18,9 +18,7 @@
 CSRF_STATE = 'state'
 AUTH_STATE = 'authentication'
 
-# Application's route names
-ROUTE_LOGIN = 'render_login_page'
-
 # Github Endpoints
 GITHUB_AUTHORIZE = 'https://github.com/login/oauth/authorize'
 GITHUB_ACCESS = 'https://github.com/login/oauth/access_token'
+GITHUB_PROFILE = 'https://api.github.com/user'

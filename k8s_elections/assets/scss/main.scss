@@ -28,6 +28,8 @@ body {
     font-size: 15px;
     width: 100%;
     margin: 0 auto 0 auto;
+    padding: 0;
+    min-height: 100vh;
     background-color: var(--bg-color);
 }
 
@@ -43,6 +45,45 @@ a {
 
 .h-100 {
     height: 100vh;
+}
+
+.f-sidebar {
+    position: absolute;
+    border-right: 1px solid #dcdcdc;
+    width: 269px;
+    height: 100vh; 
+    right: 1171px;
+    top: 0px;
+}
+
+.f-sidebar__user {
+    border-bottom: 1px solid #dcdcdc;
+    box-sizing: border-box;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+}
+
+h3.f-sidebar__user_title {
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0;
+}
+
+img.f-sidebar__user_img {
+    width: 27px;
+    height: 27px;
+    border: 1px solid #dcdcdc;
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin-right: 10px;
 }
 
 .f-welcome {
@@ -111,6 +152,14 @@ a {
 
     /* identical to box height */
     color: #a8a8a8;
+}
+
+.f-sidebar {
+    position: absolute;
+    width: 269px;
+    height: 900px;
+    right: 1171px;
+    top: 0px;
 }
 
 @media screen and (max-width: 400px) and (orientation: portrait) {

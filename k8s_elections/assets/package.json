@@ -1,0 +1,15 @@
+{
+  "name": "k8s.elections",
+  "version": "1.0.0",
+  "description": "Application for conducting kubernetes community elections ",
+  "main": "index.js",
+  "scripts": {
+    "build-scss": "node-sass scss -o ../static/css --output-style compressed",
+    "watch": "node-sass --watch scss -o ../static/css --output-style compressed"
+  },
+  "author": "Manish Sahani",
+  "license": "MIT",
+  "dependencies": {
+    "node-sass": "^5.0.0"
+  }
+}
