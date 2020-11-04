@@ -1,0 +1,13 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+
+    & > * {
+        padding: 8px 25px;
+        
+        color: $color-black;
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 600;
+    }
+}

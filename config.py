@@ -42,10 +42,10 @@ DEBUG = env('APP_DEBUG', True)
 TEMPLATES_AUTO_RELOAD = True if DEBUG is True else False
 
 # Default Database Connection
-# 
+#
 # Here is the database connection is specified, currently the application
 # supports MySQL and can be extended to any other SQLAlchemy supported data-
-# base, the format for database connection url is 
+# base, the format for database connection url is
 #   <engine>://<user>:<password>@<host>/<dbname>
 DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
     engine=env('DB_CONNECTION', 'mysql'),
@@ -55,6 +55,16 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
     port=env('DB_PORT', 3306),
     dbname=env('DB_DATABASE'),
 )
+
+# Meta repository
+#
+# The application uses a meta repository for handling the admin part of the
+# application via gitops, see the design documentation [/docs/DESIGN.md] for
+# more detailed information on working.
+META = {
+    'REMOTE': env('META_REPO'),
+    'PATH': 'meta'
+}
 
 # Third Party Integrations
 #

@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+<h1>{% block title %}{{ election['name'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+    <div class="space--md">
+        <h1 class="title border--bottom">
+            {{ election['name'] }}
+        </h1>
+        <div>
+            <!-- {% for e in elections %}
+            <div class="row border--bottom">
+                <div class="col-8">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
+                        {{ e['name'] }}
+                    </a>
+                </div>
+                <div class="col-4 text--right">
+                    05:30 UTC, Thur, 29 Oct 2020
+                </div>
+            </div>
+            {% endfor %} -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}

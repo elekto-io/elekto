@@ -9,3 +9,17 @@ p {
     font-weight: 400;
     font-size: $font-size-para;
 }
+
+.title {
+    font-size: 23px;
+    font-weight: 500;
+    color: $color-black;
+    padding-bottom: 10px;
+}
+
+.row-title {
+    font-size: 15px;
+    margin-left: 4px;
+    line-height: 22px;
+    color: #615E5E;
+}

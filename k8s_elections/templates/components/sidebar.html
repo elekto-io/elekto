@@ -1,0 +1,27 @@
+<div class="sidebar border--right">
+    <div class="sidebar__user border--bottom">
+        <img src="{{ g.user['avatar_url'] }}" alt="" srcset="" class="sidebar__user-img bordered">
+        <h3 class="sidebar__user-title">
+            {{ g.user['name'] }}
+        </h3>
+    </div>
+    <div class="sidebar-item">
+        <a href="{{ url_for('elections') }}">
+            <span>
+                Explore Election
+            </span>
+        </a>
+    </div>
+    <div class="sidebar-divider border--bottom mt-2">
+        <span>
+            Past Elections
+        </span>
+    </div>
+    {% for i in range(4) %}
+    <div class="sidebar-item">
+        <span>
+            Steering - 2019
+        </span>
+    </div>
+    {% endfor %}
+</div>

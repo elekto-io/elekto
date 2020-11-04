@@ -9,38 +9,20 @@
 </head>
 
 <body>
-    <div style="position: relative;">
-        <div class="f-sidebar">
-            <div class="f-sidebar__user">
-                <img src="{{ g.user['avatar_url'] }}" alt="" srcset="" class="f-sidebar__user_img">
-                <h3 class="f-sidebar__user_title">
-                    {{ g.user['name'] }}
-                </h3>
-            </div>
+    <section class="d-flex">
+        <div class="sidebar-container">
+            {% include "components/sidebar.html" %}
         </div>
-        <!-- <section class="content">
-            <header>
-                {% block header %}{% endblock %}
-            </header>
+        <div class="content-container">
+            {% include "components/navbar.html" %}
             {% for message in get_flashed_messages() %}
             <div class="flash">{{ message }}</div>
             {% endfor %}
-            {% block content %}{% endblock %}
-        </section> -->
-    </div>
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>
-
-<!-- <nav>
-    <h1>Flaskr</h1>
-    <ul>
-        {% if g.user %}
-        <li><span>{{ g.user['login'] }}</span>
-        <li><a href="{{ url_for('logout') }}">Log Out</a>
-            {% else %}
-        <li><a href="{{ url_for('render_login_page') }}">Log In</a>
-            {% endif %}
-    </ul>
-
-</nav> -->

@@ -15,6 +15,7 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import flask as F
+import k8s_elections.models.meta as meta
 
 from k8s_elections import models, constants
 from authlib.integrations.requests_client import OAuth2Session
@@ -70,3 +71,15 @@ import k8s_elections.controllers.authentication  # noqa
 @APP.route('/app')
 def app():
     return F.render_template('views/dashboard.html')
+
+
+@APP.route('/elections')
+def elections():
+    elections = meta.Elections().query().all()
+    return F.render_template('views/elections/index.html', elections=elections)
+
+
+@APP.route('/elections/<eid>')
+def elections_single(eid):
+    election = meta.Elections().query().get(eid)
+    return F.render_template('views/elections/single.html', election=election)

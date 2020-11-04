@@ -1,9 +1,56 @@
 {% extends 'layout.html' %}
 
 {% block header %}
-<h1>{% block title %}Register{% endblock %}</h1>
+<h1>{% block title %}Dashboard{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+
+<div class="dashboard">
+    <div class="space--md">
+        <h1 class="title border--bottom">
+            Elections In Progress
+        </h1>
+        <div>
+            <div class="row border--bottom">
+                <div class="col-4">
+                    <span class="row-title">
+                        Steering election - 2021
+                    </span>
+                </div>
+                <div class="col-4 text--right">
+                    05:30 UTC, Thur, 29 Oct 2020
+                </div>
+                <div class="col-1 text--center">
+                    to
+                </div>
+                <div class="col-3 text--right">
+                    05:30 UTC, Sat, 29 Oct 2020
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="space--md">
+        <h1 class="title border--bottom">
+            Previously Voted
+        </h1>
+        <div>
+            {% for i in range(3) %}
+
+            <div class="row border--bottom">
+                <div class="col-9">
+                    <span class="row-title">
+                        Steering election - 2021
+                    </span>
+                </div>
+                <div class="col-3 text--right">
+                    <a href="">view results</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}
