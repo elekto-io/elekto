@@ -5,9 +5,32 @@ body {
 }
 
 p {
-    line-height: 1.9em;
     font-weight: 400;
     font-size: $font-size-para;
+
+    &.description {
+        font-size: 12.6px;
+        line-height: 20px;
+        text-align: justify;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        color: $color-black;
+    }
+
+    & > br {
+        margin-bottom: 5px;
+    }
+
+    &.disclaimer {
+        font-size: 13px;
+        text-align: justify;
+        font-weight: 300;
+        margin-bottom: 1rem;
+
+        & > b {
+            font-weight: 600;
+        }
+    }
 }
 
 .title {
@@ -15,11 +38,29 @@ p {
     font-weight: 500;
     color: $color-black;
     padding-bottom: 10px;
+
+    &-has-subtitle {
+        line-height: 28px;
+
+        & + span {
+            font-size: 12px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+    }
+}
+
+.subtitle {
+    font-size: 17px;
+    font-weight: 500;
+    color: $color-black;
+    padding-bottom: 8px;
 }
 
 .row-title {
     font-size: 15px;
     margin-left: 4px;
     line-height: 22px;
-    color: #615E5E;
+    font-style: normal;
+    font-weight: 300;
 }

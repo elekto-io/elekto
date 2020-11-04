@@ -1,7 +1,7 @@
 $available-heights-size: 10 20 30 40 50 60 70 80 90 100;
 $sides: left right top bottom;
 $alignments: left right center;
-$available-index: 1 2 3 4 5 6 7 8 9 10;
+$available-index: 0 5px 10px 1rem 2rem 3rem 4rem 5rem 6rem 7rem 8rem 9rem 10rem;
 
 @each $height in $available-heights-size {
     .h--#{$height} {
@@ -23,35 +23,35 @@ $available-index: 1 2 3 4 5 6 7 8 9 10;
 
 @each $i in $available-index {
     .m-#{$i} {
-        margin: #{$i}rem;
+        margin: #{$i} !important;
     }
     .mt-#{$i} {
-        margin-top: #{$i}rem;
+        margin-top: #{$i} !important;
     }
     .ml-#{$i} {
-        margin-left: #{$i}rem;
+        margin-left: #{$i} !important;
     }
     .mr-#{$i} {
-        margin-right: #{$i}rem;
+        margin-right: #{$i} !important;
     }
     .mb-#{$i} {
-        margin-bottom: #{$i}rem;
+        margin-bottom: #{$i} !important;
     }
 
     .p-#{$i} {
-        padding: #{$i}rem;
+        padding: #{$i} !important;
     }
     .pt-#{$i} {
-        padding-top: #{$i}rem;
+        padding-top: #{$i} !important;
     }
     .pl-#{$i} {
-        padding-left: #{$i}rem;
+        padding-left: #{$i} !important;
     }
     .pr-#{$i} {
-        padding-right: #{$i}rem;
+        padding-right: #{$i} !important;
     }
     .pb-#{$i} {
-        padding-bottom: #{$i}rem;
+        padding-bottom: #{$i} !important;
     }
 }
 

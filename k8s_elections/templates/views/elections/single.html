@@ -7,23 +7,47 @@
 {% block content %}
 
 <div class="dashboard">
-    <div class="space--md">
-        <h1 class="title border--bottom">
-            {{ election['name'] }}
+    <div class="space--md pb-1rem">
+        <div class="border--bottom pb-10px mb-1rem">
+            <h1 class="title title-has-subtitle pb-0">
+                {{ election['name'] }}
+            </h1>
+            <span>{{ election['organization'] }}</span>
+        </div>
+        <p class="description">
+            {{ election['description'] | safe}}
+        </p>
+        <p class="disclaimer">
+            The poll ends <b>{{ election['end_datetime'] }}</b>.
+            The poll is supervised by
+            <b>
+                {% for eo in election['election_officers'] %}
+                <a target="__blank" href="https://github.com/{{ eo }}">
+                    {{ eo + ', ' if election['election_officers']|length > loop.index else eo + '.' }}
+                </a>
+                {% endfor %}
+            </b>
+            Contact the poll supervisor if you need help.
+        </p>
+    </div>
+    <div class="space--md pt-0">
+        <h1 class="subtitle border--bottom">
+            Candidates
         </h1>
         <div>
-            <!-- {% for e in elections %}
+            {% for i in range(3) %}
+
             <div class="row border--bottom">
-                <div class="col-8">
-                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
-                        {{ e['name'] }}
-                    </a>
+                <div class="col-9">
+                    <span class="row-title">
+                        Steering election - 2021
+                    </span>
                 </div>
-                <div class="col-4 text--right">
-                    05:30 UTC, Thur, 29 Oct 2020
+                <div class="col-3 text--right">
+                    <a href="">view profile</a>
                 </div>
             </div>
-            {% endfor %} -->
+            {% endfor %}
         </div>
     </div>
 </div>
