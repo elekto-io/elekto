@@ -22,6 +22,7 @@ from authlib.integrations.requests_client import OAuth2Session
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
+META = APP.config.get('META')
 SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
 
@@ -67,19 +68,29 @@ def destroy_session(exception=None):
 
 import k8s_elections.controllers.authentication  # noqa
 
+@APP.route('/')
+def welcome():
+    return APP.name
+
 
 @APP.route('/app')
 def app():
     return F.render_template('views/dashboard.html')
 
 
-@APP.route('/elections')
+ele = meta.Election(META).query()
+
+
+@APP.route('/app/elections')
 def elections():
-    elections = meta.Elections().query().all()
+    elections = ele.all()
     return F.render_template('views/elections/index.html', elections=elections)
 
 
-@APP.route('/elections/<eid>')
+@APP.route('/app/elections/<eid>')
 def elections_single(eid):
-    election = meta.Elections().query().get(eid)
-    return F.render_template('views/elections/single.html', election=election)
+    election = ele.get(eid)
+    candidates = ele.candidates(eid)
+    return F.render_template('views/elections/single.html',
+                             election=election,
+                             candidates=candidates)

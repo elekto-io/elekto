@@ -14,21 +14,6 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-# Application's CSRF Security
-CSRF_STATE = 'state'
-AUTH_STATE = 'authentication'
-
-# Github Endpoints
-GITHUB_AUTHORIZE = 'https://github.com/login/oauth/authorize'
-GITHUB_ACCESS = 'https://github.com/login/oauth/access_token'
-GITHUB_PROFILE = 'https://api.github.com/user'
-
-
-# Election attributes related constants
-ELEC_STAT_COMPLETED = 'completed'
-ELEC_STAT_RUNNING = 'running'
-ELEC_STAT_UPCOMING = 'upcoming'
-
-# Candidates attribiutes related constants
-CAND_START_DEL = '------n'
-CAND_END_DEL = '-------'
+"""
+The module is responsible for handling all the election's related request.
+"""

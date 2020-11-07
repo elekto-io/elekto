@@ -35,12 +35,12 @@
             Candidates
         </h1>
         <div>
-            {% for i in range(3) %}
+            {% for candidate in candidates %}
 
             <div class="row border--bottom">
                 <div class="col-9">
                     <span class="row-title">
-                        Steering election - 2021
+                        {{ candidate['name'] }} 
                     </span>
                 </div>
                 <div class="col-3 text--right">

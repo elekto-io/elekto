@@ -15,6 +15,7 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 from utils import env
+from distutils.util import strtobool
 
 # Application Name
 #
@@ -33,7 +34,7 @@ SECRET_KEY = env('APP_KEY', 'test')
 # When the application is in debug mode, all the development functionalities
 # like printing detailed error stack trace, reloading css on change etc are
 # enabled.
-DEBUG = env('APP_DEBUG', True)
+DEBUG = bool(strtobool(env('APP_DEBUG', 'False')))
 
 # Auto Reload Templates
 #
@@ -61,9 +62,13 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
 # The application uses a meta repository for handling the admin part of the
 # application via gitops, see the design documentation [/docs/DESIGN.md] for
 # more detailed information on working.
+# - REMOTE : Remote repository url
+# - PATH : Where the meta repository is cloned (if development is local)
+# - DEPLOYMENT : mode of deployment (local, sidecar)
 META = {
     'REMOTE': env('META_REPO'),
-    'PATH': 'meta'
+    'PATH': 'meta',
+    'DEPLOYMENT': env('META_DEPLOYMENT', 'local')
 }
 
 # Third Party Integrations
