@@ -4,25 +4,32 @@
 <h1>{% block title %}{{ election['name'] }}{% endblock %}</h1>
 {% endblock %}
 
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums breadcrums-active">{{ election['name'] }}</a>
+{% endblock %}
+
 {% block content %}
+
 
 <div class="dashboard">
     <div class="space--md pb-1rem">
         <div class="border--bottom pb-10px mb-1rem">
             <h1 class="title title-has-subtitle pb-0">
                 {{ election['name'] }}
+                <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
             </h1>
             <span>{{ election['organization'] }}</span>
         </div>
-        <p class="description">
-            {{ election['description'] | safe}}
-        </p>
+        <div class="description">
+            {{ election['description'] | safe }}
+        </div>
         <p class="disclaimer">
             The poll ends <b>{{ election['end_datetime'] }}</b>.
             The poll is supervised by
             <b>
                 {% for eo in election['election_officers'] %}
-                <a target="__blank" href="https://github.com/{{ eo }}">
+                <a class="text-dark" target="__blank" href="https://github.com/{{ eo }}">
                     {{ eo + ', ' if election['election_officers']|length > loop.index else eo + '.' }}
                 </a>
                 {% endfor %}
@@ -39,12 +46,16 @@
 
             <div class="row border--bottom">
                 <div class="col-9">
-                    <span class="row-title">
-                        {{ candidate['name'] }} 
-                    </span>
+                    <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">
+                        <span class="row-title">
+                            {{ candidate['name'] }}
+                        </span>
+                    </a>
                 </div>
                 <div class="col-3 text--right">
-                    <a href="">view profile</a>
+                    <a class="text-dark"
+                        href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">view
+                        profile</a>
                 </div>
             </div>
             {% endfor %}

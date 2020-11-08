@@ -103,3 +103,16 @@ def extract_candidate_info(md):
 
     return parse_yaml_from_string(info)
 
+
+def extract_candidate_description(md):
+    """
+    Extract candidates description from the hybrid string
+
+    Args:
+        md (string): markdown string read from the candidate-xxxx.md file
+
+    Returns:
+        string: mardown description
+    """
+    desc = md.split(constants.CAND_END_DEL)[-1].strip('-').strip('\n')
+    return desc

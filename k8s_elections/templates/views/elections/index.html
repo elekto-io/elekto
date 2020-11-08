@@ -4,23 +4,44 @@
 <h1>{% block title %}Elections{% endblock %}</h1>
 {% endblock %}
 
+{% block breadcrums %}
+<a href="" class="breadcrums">elections</a>
+<a href="" class="breadcrums breadcrums-active">
+    {% if status %}
+    <span class="badge badge-{{status}}">{{status}}</span>
+    {% endif %}
+</a>
+{% endblock %}
+
 {% block content %}
 
 <div class="dashboard">
     <div class="space--md">
-        <h1 class="title border--bottom">
-            Elections
-        </h1>
+        <div class="d-flex justify-around border--bottom">
+            <h1 class="title">
+                Elections
+            </h1>
+            <div class="pt-10px">
+                {% if status %}
+                <small class="badge badge-{{status}}">{{status}}</small>
+                {% endif %}
+            </div>
+        </div>
         <div>
             {% for e in elections %}
             <div class="row border--bottom">
-                <div class="col-8">
+                <div class="col-7">
                     <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
                         {{ e['name'] }}
                     </a>
                 </div>
+                <div class="col-1">
+                    <a href="{{ url_for('elections', status=e['status']) }}">
+                        <span class="badge badge-{{  e['status'] }} ">{{ e['status'] }}</span>
+                    </a>
+                </div>
                 <div class="col-4 text--right">
-                    05:30 UTC, Thur, 29 Oct 2020
+                    {{ e['start_datetime'] }}
                 </div>
             </div>
             {% endfor %}

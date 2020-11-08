@@ -1,0 +1,26 @@
+.breadcrums {
+    & > span,
+    & > span.badge {
+        font-size: 10px !important;
+    }
+
+    font-size: 12px !important;
+    line-height: 18px;
+    font-size: 400;
+    color: #a8a8a8;
+    text-transform: capitalize;
+
+    &::after {
+        content: "/";
+        font-size: 10px;
+        margin-left: 3px;
+    }
+
+    &-active {
+        color: var(--body-color);
+
+        &::after {
+            content: "" !important;
+        }
+    }
+}

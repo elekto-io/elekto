@@ -4,30 +4,37 @@
 <h1>{% block title %}Dashboard{% endblock %}</h1>
 {% endblock %}
 
+{% block breadcrums %}
+
+{% endblock %}
+
 {% block content %}
 
 <div class="dashboard">
     <div class="space--md">
+        
         <h1 class="title border--bottom">
             Elections In Progress
         </h1>
         <div>
+            {% for e in upcoming %}
             <div class="row border--bottom">
-                <div class="col-4">
-                    <a href="{{ url_for('elections_single', eid='2020_SC') }}" class="row-title">
-                        {{"2020 Kubernetes Steering Committee Election "[:30]}}...
+                <div class="col-7">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
+                        {{ e['name'] }}
                     </a>
                 </div>
                 <div class="col-4 text--right">
-                    05:30 UTC, Thur, 29 Oct 2020
+                    {{ e['start_datetime'] }}
                 </div>
                 <div class="col-1 text--center">
                     to
                 </div>
                 <div class="col-3 text--right">
-                    05:30 UTC, Sat, 29 Oct 2020
+                    {{ e['end_datetime'] }}
                 </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 

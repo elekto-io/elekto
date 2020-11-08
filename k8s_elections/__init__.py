@@ -68,6 +68,7 @@ def destroy_session(exception=None):
 
 import k8s_elections.controllers.authentication  # noqa
 
+
 @APP.route('/')
 def welcome():
     return APP.name
@@ -75,7 +76,8 @@ def welcome():
 
 @APP.route('/app')
 def app():
-    return F.render_template('views/dashboard.html')
+    upcoming = ele.where('status', constants.ELEC_STAT_UPCOMING)
+    return F.render_template('views/dashboard.html', upcoming=upcoming)
 
 
 ele = meta.Election(META).query()
@@ -83,8 +85,12 @@ ele = meta.Election(META).query()
 
 @APP.route('/app/elections')
 def elections():
-    elections = ele.all()
-    return F.render_template('views/elections/index.html', elections=elections)
+    status = F.request.args.get('status')
+    elections = ele.all() if status is None else ele.where('status', status)
+    elections.sort(key=lambda e: e['start_datetime'], reverse=True)
+    return F.render_template('views/elections/index.html',
+                             elections=elections,
+                             status=status)
 
 
 @APP.route('/app/elections/<eid>')
@@ -94,3 +100,26 @@ def elections_single(eid):
     return F.render_template('views/elections/single.html',
                              election=election,
                              candidates=candidates)
+
+
+@APP.route('/app/elections/<eid>/<cid>')
+def elections_candidate(eid, cid):
+    election = ele.get(eid)
+    candidate = ele.candidate(eid, cid)
+
+    print(candidate)
+    return F.render_template('views/elections/candidate.html',
+                             election=election,
+                             candidate=candidate)
+
+
+# webhook route from kubernetes prow
+
+
+@APP.route('/v1/webhooks/meta/updated', methods=['POST'])
+def update_meta():
+    """
+    update the meta
+    """
+    ele.query()
+    return "ok"

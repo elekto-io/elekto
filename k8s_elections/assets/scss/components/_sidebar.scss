@@ -36,6 +36,10 @@
     &-item {
         padding: 3px 17px;
 
+        & > a {
+            color: var(--color-sidebar);
+        }
+
         & > span {
             font-size: 13px;
         }

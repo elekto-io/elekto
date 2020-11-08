@@ -1,0 +1,24 @@
+.badge {
+    align-items: center;
+    height: 18px;
+    border-radius: 3px;
+    padding: 2px 8px;
+    line-height: 120%;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 13px;
+    color: var(--color-sidebar);
+    background: var(--blockquote-text-color) none repeat scroll;
+
+    &-red, &-upcoming {
+        background: rgba(255, 0, 26, 0.2) none repeat scroll 0% 0%;
+    }
+
+    &-green, &-completed {
+        background: rgba(0, 135, 107, 0.2) none repeat scroll 0% 0%;
+    }
+
+    &-warning, &-running {
+        background: rgba(233, 168, 0, 0.2) none repeat scroll 0% 0%;
+    }
+}

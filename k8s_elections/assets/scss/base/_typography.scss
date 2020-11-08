@@ -15,6 +15,7 @@ p {
         font-weight: 300;
         margin-bottom: 1rem;
         color: $color-black;
+        margin-bottom: 1rem;
     }
 
     & > br {
@@ -30,6 +31,32 @@ p {
         & > b {
             font-weight: 600;
         }
+    }
+}
+
+div.description {
+    & > h3  {
+        font-size: 1.1rem;
+        line-height: 33px;
+    }
+
+    & > h2  {
+        line-height: 33px;
+    }
+
+    & > p {
+        margin-bottom: 0.5rem;
+        text-align: justify;
+    }
+    font-size: 13px;
+    line-height: 20px;
+    text-align: justify;
+    font-weight: 300;
+    color: $color-black;
+    margin-bottom: 1rem;
+
+    & > ul {
+        margin-bottom: 0.5rem;
     }
 }
 
@@ -59,6 +86,7 @@ p {
 
 .row-title {
     font-size: 15px;
+    color: var(--color-sidebar);
     margin-left: 4px;
     line-height: 22px;
     font-style: normal;

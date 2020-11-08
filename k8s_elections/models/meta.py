@@ -16,6 +16,7 @@
 
 import os
 import config
+import markdown2 as markdown
 
 from k8s_elections import utils
 from abc import abstractmethod
@@ -76,10 +77,17 @@ class Meta:
         Returns:
             list: list of all the resouces
         """
-        result = []
-        for key in self.store.keys():
-            result.append(self.store[key])
-        return result
+        return [self.store[key] for key in self.store.keys()]
+
+    def where(self, key, value):
+        """
+        Return the list of resource which matches the conditions
+
+        Args:
+            key (string): key in the resource whose value will be checked
+            value (mixed): value
+        """
+        return [r for r in self.all() if r[key] == value]
 
     def get(self, key):
         """
@@ -132,8 +140,8 @@ class Election(Meta):
             Election: returns the reference to the election object
         """
         for e in self.keys:
-            _path = os.path.join(self._path, e, 'election.yaml')  # yaml path
-            self.store[e] = self.build_election_from_yaml(_path, e)
+            _path = os.path.join(self._path, e)  # yaml path
+            self.store[e] = self.build_election_from_yaml(_path)
 
         return self
 
@@ -150,9 +158,9 @@ class Election(Meta):
             dict: Election info in an dict
         """
         _path = os.path.join(self._path, key, 'election.yaml')
-        return self.build_election_from_yaml(_path, key)
+        return self.build_election_from_yaml(_path)
 
-    def build_election_from_yaml(self, _path, key):
+    def build_election_from_yaml(self, _path):
         """
         Build the election object from the yam file, add primary key check the
         status and perform other necessary computation.
@@ -164,12 +172,30 @@ class Election(Meta):
         Returns:
             dict: Complete Election info in an dict
         """
-        election = utils.parse_yaml_from_file(_path)
+        election = utils.parse_yaml_from_file(
+            os.path.join(_path, 'election.yaml'))
         # Set Status of the election
         election['status'] = utils.check_election_status(election)
-        election['key'] = key
+        election['key'] = _path.split('/')[-1]
+        election['description'] = markdown.markdown(open(os.path.join(
+            _path, 'election_desc.md'), 'r').read(), extras=['cuddled-lists'])
 
         return election
+
+    def voters(self, eid):
+        """
+        Get all the voters of the election
+
+        Args:
+            eid (string): primary key for the election
+
+        Returns:
+            list: list of voters
+        """
+        _path = os.path.join(self._path, eid, 'voters.yaml')
+        voters = utils.parse_yaml_from_file(_path)
+
+        return voters
 
     def candidates(self, eid):
         """
@@ -189,7 +215,31 @@ class Election(Meta):
                 md = open(os.path.join(self._path, eid, f)).read()
                 # Build the candidate Object
                 candidate = utils.extract_candidate_info(md)
-                candidate['key'] = f
+                candidate['key'] = candidate['ID']
                 result.append(candidate)
-        
+
         return result
+
+    def candidate(self, eid, cid):
+        """
+        Get a particular candidate participating in the election
+
+        Args:
+            eid (string): primary key for the election
+            cid (string): primary key for the candidate
+
+        Returns:
+            dict: dict containing candidate info
+        """
+        _path = os.path.join(os.path.join(
+            self._path, eid, 'candidate-{}.md'.format(cid)))
+        if os.path.exists(_path) is False:
+            return None
+        md = open(_path).read()
+        candidate = utils.extract_candidate_info(md)
+        candidate['key'] = cid
+        candidate['election_key'] = eid
+        candidate['description'] = markdown.markdown(
+            utils.extract_candidate_description(md), extras=['cuddled-lists'])
+
+        return candidate
