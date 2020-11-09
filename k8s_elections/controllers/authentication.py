@@ -20,12 +20,14 @@ queries, and user's session management
 """
 
 import flask as F
+import base64
 
+from functools import wraps
 from authlib.integrations.requests_client import OAuth2Session
 from k8s_elections import constants, APP
 
 
-def check():
+def authenticated():
     """
     Check the state of user's authentication
 
@@ -33,6 +35,17 @@ def check():
         (bool)
     """
     return hasattr(F.g, 'user') and F.g.user is not None
+
+
+def auth_guard(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not authenticated():
+            # r = str(base64.b64encode(
+            #     F.request.url.encode("ascii"))).replace('/', '$')
+            return F.redirect(F.url_for('render_login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def csrf_protection(ses, req):
@@ -78,7 +91,7 @@ def render_login_page():
     Returns:
         F.redirect: redirect to the login page.
     """
-    if check():
+    if authenticated():
         return F.redirect('/app')
 
     return F.render_template('login.html')
@@ -115,8 +128,8 @@ def oauth_github_login():
         F.redirect
     """
     client = oauth_session(github)
-    uri, state = client.create_authorization_url(constants.GITHUB_AUTHORIZE)
-
+    uri, state = client.create_authorization_url(
+        constants.GITHUB_AUTHORIZE)
     # CSRF protection
     F.session[constants.CSRF_STATE] = state
 
@@ -140,5 +153,5 @@ def oauth_github_redirect():
 
     # Add user's authentication token to the flask session
     F.session[constants.AUTH_STATE] = token
-
+    
     return F.redirect('/app')

@@ -15,14 +15,12 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import flask as F
-import k8s_elections.models.meta as meta
 
 from k8s_elections import models, constants
 from authlib.integrations.requests_client import OAuth2Session
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
-META = APP.config.get('META')
 SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
 
@@ -66,60 +64,7 @@ def destroy_session(exception=None):
 # is developed for only authentication user via an external vendor, currently
 # github OAuth is supported.
 
+import k8s_elections.controllers.errors  # noqa
 import k8s_elections.controllers.authentication  # noqa
-
-
-@APP.route('/')
-def welcome():
-    return APP.name
-
-
-@APP.route('/app')
-def app():
-    upcoming = ele.where('status', constants.ELEC_STAT_UPCOMING)
-    return F.render_template('views/dashboard.html', upcoming=upcoming)
-
-
-ele = meta.Election(META).query()
-
-
-@APP.route('/app/elections')
-def elections():
-    status = F.request.args.get('status')
-    elections = ele.all() if status is None else ele.where('status', status)
-    elections.sort(key=lambda e: e['start_datetime'], reverse=True)
-    return F.render_template('views/elections/index.html',
-                             elections=elections,
-                             status=status)
-
-
-@APP.route('/app/elections/<eid>')
-def elections_single(eid):
-    election = ele.get(eid)
-    candidates = ele.candidates(eid)
-    return F.render_template('views/elections/single.html',
-                             election=election,
-                             candidates=candidates)
-
-
-@APP.route('/app/elections/<eid>/<cid>')
-def elections_candidate(eid, cid):
-    election = ele.get(eid)
-    candidate = ele.candidate(eid, cid)
-
-    print(candidate)
-    return F.render_template('views/elections/candidate.html',
-                             election=election,
-                             candidate=candidate)
-
-
-# webhook route from kubernetes prow
-
-
-@APP.route('/v1/webhooks/meta/updated', methods=['POST'])
-def update_meta():
-    """
-    update the meta
-    """
-    ele.query()
-    return "ok"
+import k8s_elections.controllers.elections  # noqa
+import k8s_elections.controllers.public  # noqa

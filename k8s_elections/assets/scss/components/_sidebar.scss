@@ -1,6 +1,7 @@
 .sidebar {
-    width: 269px;
-    height: 100vh;
+    width: $sidebar-width;
+    min-height: 100vh;
+    position: fixed;
 
     & > * {
         font-size: 13px;
@@ -14,7 +15,7 @@
 
     &__user {
         display: flex;
-        padding: .8rem 1rem;
+        padding: 0.8rem 1rem;
 
         &-img {
             width: 27px;
@@ -43,5 +44,16 @@
         & > span {
             font-size: 13px;
         }
+    }
+
+    &__footer {
+        position: absolute;
+        bottom: 0;
+        width: $sidebar-width;
+        text-align: center;
+        color: #a8a8a8;
+        font-weight: 300;
+        font-size: 10px;
+        padding-bottom: 10px;
     }
 }

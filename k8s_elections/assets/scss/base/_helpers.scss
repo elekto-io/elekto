@@ -74,8 +74,13 @@ $available-index: 0 5px 10px 1rem 2rem 3rem 4rem 5rem 6rem 7rem 8rem 9rem 10rem;
 
 // Color
 
-.text-dark {
+.text-dark, .t-dark {
     color: $color-black;
+}
+
+
+.t-center {
+    text-align: center;
 }
 
 // Display
@@ -95,4 +100,13 @@ $available-index: 0 5px 10px 1rem 2rem 3rem 4rem 5rem 6rem 7rem 8rem 9rem 10rem;
     display: grid;
     align-items: center;
     justify-content: center;
+}
+
+// background 
+.bg-warning {
+    background: rgba(233, 168, 0, 0.2) none repeat scroll 0% 0%;
+}
+
+.bg-green {
+    background: rgba(0, 135, 107, 0.2) none repeat scroll 0% 0%;
 }

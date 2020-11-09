@@ -6,27 +6,18 @@
 
 {% block breadcrums %}
 <a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
-<a href="{{ url_for('elections_single', eid=election['key']) }}"
-    class="breadcrums breadcrums-active">{{ election['name'] }}</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">vote</a>
 {% endblock %}
 
 {% block content %}
-
-
 <div class="dashboard">
     <div class="space--md pb-1rem">
         <div class="border--bottom pb-10px mb-1rem">
             <h1 class="title title-has-subtitle pb-0">
                 {{ election['name'] }}
-                <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
-                {% if g.user['login'] in voters['eligible_voters'] %}
-                <small class="badge badge-blue ">eligible</small>
-                {% endif %}
             </h1>
             <span>{{ election['organization'] }}</span>
-        </div>
-        <div class="description">
-            {{ election['description'] | safe }}
         </div>
         <p class="disclaimer">
             The poll ends <b>{{ election['end_datetime'] }}</b>.
@@ -45,10 +36,10 @@
         <h1 class="subtitle border--bottom">
             Candidates
         </h1>
-        <div>
+        <div class="draggable">
             {% for candidate in candidates %}
 
-            <div class="row border--bottom">
+            <div class="row border--bottom draggable-row">
                 <div class="col-9">
                     <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">
                         <span class="row-title">
@@ -65,33 +56,19 @@
             {% endfor %}
         </div>
     </div>
-    <div class="space--md pt-0">
-        <h1 class="subtitle border--bottom">
-            Voters
-        </h1>
-        <div class="description mt-1rem">
-            {{ voters['details'] }}
-        </div>
-        <div class="border--top">
-            {% for voter in voters['eligible_voters'] %}
-
-            <div class="row border--bottom">
-                <div class="col-12">
-                    <a href="">
-                        <span class="row-title {{ 'badge badge-green' if g.user['login'] == voter else ' ' }}">
-                            {{ voter }}
-                        </span>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% if election['status'] == 'running' and g.user['login'] in voters['eligible_voters']  %}
-    <div class="space--md pt-0">
-        <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-grey">vote</a>
-    </div>
-    {% endif %}
 </div>
 
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>
+<script>
+    const draggable = new Draggable.Draggable(document.querySelectorAll('.draggable'), {
+        draggable: 'div',
+        exclude: {
+            sensors: [Draggable.Sensors.TouchSensor],
+        }
+    });
+    draggable.on('drag:start', () => console.log('drag:start'));
+</script>
 {% endblock %}
