@@ -15,14 +15,35 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 """
-The module is responsible for handling all the apps's public request.
+The controller is responsible for handling all application's request that does
+not require authentication.
 """
 
 import flask as F
 
 from k8s_elections import APP
+from k8s_elections.controllers.elections import ele
 
 
 @APP.route('/')
 def welcome():
     return F.render_template('/views/public/welcome.html')
+
+
+@APP.route('/elections')
+def public_elections():
+    elections = ele.all()
+    elections.sort(key=lambda e: e['start_datetime'], reverse=True)
+
+    return F.render_template('views/public/elections_index.html',
+                             elections=elections)
+
+
+@APP.route('/elections/<eid>')
+def public_election(eid):
+    election = ele.get(eid)
+    candidates = ele.candidates(eid)
+
+    return F.render_template('views/public/elections_single.html',
+                             election=election,
+                             candidates=candidates)

@@ -41,6 +41,7 @@ def elections():
     status = F.request.args.get('status')
     elections = ele.all() if status is None else ele.where('status', status)
     elections.sort(key=lambda e: e['start_datetime'], reverse=True)
+
     return F.render_template('views/elections/index.html',
                              elections=elections,
                              status=status)
@@ -50,8 +51,10 @@ def elections():
 @auth_guard
 def elections_single(eid):
     election = ele.get(eid)
+    # TODO : Validation
     candidates = ele.candidates(eid)
     voters = ele.voters(eid)
+
     return F.render_template('views/elections/single.html',
                              election=election,
                              candidates=candidates,

@@ -43,11 +43,14 @@ def before_request():
             F.session[constants.AUTH_STATE] is not None:
         # Authenticate with every request if the user's token correct or not
         github = APP.config.get('GITHUB')
-        user = OAuth2Session(client_id=github['client_id'],
-                             client_secret=github['client_secret'],
-                             token=F.session[constants.AUTH_STATE])
-        # print(user.get(constants.GITHUB_PROFILE).json())
-        F.g.user = user.get(constants.GITHUB_PROFILE).json()
+        oauthsession = OAuth2Session(client_id=github['client_id'],
+                                     client_secret=github['client_secret'],
+                                     token=F.session[constants.AUTH_STATE])
+        resp = oauthsession.get(constants.GITHUB_PROFILE)
+        if resp.status_code != 200:
+            F.g.user = None
+        else:
+            F.g.user = resp.json()
     else:
         F.g.user = None
 

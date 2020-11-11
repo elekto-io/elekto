@@ -20,11 +20,13 @@ queries, and user's session management
 """
 
 import flask as F
-import base64
 
 from functools import wraps
 from authlib.integrations.requests_client import OAuth2Session
 from k8s_elections import constants, APP
+
+
+# Helper Functions for authentication
 
 
 def authenticated():
@@ -32,7 +34,7 @@ def authenticated():
     Check the state of user's authentication
 
     Returns:
-        (bool)
+        (bool): user's authentication state
     """
     return hasattr(F.g, 'user') and F.g.user is not None
 
@@ -153,5 +155,5 @@ def oauth_github_redirect():
 
     # Add user's authentication token to the flask session
     F.session[constants.AUTH_STATE] = token
-    
+
     return F.redirect('/app')
