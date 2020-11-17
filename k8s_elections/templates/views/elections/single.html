@@ -21,6 +21,8 @@
                 <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
                 {% if g.user['login'] in voters['eligible_voters'] %}
                 <small class="badge badge-blue ">eligible</small>
+                {% else %}
+                <small class="badge badge-blue">Not eligible</small>
                 {% endif %}
             </h1>
             <span>{{ election['organization'] }}</span>
@@ -60,28 +62,6 @@
                     <a class="text-dark"
                         href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">view
                         profile</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="space--md pt-0">
-        <h1 class="subtitle border--bottom">
-            Voters
-        </h1>
-        <div class="description mt-1rem">
-            {{ voters['details'] }}
-        </div>
-        <div class="border--top">
-            {% for voter in voters['eligible_voters'] %}
-
-            <div class="row border--bottom">
-                <div class="col-12">
-                    <a href="">
-                        <span class="row-title {{ 'badge badge-green' if g.user['login'] == voter else ' ' }}">
-                            {{ voter }}
-                        </span>
-                    </a>
                 </div>
             </div>
             {% endfor %}

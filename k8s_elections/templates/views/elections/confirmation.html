@@ -1,0 +1,32 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Thank you {% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}"
+    class="breadcrums">{{ election['name'] }}</a>
+<a href=""
+    class="breadcrums breadcrums-active">Confirmation</a>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--80 center-y">
+    <div class="">
+        <h1 class="title t-center">
+            Thank you for voting | {{ election['name'] }}
+        </h1>
+        <p class="t-center">
+            your vote has been stored securely, to see the result see
+            <a href="/">
+                {{ election['name'] }}'s
+            </a>
+            description page
+        </p>
+    </div>
+</section>
+
+{% endblock %}

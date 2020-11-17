@@ -16,6 +16,7 @@
 
 import os
 import config
+import flask as F
 import markdown2 as markdown
 
 from k8s_elections import utils
@@ -101,7 +102,7 @@ class Meta:
             dict: resource info as a dict
         """
         if key not in self.keys:
-            return None
+            return F.abort(404)
 
         if key in self.store.keys():
             print('key in the store')
@@ -234,7 +235,7 @@ class Election(Meta):
         _path = os.path.join(os.path.join(
             self._path, eid, 'candidate-{}.md'.format(cid)))
         if os.path.exists(_path) is False:
-            return None
+            return F.abort(404)
         md = open(_path).read()
         candidate = utils.extract_candidate_info(md)
         candidate['key'] = cid

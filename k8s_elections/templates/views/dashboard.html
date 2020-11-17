@@ -12,7 +12,7 @@
 
 <div class="dashboard">
     <div class="space--md">
-        
+
         <h1 class="title border--bottom">
             Elections In Progress
         </h1>
@@ -43,13 +43,15 @@
             Previously Voted
         </h1>
         <div>
-            {% for i in range(3) %}
+            {% for e in past %}
 
             <div class="row border--bottom">
                 <div class="col-9">
-                    <span class="row-title">
-                        Steering election - 2021
-                    </span>
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}">
+                        <span class="row-title">
+                            {{ e['name'] }}
+                        </span>
+                    </a>
                 </div>
                 <div class="col-3 text--right">
                     <a href="">view results</a>

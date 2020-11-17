@@ -12,10 +12,16 @@
             {{ g.NAME }}
         </h1>
         <p class="t-center">
-            Welcome to the {{ g.NAME }}'s election app.
+            Welcome to the {{ g.NAME }}'s election app. Go to 
+            {% if g.auth %}
+            <a href="{{url_for('app')}}">
+                Dashboard
+            </a>
+            {% else %}
             <a href="{{url_for('render_login_page')}}">
                 login
             </a>
+            {% endif %}
         </p>
     </div>
 </section>

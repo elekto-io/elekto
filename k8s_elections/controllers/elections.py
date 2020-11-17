@@ -20,9 +20,10 @@ The module is responsible for handling all the election's related request.
 
 import flask as F
 
-from k8s_elections.models import meta
-from k8s_elections import constants, APP
+from k8s_elections.models import meta, Election, Ballot, Voter
+from k8s_elections import constants, APP, SESSION
 from k8s_elections.controllers.authentication import auth_guard
+from werkzeug.security import generate_password_hash
 
 # Yaml based Election backend
 ele = meta.Election(APP.config.get('META')).query()
@@ -31,8 +32,18 @@ ele = meta.Election(APP.config.get('META')).query()
 @APP.route('/app')
 @auth_guard
 def app():
+    # Find all the user's past elections
+    query = SESSION.query(Election).filter(Election.id.in_(
+        SESSION.query(Voter.election_id).filter(
+            Voter.handle == F.g.user['login']).subquery()
+    )).all()
+
     upcoming = ele.where('status', constants.ELEC_STAT_RUNNING)
-    return F.render_template('views/dashboard.html', upcoming=upcoming)
+    past = [ele.get(e.key) for e in query]
+
+    return F.render_template('views/dashboard.html',
+                             upcoming=upcoming,
+                             past=past)
 
 
 @APP.route('/app/elections')
@@ -51,7 +62,6 @@ def elections():
 @auth_guard
 def elections_single(eid):
     election = ele.get(eid)
-    # TODO : Validation
     candidates = ele.candidates(eid)
     voters = ele.voters(eid)
 
@@ -73,17 +83,54 @@ def elections_candidate(eid, cid):
                              candidate=candidate)
 
 
-@APP.route('/app/elections/<eid>/vote')
+@APP.route('/app/elections/<eid>/vote', methods=['GET', 'POST'])
+@auth_guard
 def elections_voting_page(eid):
     election = ele.get(eid)
     candidates = ele.candidates(eid)
     voters = ele.voters(eid)
+    e = SESSION.query(Election).filter_by(key=eid).first()
+
     if F.g.user['login'] not in voters['eligible_voters']:
-        return 'not eligible to vote'
+        return F.render_template('errors/not_eligible.html',
+                                 election=election)
+
+    # Redirect to thankyou page if already voted
+    if F.g.user['login'] in [v.handle for v in e.voters]:
+        return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
+
+    if F.request.method == 'POST':
+        # encrypt the voter identity
+        voter = generate_password_hash(
+            F.g.user['login'] + '+' + F.request.form['password'])
+        print(voter)
+        for k in F.request.form.keys():
+            if k.split('@')[0] == 'candidate':
+                candidate = k.split('@')[-1]
+                rank = F.request.form[k]
+                ballot = Ballot(rank=rank, candidate=candidate, voter=voter)
+                e.ballots.append(ballot)
+
+        # Add user to the voted list
+        e.voters.append(Voter(handle=F.g.user['login']))
+        SESSION.commit()
+        return 'saved'
+
     return F.render_template('views/elections/vote.html',
                              election=election,
                              candidates=candidates,
                              voters=voters)
+
+
+@APP.route('/app/elections/<eid>/confirmation', methods=['GET'])
+@auth_guard
+def elections_confirmation_page(eid):
+    election = ele.get(eid)
+    e = SESSION.query(Election).filter_by(key=eid).first()
+
+    if F.g.user['login'] in [v.handle for v in e.voters]:
+        return F.render_template('views/elections/confirmation.html',
+                                 election=election)
 
 # webhook route from kubernetes prow
 
@@ -93,5 +140,13 @@ def update_meta():
     """
     update the meta
     """
-    ele.query()
+    ele.query()  # update the meta store
+    elections = ele.all()
+    for e in elections:
+        query = SESSION.query(Election).filter_by(key=e['key']).first()
+        if query:
+            query.name = e['name']
+        else:
+            SESSION.add(Election(key=e['key'], name=e['name']))
+        SESSION.commit()
     return "ok"

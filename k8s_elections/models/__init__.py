@@ -59,6 +59,40 @@ def migrate(url):
     return session
 
 
-# These circular imports are fine
-import k8s_elections.models.users  # noqa
-import k8s_elections.models.elections  # noqa
+class Election(BASE):
+    __tablename__ = 'election'
+
+    id = S.Column(S.Integer, primary_key=True)
+    key = S.Column(S.String(255), nullable=False, unique=True)
+    name = S.Column(S.String(255), nullable=True)
+    ballots = S.orm.relationship('Ballot')  # intentionally unidirectional
+    voters = S.orm.relationship('Voter')
+
+
+class Voter(BASE):
+    """
+    Voters that have already voted
+    """
+    __tablename__ = 'voter'
+
+    id = S.Column(S.Integer, primary_key=True)
+    handle = S.Column(S.String(255), nullable=False)
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+
+class Ballot(BASE):
+    """
+    Ballot to store the voter's choice, give an election(E) and candidates(C)
+    the voter(V) can have up-to (|C|) ballots(B) for E.
+        - No entry will be done for no opinion
+        - Single entry for each candidate's rank
+
+    therefore, B(i) = C(j) + rank + V given (0 < i,j <= |C|)
+    """
+    __tablename__ = 'ballot'
+
+    id = S.Column(S.Integer, primary_key=True)
+    rank = S.Column(S.Integer, default=0)
+    candidate = S.Column(S.String(255), nullable=False)
+    voter = S.Column(S.String(255), nullable=False)
+    created_at = S.Column(S.DateTime, default=S.func.now())
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))

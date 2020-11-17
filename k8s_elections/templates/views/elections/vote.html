@@ -37,38 +37,39 @@
             Candidates
         </h1>
         <div class="draggable">
-            {% for candidate in candidates %}
+            <form action="" method="post">
+                {% for candidate in candidates %}
 
-            <div class="row border--bottom draggable-row">
-                <div class="col-9">
-                    <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">
-                        <span class="row-title">
-                            {{ candidate['name'] }}
-                        </span>
-                    </a>
+                <div class="row border--bottom draggable-row">
+                    <div class="col-6">
+                        <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">
+                            <span class="row-title">
+                                {{ candidate['name'] }}
+                            </span>
+                        </a>
+
+                    </div>
+                    <div class="col-6 text--right">
+                        <select name="candidate@{{ candidate['key'] }}" id="">
+                            <option value="0">No opinion</option>
+                            {% for k in range(1, candidates|length + 1) %}
+                            <option value="{{k}}">{{k}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div class="col-3 text--right">
-                    <a class="text-dark"
-                        href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">view
-                        profile</a>
+                {% endfor %}
+
+                <div class="mt-10px">
+                    <input type="text" name="password" placeholder="password">
                 </div>
-            </div>
-            {% endfor %}
+
+                <div class="mt-1rem">
+                    <button class="btn btn-grey" type="submit">Submit Vote</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-{% endblock %}
-
-{% block script %}
-<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>
-<script>
-    const draggable = new Draggable.Draggable(document.querySelectorAll('.draggable'), {
-        draggable: 'div',
-        exclude: {
-            sensors: [Draggable.Sensors.TouchSensor],
-        }
-    });
-    draggable.on('drag:start', () => console.log('drag:start'));
-</script>
 {% endblock %}

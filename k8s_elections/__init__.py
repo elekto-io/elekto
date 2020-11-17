@@ -47,12 +47,18 @@ def before_request():
                                      client_secret=github['client_secret'],
                                      token=F.session[constants.AUTH_STATE])
         resp = oauthsession.get(constants.GITHUB_PROFILE)
+
+        # if unable to fetch the user's info, set auth to False
         if resp.status_code != 200:
             F.g.user = None
+            F.g.auth = False
+            F.session.pop(constants.AUTH_STATE)
         else:
             F.g.user = resp.json()
+            F.g.auth = True
     else:
         F.g.user = None
+        F.g.auth = False
 
 
 @APP.teardown_appcontext

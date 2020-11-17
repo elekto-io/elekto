@@ -36,7 +36,7 @@ def authenticated():
     Returns:
         (bool): user's authentication state
     """
-    return hasattr(F.g, 'user') and F.g.user is not None
+    return hasattr(F.g, 'auth') and F.g.auth is not False
 
 
 def auth_guard(f):
@@ -64,6 +64,7 @@ def csrf_protection(ses, req):
     if constants.CSRF_STATE not in req.args.keys() \
             or constants.CSRF_STATE not in ses.keys() \
             or req.args[constants.CSRF_STATE] != ses[constants.CSRF_STATE]:
+        # TODO -> Flash a message here for invalid csrf
         return F.redirect(F.url_for('render_login_page'))
 
 
