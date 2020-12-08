@@ -47,6 +47,5 @@ if args.migrate:
     migrate(APP.config.get('DATABASE_URL'))
     exit()
 
-APP.run(debug=DEBUG,
-        host=args.host,
-        port=args.port)
+if DEBUG:
+    APP.run(debug=DEBUG, host=args.host, port=args.port)

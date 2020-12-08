@@ -8,7 +8,7 @@
     text-transform: capitalize;
     font-size: 13px;
     color: var(--color-sidebar);
-    background: var(--blockquote-text-color) none repeat scroll;
+    background: var(--color-grey-light) none repeat scroll;
 
     &-red, &-upcoming {
         background: rgba(255, 0, 26, 0.2) none repeat scroll 0% 0%;

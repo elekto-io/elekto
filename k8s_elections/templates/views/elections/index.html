@@ -15,6 +15,20 @@
 
 {% block content %}
 
+{% if elections|length == 0 %}
+<section class="h--80 center-y">
+    <div class="space--md t-center">
+        <h1 class="title t-center">
+            No Elections found
+            {% if status %}
+            in <span class="badge badge-{{status}}">{{status}}</span>
+            {% endif %}
+        </h1>
+    </div>
+</section>
+
+{% else %}
+
 <div class="dashboard">
     <div class="space--md">
         <div class="d-flex justify-around border--bottom">
@@ -27,7 +41,7 @@
                 {% endif %}
             </div>
         </div>
-        <div>
+        <div class="">
             {% for e in elections %}
             <div class="row border--bottom">
                 <div class="col-7">
@@ -48,5 +62,7 @@
         </div>
     </div>
 </div>
+
+{% endif %}
 
 {% endblock %}

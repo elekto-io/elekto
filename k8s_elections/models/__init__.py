@@ -59,13 +59,21 @@ def migrate(url):
     return session
 
 
+class User(BASE):
+    __tablename__ = 'user'
+
+    id = S.Column(S.Integer, primary_key=True)
+    username = S.Column(S.String(255), unique=True)
+    name = S.Column(S.String(255), nullable=True)
+
+
 class Election(BASE):
     __tablename__ = 'election'
 
     id = S.Column(S.Integer, primary_key=True)
     key = S.Column(S.String(255), nullable=False, unique=True)
     name = S.Column(S.String(255), nullable=True)
-    ballots = S.orm.relationship('Ballot')  # intentionally unidirectional
+    ballots = S.orm.relationship('Ballot') 
     voters = S.orm.relationship('Voter')
 
 
@@ -79,6 +87,7 @@ class Voter(BASE):
     handle = S.Column(S.String(255), nullable=False)
     election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
 
+
 class Ballot(BASE):
     """
     Ballot to store the voter's choice, give an election(E) and candidates(C)
@@ -86,7 +95,10 @@ class Ballot(BASE):
         - No entry will be done for no opinion
         - Single entry for each candidate's rank
 
-    therefore, B(i) = C(j) + rank + V given (0 < i,j <= |C|)
+    therefore, B(i) = C + rank + V given (0 < i,j <= |C|)
+
+    There should not be any mapping between Ballot and User/Voter or any other
+    model that can lead to the identification of the voter.
     """
     __tablename__ = 'ballot'
 

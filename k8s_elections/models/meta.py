@@ -105,7 +105,6 @@ class Meta:
             return F.abort(404)
 
         if key in self.store.keys():
-            print('key in the store')
             return self.store[key]
 
         return self.fallback(key)
@@ -130,6 +129,12 @@ class Election(Meta):
         """
         Meta.__init__(self, meta)
         self._path = os.path.join(self.META, 'elections')
+        self.keys = os.listdir(self._path)
+
+    def update_store(self):
+        """
+        Update the store - generally used by webhooks
+        """
         self.keys = os.listdir(self._path)
 
     def query(self):
@@ -178,8 +183,22 @@ class Election(Meta):
         # Set Status of the election
         election['status'] = utils.check_election_status(election)
         election['key'] = _path.split('/')[-1]
-        election['description'] = markdown.markdown(open(os.path.join(
-            _path, 'election_desc.md'), 'r').read(), extras=['cuddled-lists'])
+
+        # Check for Description
+        try:
+            election['description'] = markdown.markdown(open(os.path.join(
+                _path, 'election_desc.md'), 'r').read(), extras=['cuddled-lists'])
+        except:
+            election['description'] = 'No description or Error While generating descripting'
+
+        # check for results.md
+        try:
+            results_md = os.path.join(_path, 'results.md')
+            if election['status'] == 'completed' and os.path.isfile(results_md):
+                election['results'] = markdown.markdown(
+                    open(results_md).read(), extras=['cuddled-lists'])
+        except:
+            election['results'] = 'Result are not updated yet or Error while generating Results'
 
         return election
 

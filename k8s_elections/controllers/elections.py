@@ -32,21 +32,20 @@ ele = meta.Election(APP.config.get('META')).query()
 @APP.route('/app')
 @auth_guard
 def app():
-    # Find all the user's past elections
+    # Find all the user's past and all upcoming (meta only) elections
     query = SESSION.query(Election).filter(Election.id.in_(
         SESSION.query(Voter.election_id).filter(
             Voter.handle == F.g.user['login']).subquery()
     )).all()
-
-    upcoming = ele.where('status', constants.ELEC_STAT_RUNNING)
     past = [ele.get(e.key) for e in query]
+    upcoming = ele.where('status', constants.ELEC_STAT_RUNNING)
 
     return F.render_template('views/dashboard.html',
                              upcoming=upcoming,
                              past=past)
 
 
-@APP.route('/app/elections')
+@APP.route('/app/elections')  # Election listing
 @auth_guard
 def elections():
     status = F.request.args.get('status')
@@ -58,7 +57,7 @@ def elections():
                              status=status)
 
 
-@APP.route('/app/elections/<eid>')
+@APP.route('/app/elections/<eid>')  # Particular Election
 @auth_guard
 def elections_single(eid):
     election = ele.get(eid)
@@ -71,16 +70,39 @@ def elections_single(eid):
                              voters=voters)
 
 
-@APP.route('/app/elections/<eid>/candidates/<cid>')
+@APP.route('/app/elections/<eid>/candidates/<cid>')  # Particular Candidate
 @auth_guard
 def elections_candidate(eid, cid):
     election = ele.get(eid)
     candidate = ele.candidate(eid, cid)
 
-    print(candidate)
     return F.render_template('views/elections/candidate.html',
                              election=election,
                              candidate=candidate)
+
+
+@APP.route('/app/elections/<eid>/admin/')  # Admin page for the election
+@auth_guard
+def elections_admin(eid):
+    election = ele.get(eid)
+
+    if F.g.user['login'] not in election['election_officers']:
+        return F.abort(404)
+
+    e = SESSION.query(Election).filter_by(key=eid).first()
+    voters = e.voters
+
+    return F.render_template('views/elections/admin.html',
+                             election=election,
+                             voters=voters)
+
+
+@APP.route('/app/elections/<eid>/results/')  # Election's Result
+@auth_guard
+def elections_results(eid):
+    election = ele.get(eid)
+
+    return F.render_template('views/elections/results.html', election=election)
 
 
 @APP.route('/app/elections/<eid>/vote', methods=['GET', 'POST'])
@@ -101,9 +123,9 @@ def elections_voting_page(eid):
 
     if F.request.method == 'POST':
         # encrypt the voter identity
-        voter = generate_password_hash(
-            F.g.user['login'] + '+' + F.request.form['password'])
-        print(voter)
+        voter_str = F.g.user['login'] + '+' + F.request.form['password']
+        voter = generate_password_hash(voter_str)
+
         for k in F.request.form.keys():
             if k.split('@')[0] == 'candidate':
                 candidate = k.split('@')[-1]
@@ -114,7 +136,7 @@ def elections_voting_page(eid):
         # Add user to the voted list
         e.voters.append(Voter(handle=F.g.user['login']))
         SESSION.commit()
-        return 'saved'
+        return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
 
     return F.render_template('views/elections/vote.html',
                              election=election,
@@ -140,7 +162,8 @@ def update_meta():
     """
     update the meta
     """
-    ele.query()  # update the meta store
+    ele.update_store()  # update the meta store
+    ele.query()  # update the queries
     elections = ele.all()
     for e in elections:
         query = SESSION.query(Election).filter_by(key=e['key']).first()

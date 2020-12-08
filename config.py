@@ -67,7 +67,7 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
 # - DEPLOYMENT : mode of deployment (local, sidecar)
 META = {
     'REMOTE': env('META_REPO'),
-    'PATH': 'meta',
+    'PATH': env('META_PATH', 'meta'),
     'DEPLOYMENT': env('META_DEPLOYMENT', 'local')
 }
 
