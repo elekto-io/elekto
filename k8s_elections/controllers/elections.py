@@ -87,7 +87,7 @@ def elections_candidate(eid, cid):
 @auth_guard
 def elections_admin(eid):
     election = ele.get(eid)
-    candidates = ele.candidates(eid)
+    # candidates = ele.candidates(eid)
 
     if F.g.user['login'] not in election['election_officers']:
         return F.abort(404)
