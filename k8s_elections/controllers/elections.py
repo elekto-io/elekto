@@ -20,8 +20,9 @@ The module is responsible for handling all the election's related request.
 
 import flask as F
 
-from k8s_elections.models import meta, Election, Ballot, Voter
 from k8s_elections import constants, APP, SESSION
+from k8s_elections.results import generate_result
+from k8s_elections.models import meta, Election, Ballot, Voter
 from k8s_elections.controllers.authentication import auth_guard
 from werkzeug.security import generate_password_hash
 
@@ -63,6 +64,7 @@ def elections_single(eid):
     election = ele.get(eid)
     candidates = ele.candidates(eid)
     voters = ele.voters(eid)
+    print(voters)
 
     return F.render_template('views/elections/single.html',
                              election=election,
@@ -85,12 +87,14 @@ def elections_candidate(eid, cid):
 @auth_guard
 def elections_admin(eid):
     election = ele.get(eid)
+    candidates = ele.candidates(eid)
 
     if F.g.user['login'] not in election['election_officers']:
         return F.abort(404)
 
     e = SESSION.query(Election).filter_by(key=eid).first()
     voters = e.voters
+    # print(generate_result(candidates, e.ballots, election['no_winners']))
 
     return F.render_template('views/elections/admin.html',
                              election=election,
@@ -153,6 +157,8 @@ def elections_confirmation_page(eid):
     if F.g.user['login'] in [v.handle for v in e.voters]:
         return F.render_template('views/elections/confirmation.html',
                                  election=election)
+
+    return F.redirect(F.url_for('elections_single', eid=eid))
 
 # webhook route from kubernetes prow
 

@@ -65,6 +65,7 @@ class User(BASE):
     id = S.Column(S.Integer, primary_key=True)
     username = S.Column(S.String(255), unique=True)
     name = S.Column(S.String(255), nullable=True)
+    created_at = S.Column(S.DateTime, default=S.func.now())
 
 
 class Election(BASE):
@@ -73,8 +74,9 @@ class Election(BASE):
     id = S.Column(S.Integer, primary_key=True)
     key = S.Column(S.String(255), nullable=False, unique=True)
     name = S.Column(S.String(255), nullable=True)
-    ballots = S.orm.relationship('Ballot') 
+    ballots = S.orm.relationship('Ballot')
     voters = S.orm.relationship('Voter')
+    created_at = S.Column(S.DateTime, default=S.func.now())
 
 
 class Voter(BASE):
@@ -103,8 +105,12 @@ class Ballot(BASE):
     __tablename__ = 'ballot'
 
     id = S.Column(S.Integer, primary_key=True)
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
     rank = S.Column(S.Integer, default=0)
     candidate = S.Column(S.String(255), nullable=False)
     voter = S.Column(S.String(255), nullable=False)
     created_at = S.Column(S.DateTime, default=S.func.now())
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+
+    def __repr__(self):
+        return "<Ballot(election_id={}, candidate={}, rank={})>".format(
+            self.election_id, self.candidate, self.rank)

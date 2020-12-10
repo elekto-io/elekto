@@ -67,16 +67,17 @@
             {% endfor %}
         </div>
     </div>
-    {% if g.user['login'] in election['election_officers']  %}
+    
     <div class="space--md pt-0">
+        {% if g.user['login'] in election['election_officers']  %}
         <a href="{{ url_for('elections_admin', eid=election['key'])}}" class="btn btn-grey">Admin</a>
+        {% endif %}
         {% if election['status'] == 'running' and g.user['login'] in voters['eligible_voters']  %}
             <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-grey">vote</a>
         {% elif election['status'] == 'completed' %}
             <a href="{{ url_for('elections_results', eid=election['key'])}}" class="btn btn-grey">Results</a>
         {% endif %}
     </div>
-    {% endif %}
 </div>
 
 {% endblock %}
