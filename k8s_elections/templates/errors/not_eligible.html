@@ -1,0 +1,31 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Not Eligible{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}"
+    class="breadcrums">{{ election['name'] }}</a>
+<a href=""
+    class="breadcrums breadcrums-active">Vote</a>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--80 center-y">
+    <div class="">
+        <h1 class="title t-center">
+            Not Eligible | {{ election['name'] }}
+        </h1>
+        <p class="t-center">
+            you are not in the voter list. fill the
+            <a href="/">
+                form
+            </a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}

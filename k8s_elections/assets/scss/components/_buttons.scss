@@ -1,0 +1,39 @@
+.btn {
+    &,
+    &:link,
+    &:visited {
+        cursor: pointer;
+        font-weight: 400;
+        text-decoration: none;
+        transition: all 0.3s ease-in;
+        color: #ffffff;
+        padding: 5px 2rem;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    &-grey {
+        color: var(--color-sidebar) !important;
+        font-weight: 500 !important;
+        background: rgba(59, 59, 59, 0.2) none repeat scroll 0% 0%;
+    }
+
+    &-link {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    &-blue {
+        background: #4a90e2;
+        color: #ffffff;
+    }
+
+    &__login {
+        height: 43.46px;
+        background-color: $color-black;
+        font-size: 16px;
+        text-transform: none;
+        border: 1px solid $color-black;
+        width: 100%;
+    }
+}

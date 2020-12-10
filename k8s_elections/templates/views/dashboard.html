@@ -1,0 +1,65 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Dashboard{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+    <div class="space--md">
+
+        <h1 class="title border--bottom">
+            Elections In Progress
+        </h1>
+        <div>
+            {% for e in upcoming %}
+            <div class="row border--bottom">
+                <div class="col-7">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
+                        {{ e['name'] }}
+                    </a>
+                </div>
+                <div class="col-4 text--right">
+                    {{ e['start_datetime'] }}
+                </div>
+                <div class="col-1 text--center">
+                    to
+                </div>
+                <div class="col-3 text--right">
+                    {{ e['end_datetime'] }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="space--md">
+        <h1 class="title border--bottom">
+            Previously Voted
+        </h1>
+        <div>
+            {% for e in past %}
+
+            <div class="row border--bottom">
+                <div class="col-9">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}">
+                        <span class="row-title">
+                            {{ e['name'] }}
+                        </span>
+                    </a>
+                </div>
+                <div class="col-3 text--right">
+                    <a href="">view results</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

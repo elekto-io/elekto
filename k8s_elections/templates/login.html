@@ -1,0 +1,48 @@
+{% extends 'layouts/public.html' %}
+
+{% block header %}
+<h1>{% block title %}Login{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--100 center-y">
+    <div class="boxed login space--xl">
+        <div class="login__brand">
+            <img class="login__brand-img"
+                src="https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png" alt="" srcset="">
+            <span class="login__brand-subtitle">
+                Community wide application for conducting elections
+            </span>
+            <span class="login__brand-title">
+                Login to {{g.NAME}}
+            </span>
+        </div>
+        <div class="login__action">
+            <form action="{{ url_for('oauth_github_login') }}" method="POST">
+                <button type="submit" class="btn btn__login">
+                    <span>
+                        Sign in with Github
+                    </span>
+                </button>
+            </form>
+            <hr>
+            <div class="login__action-break center-y">
+                <div class="border--bottom login__action-break-line"></div>
+                <span>or</span>
+                <div class="border--bottom login__action-break-line"></div>
+            </div>
+        </div>
+        <div class="login__footer">
+            <span>
+                See community voting
+            </span>
+            <span class="text-dark">
+                guidelines
+            </span>
+        </div>
+    </div>
+    </div>
+</section>
+
+{% endblock %}

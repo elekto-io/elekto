@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>{% block title %}{% endblock %} | k8s.elections</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <section class="d-flex">
+        <div class="sidebar-container">
+            {% include "components/sidebar.html" %}
+        </div>
+        <div class="content-container content-has-sidebar">
+            <nav class="nav">
+                <div>
+                    <a href="{{ url_for('app') }}" class="breadcrums">{{g.NAME}}</a>
+                    {% block breadcrums %}{% endblock %}
+                </div>
+                <div class="">
+                    <a class="text-dark" href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </nav>
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </section>
+    {% block script %}{% endblock %}
+</body>
+
+</html>

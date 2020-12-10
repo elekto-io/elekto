@@ -1,0 +1,29 @@
+{% extends 'layouts/public.html' %}
+
+{% block header %}
+<h1>{% block title %}k8s.election{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--100 center-y">
+    <div class="space--md t-center">
+        <h1 class="title t-center">
+            {{ g.NAME }}
+        </h1>
+        <p class="t-center">
+            Welcome to the {{ g.NAME }}'s election app. Go to 
+            {% if g.auth %}
+            <a href="{{url_for('app')}}">
+                Dashboard
+            </a>
+            {% else %}
+            <a href="{{url_for('render_login_page')}}">
+                login
+            </a>
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+{% endblock %}

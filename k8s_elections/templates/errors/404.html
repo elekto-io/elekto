@@ -1,0 +1,23 @@
+{% extends 'layouts/public.html' %}
+
+{% block header %}
+<h1>{% block title %}404 Not Found{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--100 center-y">
+    <div class="space--md">
+        <h1 class="title t-center">
+            Not Found | {{ g.NAME }}
+        </h1>
+        <p class="t-center">
+            you ran into a 404. Go back to
+            <a href="/">
+                home
+            </a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}

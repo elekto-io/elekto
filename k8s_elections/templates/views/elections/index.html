@@ -1,0 +1,68 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Elections{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="" class="breadcrums">elections</a>
+<a href="" class="breadcrums breadcrums-active">
+    {% if status %}
+    <span class="badge badge-{{status}}">{{status}}</span>
+    {% endif %}
+</a>
+{% endblock %}
+
+{% block content %}
+
+{% if elections|length == 0 %}
+<section class="h--80 center-y">
+    <div class="space--md t-center">
+        <h1 class="title t-center">
+            No Elections found
+            {% if status %}
+            in <span class="badge badge-{{status}}">{{status}}</span>
+            {% endif %}
+        </h1>
+    </div>
+</section>
+
+{% else %}
+
+<div class="dashboard">
+    <div class="space--md">
+        <div class="d-flex justify-around border--bottom">
+            <h1 class="title">
+                Elections
+            </h1>
+            <div class="pt-10px">
+                {% if status %}
+                <small class="badge badge-{{status}}">{{status}}</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="">
+            {% for e in elections %}
+            <div class="row border--bottom">
+                <div class="col-7">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="row-title">
+                        {{ e['name'] }}
+                    </a>
+                </div>
+                <div class="col-1">
+                    <a href="{{ url_for('elections', status=e['status']) }}">
+                        <span class="badge badge-{{  e['status'] }} ">{{ e['status'] }}</span>
+                    </a>
+                </div>
+                <div class="col-4 text--right">
+                    {{ e['start_datetime'] }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

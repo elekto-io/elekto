@@ -1,0 +1,27 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    border: 0;
+    box-sizing: inherit;
+}
+
+html {
+    background-color: var(--bg-color);
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+}
+
+body {
+    // layout
+    width: 100%;
+    min-height: 100vh;
+    margin: 0 auto 0 auto;
+    padding: 0;
+    background-color: var(--bg-color);
+}
+
+a {
+    text-decoration: none;
+    color: rgba(0, 135, 107, 0.8);
+}

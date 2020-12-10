@@ -1,0 +1,59 @@
+.sidebar {
+    width: $sidebar-width;
+    min-height: 100vh;
+    position: fixed;
+
+    & > * {
+        font-size: 13px;
+        color: var(--color-sidebar);
+    }
+
+    &-divider {
+        padding-left: 10px;
+        padding-bottom: 5px;
+    }
+
+    &__user {
+        display: flex;
+        padding: 0.8rem 1rem;
+
+        &-img {
+            width: 27px;
+            height: 27px;
+            border-radius: 2px;
+            margin-left: 0.7rem;
+            margin-right: 10px;
+        }
+
+        &-title {
+            margin-top: 3px;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+            color: $color-black;
+        }
+    }
+
+    &-item {
+        padding: 3px 17px;
+
+        & > a {
+            color: var(--color-sidebar);
+        }
+
+        & > span {
+            font-size: 13px;
+        }
+    }
+
+    &__footer {
+        position: absolute;
+        bottom: 0;
+        width: $sidebar-width;
+        text-align: center;
+        color: #a8a8a8;
+        font-weight: 300;
+        font-size: 10px;
+        padding-bottom: 10px;
+    }
+}
