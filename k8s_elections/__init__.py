@@ -14,12 +14,13 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
+import os
 import flask as F
 
 from k8s_elections import models, constants
 from authlib.integrations.requests_client import OAuth2Session
 
-APP = F.Flask(__name__)
+APP = F.Flask(__name__, static_folder=os.path.abspath('static'))
 APP.config.from_object('config')
 SESSION = models.create_session(APP.config.get('DATABASE_URL'))
 
