@@ -5,25 +5,30 @@ channels:
 dependencies:
   - authlib=0.15.2=py_0
   - brotlipy=0.7.0=py36h9ed2024_1003
-  - ca-certificates=2020.12.8=hecd8cb5_0
-  - certifi=2020.12.5=py36hecd8cb5_0
+  - ca-certificates=2020.12.5=h033912b_0
+  - certifi=2020.12.5=py36h79c6626_0
   - cffi=1.14.4=py36h2125817_0
   - chardet=3.0.4=py36hecd8cb5_1003
   - click=7.1.2=py_0
   - cryptography=3.3.1=py36hbcfaee0_0
   - flask=1.1.2=py_0
+  - icu=67.1=hb1e8313_0
   - idna=2.10=py_0
   - itsdangerous=1.1.0=py36_0
+  - jansson=2.13.1=hc929b4f_0
   - jinja2=2.11.2=py_0
-  - libcxx=10.0.0=1
+  - libcxx=11.0.0=h4c3b8ed_1
   - libedit=3.1.20191231=h1de35cc_1
   - libffi=3.3=hb1e8313_2
+  - libiconv=1.16=haf1e3a3_0
+  - libxml2=2.9.10=h2c6e4a5_2
   - markdown2=2.3.10=py_0
   - markupsafe=1.1.1=py36h1de35cc_0
   - mysql-connector-c=6.1.11=hccea1a4_1
   - mysqlclient=2.0.1=py36hb1e8313_0
   - ncurses=6.2=h0a44026_1
-  - openssl=1.1.1i=h9ed2024_0
+  - openssl=1.1.1i=h35c211d_0
+  - pcre=8.44=hb1e8313_0
   - pip=20.3.1=py36hecd8cb5_0
   - pycparser=2.20=py_2
   - pyopenssl=20.0.0=pyhd3eb1b0_1
@@ -40,6 +45,7 @@ dependencies:
   - sqlite=3.33.0=hffcf06c_0
   - tk=8.6.10=hb0a8c7a_0
   - urllib3=1.25.11=py_0
+  - uwsgi=2.0.19.1=py36h073569c_1
   - werkzeug=1.0.1=py_0
   - wheel=0.36.1=pyhd3eb1b0_0
   - xz=5.2.5=h1de35cc_0

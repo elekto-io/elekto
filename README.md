@@ -12,7 +12,6 @@ See our detailed instruction [docs](/docs/README.md)
 
 See the application's design and architecture [documentation](/docs/DESIGN.md), that has all information about building k8s.elections from source, how to contribute code and documentation, who to contact about what, etc.
 
-#### Dependencies 
 The repository contains an conda `environment.yml` file for creating virtual environment (refer to - [conda docs](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)) and also has an `requirements.txt` for pip usage.
 
 ```bash
