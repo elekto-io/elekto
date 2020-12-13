@@ -21,7 +21,7 @@ The module is responsible for handling all the election's related request.
 import flask as F
 
 from k8s_elections import constants, APP, SESSION
-from k8s_elections.results import generate_result
+# from k8s_elections.results import generate_result
 from k8s_elections.models import meta, Election, Ballot, Voter
 from k8s_elections.controllers.authentication import auth_guard
 from werkzeug.security import generate_password_hash

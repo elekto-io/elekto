@@ -135,6 +135,14 @@ class Election(Meta):
         """
         Update the store - generally used by webhooks
         """
+        if os.path.isdir(self.META) is False:
+            os.system('/usr/bin/git clone {} {}'.format(self.REMOTE,
+                                                        self.META))
+        else:
+            os.system('/usr/bin/git --git-dir={}/.git --work-tree={} pull origin main'.format(
+                self.META, self.META)
+            )
+
         self.keys = os.listdir(self._path)
 
     def query(self):

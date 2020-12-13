@@ -14,7 +14,6 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-import os
 import flask as F
 
 from k8s_elections import models, constants
