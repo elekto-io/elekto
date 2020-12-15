@@ -14,105 +14,35 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-import os
-import yaml
+"""
+k8s.elections.utils include utils related to flask application
+"""
+
+import flask as F
 
 from k8s_elections import constants
-from datetime import datetime
+from authlib.integrations.requests_client import OAuth2Session
 
 
-def check_election_status(election):
-    """
-    Compute and return election's running status
+def set_session(app):
+    F.session.permanent = True
+    if constants.AUTH_STATE in F.session.keys() and \
+            F.session[constants.AUTH_STATE] is not None:
+        # Authenticate with every request if the user's token correct or not
+        github = app.config.get('GITHUB')
+        oauthsession = OAuth2Session(client_id=github['client_id'],
+                                     client_secret=github['client_secret'],
+                                     token=F.session[constants.AUTH_STATE])
+        resp = oauthsession.get(constants.GITHUB_PROFILE)
 
-    Args:
-        election (dict): dict with required election's info like start, end
-                         datetime
-
-    Returns:
-        string: status of the election
-    """
-    start = election['start_datetime']
-    end = election['end_datetime']
-    now = datetime.now()
-
-    if now < start:
-        return constants.ELEC_STAT_UPCOMING
-    elif end < now:
-        return constants.ELEC_STAT_COMPLETED
+        # if unable to fetch the user's info, set auth to False
+        if resp.status_code != 200:
+            F.g.user = None
+            F.g.auth = False
+            F.session.pop(constants.AUTH_STATE)
+        else:
+            F.g.user = resp.json()
+            F.g.auth = True
     else:
-        return constants.ELEC_STAT_RUNNING
-
-
-def parse_yaml_from_file(yaml_path):
-    """
-    Loads a yaml from the system and return a dict
-
-    Args:
-        yaml_path (os.path): location of the yaml file
-
-    Returns:
-        dict: parsed yaml content in a dict
-    """
-    if os.path.exists(yaml_path) is False:
-        return None
-
-    # to preserve the import consistency
-    try:
-        from yaml import CLoader as Loader
-    except ImportError:
-        from yaml import Loader
-
-    return yaml.load(open(yaml_path, 'r').read(), Loader=Loader)
-
-
-def parse_yaml_from_string(yaml_string):
-    """
-    Convert yaml string to yaml object (dict)
-
-    Args:
-        yaml_string (string): yaml string to be converted
-
-    Returns:
-        dict: parsed yaml dict object
-    """
-    try:
-        from yaml import CLoader as Loader
-    except ImportError:
-        from yaml import Loader
-
-    return yaml.load(yaml_string, Loader=Loader)
-
-
-def extract_candidate_info(md):
-    """
-    Extract candidates info from the given hybrid string
-
-    Args:
-        md (string): markdown string read from the candidate-xxxx.md file
-
-    Returns:
-        dict: candidate info as a dict
-    """
-    # TODO : check for wrong candidates strings
-    info = md[md.find(
-        constants.CAND_START_DEL) - 1 +
-        len(constants.CAND_START_DEL):md.rfind(constants.CAND_END_DEL)]
-
-    info = info.strip('-').strip('\n')
-
-    return parse_yaml_from_string(info)
-
-
-def extract_candidate_description(md):
-    """
-    Extract candidates description from the hybrid string
-
-    Args:
-        md (string): markdown string read from the candidate-xxxx.md file
-
-    Returns:
-        string: mardown description
-    """
-    desc = md.split(constants.CAND_END_DEL)[-1].strip('-').strip('\n')
-    return desc
+        F.g.user = None
+        F.g.auth = False

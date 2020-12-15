@@ -22,7 +22,7 @@ not require authentication.
 import flask as F
 
 from k8s_elections import APP
-from k8s_elections.controllers.elections import ele
+from k8s_elections.controllers.elections import e_meta
 
 
 @APP.route('/')
@@ -32,7 +32,7 @@ def welcome():
 
 @APP.route('/elections')
 def public_elections():
-    elections = ele.all()
+    elections = e_meta.all()
     elections.sort(key=lambda e: e['start_datetime'], reverse=True)
 
     return F.render_template('views/public/elections_index.html',
@@ -41,8 +41,8 @@ def public_elections():
 
 @APP.route('/elections/<eid>')
 def public_election(eid):
-    election = ele.get(eid)
-    candidates = ele.candidates(eid)
+    election = e_meta.get(eid)
+    candidates = e_meta.candidates(eid)
 
     return F.render_template('views/public/elections_single.html',
                              election=election,

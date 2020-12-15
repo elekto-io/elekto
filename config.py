@@ -68,7 +68,8 @@ DATABASE_URL = "{engine}://{user}:{password}@{host}:{port}/{dbname}".format(
 META = {
     'REMOTE': env('META_REPO'),
     'PATH': env('META_PATH', 'meta'),
-    'DEPLOYMENT': env('META_DEPLOYMENT', 'local')
+    'DEPLOYMENT': env('META_DEPLOYMENT', 'local'),
+    'BRANCH': env('META_BRANCH', 'main'),
 }
 
 # Third Party Integrations

@@ -16,12 +16,12 @@
 
 import flask as F
 
-from k8s_elections import models, constants
-from authlib.integrations.requests_client import OAuth2Session
+from k8s_elections import utils
+from k8s_elections.models import sql
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
-SESSION = models.create_session(APP.config.get('DATABASE_URL'))
+SESSION = sql.create_session(APP.config.get('DATABASE_URL'))  # database
 
 
 @APP.before_request
@@ -36,29 +36,7 @@ def before_request():
         APP.jinja_env.cache = {}
 
     # Set Session
-    #
-    # Add the loggedin user in the global request object g
-    F.session.permanent = True
-    if constants.AUTH_STATE in F.session.keys() and \
-            F.session[constants.AUTH_STATE] is not None:
-        # Authenticate with every request if the user's token correct or not
-        github = APP.config.get('GITHUB')
-        oauthsession = OAuth2Session(client_id=github['client_id'],
-                                     client_secret=github['client_secret'],
-                                     token=F.session[constants.AUTH_STATE])
-        resp = oauthsession.get(constants.GITHUB_PROFILE)
-
-        # if unable to fetch the user's info, set auth to False
-        if resp.status_code != 200:
-            F.g.user = None
-            F.g.auth = False
-            F.session.pop(constants.AUTH_STATE)
-        else:
-            F.g.user = resp.json()
-            F.g.auth = True
-    else:
-        F.g.user = None
-        F.g.auth = False
+    utils.set_session(APP)
 
 
 @APP.teardown_appcontext
@@ -67,13 +45,7 @@ def destroy_session(exception=None):
     SESSION.remove()
 
 
-# Authentication
-#
-# This section is where the authentication routes are defined, the application
-# is developed for only authentication user via an external vendor, currently
-# github OAuth is supported.
+####
+# Controllers
 
-import k8s_elections.controllers.errors  # noqa
-import k8s_elections.controllers.authentication  # noqa
-import k8s_elections.controllers.elections  # noqa
-import k8s_elections.controllers.public  # noqa
+import k8s_elections.controllers  # noqa - this circular import is fine

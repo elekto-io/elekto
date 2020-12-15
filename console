@@ -18,10 +18,10 @@
 
 # import os
 import argparse
+from config import DEBUG, DATABASE_URL
 
 from utils import env
-from k8s_elections import APP
-from k8s_elections.models import migrate
+from k8s_elections.models.sql import migrate
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
@@ -38,14 +38,13 @@ parser.add_argument('--migrate',
 
 args = parser.parse_args()
 
-# Application debug mode
-DEBUG = APP.config.get('DEBUG')
-APP.jinja_env.auto_reload = DEBUG
 
 if args.migrate:
     print('migrating - creating the database tables')
-    migrate(APP.config.get('DATABASE_URL'))
+    migrate(DATABASE_URL)
     exit()
 
 if DEBUG:
+    from k8s_elections import APP
+    APP.jinja_env.auto_reload = DEBUG
     APP.run(debug=DEBUG, host=args.host, port=args.port)

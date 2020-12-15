@@ -14,6 +14,6 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-"""
-models module is responsible for handling both databases - metafiles and SQL.
-"""
+# class Election:
+    # def __init__(self, eid)
+    

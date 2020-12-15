@@ -15,11 +15,10 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import os
-import config
 import flask as F
-import markdown2 as markdown
 
-from k8s_elections import utils
+from k8s_elections import SESSION, constants
+from k8s_elections.models import utils
 from abc import abstractmethod
 
 
@@ -37,6 +36,7 @@ class Meta:
         """
         self.META = os.path.abspath(meta['PATH'])
         self.REMOTE = meta['REMOTE']
+        self.BRANCH = meta['BRANCH']
         self.store = {}  # store for the backend, populated by child class
         self.keys = []  # present keys in the store (always populated)
 
@@ -46,12 +46,20 @@ class Meta:
         #   or not
         # - for kubernetes - Check if the sidecar has the repository synced
         #   with the self.REMOTE
-        if config.META['DEPLOYMENT'] == 'local':
-            if os.path.isdir(self.META) is False:
-                os.system('/usr/bin/git clone {} {}'.format(self.REMOTE,
-                                                            self.META))
 
-        # TODO : implement for sidecar
+        if os.path.isdir(self.META) is False:
+            os.system('/usr/bin/git clone %s %s ' % (self.REMOTE, self.META))
+
+    @abstractmethod
+    def update_store(self):
+        """
+        Updates the store and sync meta with sql
+
+        Raises:
+            NotImplementedError: Will raise when the child has not overloaded
+            the method
+        """
+        raise NotImplementedError("Must override update_store method")
 
     @abstractmethod
     def query(self):
@@ -135,15 +143,20 @@ class Election(Meta):
         """
         Update the store - generally used by webhooks
         """
+
+        # if config.META['DEPLOYMENT'] == 'local':
         if os.path.isdir(self.META) is False:
-            os.system('/usr/bin/git clone {} {}'.format(self.REMOTE,
-                                                        self.META))
+            os.system('/usr/bin/git clone {} {} '.format(
+                self.REMOTE, self.META
+            ))
         else:
-            os.system('/usr/bin/git --git-dir={}/.git --work-tree={} pull origin main'.format(
-                self.META, self.META)
-            )
+            os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
+                pull origin main'.format(self.META, self.META))
 
         self.keys = os.listdir(self._path)
+        self.query()
+        utils.sync_db_with_meta(SESSION, self.all())
+        return self
 
     def query(self):
         """
@@ -193,20 +206,13 @@ class Election(Meta):
         election['key'] = _path.split('/')[-1]
 
         # Check for Description
-        try:
-            election['description'] = markdown.markdown(open(os.path.join(
-                _path, 'election_desc.md'), 'r').read(), extras=['cuddled-lists'])
-        except:
-            election['description'] = 'No description or Error While generating descripting'
+        election['description'] = utils.renderMD(
+            os.path.join(_path, 'election_desc.md'))
 
         # check for results.md
-        try:
-            results_md = os.path.join(_path, 'results.md')
-            if election['status'] == 'completed' and os.path.isfile(results_md):
-                election['results'] = markdown.markdown(
-                    open(results_md).read(), extras=['cuddled-lists'])
-        except:
-            election['results'] = 'Result are not updated yet or Error while generating Results'
+        if election['status'] == constants.ELEC_STAT_RUNNING:
+            election['results'] = utils.renderMD(
+                os.path.join(_path, 'results.md'))
 
         return election
 
@@ -267,7 +273,7 @@ class Election(Meta):
         candidate = utils.extract_candidate_info(md)
         candidate['key'] = cid
         candidate['election_key'] = eid
-        candidate['description'] = markdown.markdown(
-            utils.extract_candidate_description(md), extras=['cuddled-lists'])
+        candidate['description'] = utils.renderMD(
+            utils.extract_candidate_description(md), False)
 
         return candidate

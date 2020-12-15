@@ -19,15 +19,16 @@ The module is responsible for handling all the election's related request.
 """
 
 import flask as F
-
-from k8s_elections import constants, APP, SESSION
-# from k8s_elections.results import generate_result
-from k8s_elections.models import meta, Election, Ballot, Voter
-from k8s_elections.controllers.authentication import auth_guard
 from werkzeug.security import generate_password_hash
 
+from k8s_elections import constants, APP, SESSION
+from k8s_elections.core import generate_result
+from k8s_elections.models import meta
+from k8s_elections.models.sql import Election, Ballot, Voter
+from k8s_elections.controllers.authentication import auth_guard
+
 # Yaml based Election backend
-ele = meta.Election(APP.config.get('META')).query()
+e_meta = meta.Election(APP.config.get('META')).update_store()
 
 
 @APP.route('/app')
@@ -38,8 +39,9 @@ def app():
         SESSION.query(Voter.election_id).filter(
             Voter.handle == F.g.user['login']).subquery()
     )).all()
-    past = [ele.get(e.key) for e in query]
-    upcoming = ele.where('status', constants.ELEC_STAT_RUNNING)
+
+    past = [e_meta.get(e.key) for e in query]
+    upcoming = e_meta.where('status', constants.ELEC_STAT_RUNNING)
 
     return F.render_template('views/dashboard.html',
                              upcoming=upcoming,
@@ -50,7 +52,7 @@ def app():
 @auth_guard
 def elections():
     status = F.request.args.get('status')
-    elections = ele.all() if status is None else ele.where('status', status)
+    elections = e_meta.all() if status is None else e_meta.where('status', status)
     elections.sort(key=lambda e: e['start_datetime'], reverse=True)
 
     return F.render_template('views/elections/index.html',
@@ -61,10 +63,9 @@ def elections():
 @APP.route('/app/elections/<eid>')  # Particular Election
 @auth_guard
 def elections_single(eid):
-    election = ele.get(eid)
-    candidates = ele.candidates(eid)
-    voters = ele.voters(eid)
-    print(voters)
+    election = e_meta.get(eid)
+    candidates = e_meta.candidates(eid)
+    voters = e_meta.voters(eid)
 
     return F.render_template('views/elections/single.html',
                              election=election,
@@ -75,8 +76,8 @@ def elections_single(eid):
 @APP.route('/app/elections/<eid>/candidates/<cid>')  # Particular Candidate
 @auth_guard
 def elections_candidate(eid, cid):
-    election = ele.get(eid)
-    candidate = ele.candidate(eid, cid)
+    election = e_meta.get(eid)
+    candidate = e_meta.candidate(eid, cid)
 
     return F.render_template('views/elections/candidate.html',
                              election=election,
@@ -86,15 +87,15 @@ def elections_candidate(eid, cid):
 @APP.route('/app/elections/<eid>/admin/')  # Admin page for the election
 @auth_guard
 def elections_admin(eid):
-    election = ele.get(eid)
-    # candidates = ele.candidates(eid)
+    election = e_meta.get(eid)
+    candidates = e_meta.candidates(eid)
 
     if F.g.user['login'] not in election['election_officers']:
         return F.abort(404)
 
     e = SESSION.query(Election).filter_by(key=eid).first()
     voters = e.voters
-    # print(generate_result(candidates, e.ballots, election['no_winners']))
+    print(generate_result(candidates, e.ballots, election['no_winners']))
 
     return F.render_template('views/elections/admin.html',
                              election=election,
@@ -104,7 +105,7 @@ def elections_admin(eid):
 @APP.route('/app/elections/<eid>/results/')  # Election's Result
 @auth_guard
 def elections_results(eid):
-    election = ele.get(eid)
+    election = e_meta.get(eid)
 
     return F.render_template('views/elections/results.html', election=election)
 
@@ -112,9 +113,9 @@ def elections_results(eid):
 @APP.route('/app/elections/<eid>/vote', methods=['GET', 'POST'])
 @auth_guard
 def elections_voting_page(eid):
-    election = ele.get(eid)
-    candidates = ele.candidates(eid)
-    voters = ele.voters(eid)
+    election = e_meta.get(eid)  # eid is also validated here
+    candidates = e_meta.candidates(eid)
+    voters = e_meta.voters(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     if F.g.user['login'] not in voters['eligible_voters']:
@@ -151,7 +152,7 @@ def elections_voting_page(eid):
 @APP.route('/app/elections/<eid>/confirmation', methods=['GET'])
 @auth_guard
 def elections_confirmation_page(eid):
-    election = ele.get(eid)
+    election = e_meta.get(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     if F.g.user['login'] in [v.handle for v in e.voters]:
@@ -165,17 +166,5 @@ def elections_confirmation_page(eid):
 
 @APP.route('/v1/webhooks/meta/updated', methods=['POST'])
 def update_meta():
-    """
-    update the meta
-    """
-    ele.update_store()  # update the meta store
-    ele.query()  # update the queries
-    elections = ele.all()
-    for e in elections:
-        query = SESSION.query(Election).filter_by(key=e['key']).first()
-        if query:
-            query.name = e['name']
-        else:
-            SESSION.add(Election(key=e['key'], name=e['name']))
-        SESSION.commit()
+    e_meta.update_store()
     return "ok"
