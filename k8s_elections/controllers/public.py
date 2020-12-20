@@ -47,3 +47,8 @@ def public_election(eid):
     return F.render_template('views/public/elections_single.html',
                              election=election,
                              candidates=candidates)
+
+
+@APP.route('/core/methods/schulze')
+def public_schulze():
+    return "Public Schulze"

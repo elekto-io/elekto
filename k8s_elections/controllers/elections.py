@@ -52,7 +52,8 @@ def app():
 @auth_guard
 def elections():
     status = F.request.args.get('status')
-    elections = e_meta.all() if status is None else e_meta.where('status', status)
+    elections = e_meta.all() if status is None else e_meta.where('status',
+                                                                 status)
     elections.sort(key=lambda e: e['start_datetime'], reverse=True)
 
     return F.render_template('views/elections/index.html',

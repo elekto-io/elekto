@@ -17,3 +17,8 @@
 # class VotersBallot:
 #     def __init__(self, collection):
 #         self.collection = collection
+
+# def prepare_ballot_from_sql(sql_ballots):
+#     preferences = 
+# def prepare_ballot_from_csv(csv):
+

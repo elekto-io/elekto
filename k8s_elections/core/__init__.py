@@ -71,4 +71,5 @@ def generate_result(candidates, ballots, no_winners):
     results = []
     for i in range(1, min(no_winners, len(ranks))):
         results.append(ranks[i - 1][1])
+
     return results
