@@ -135,11 +135,11 @@ def sync_db_with_meta(session, elections):
 
 
 def renderMD(md, path=True):
-    if path:
-        md = open(md, 'r').read()
     try:
+        if path:
+            md = open(md, 'r').read()
         return markdown.markdown(md, extras=['cuddled-lists'])
-    except IOError:
+    except FileNotFoundError:
         return 'There was an error opening the markdown file!'
-    except:
+    # except:
         return 'Markdown format not Correct'
