@@ -141,5 +141,5 @@ def renderMD(md, path=True):
         return markdown.markdown(md, extras=['cuddled-lists'])
     except FileNotFoundError:
         return 'There was an error opening the markdown file!'
-    # except:
+    except:
         return 'Markdown format not Correct'
