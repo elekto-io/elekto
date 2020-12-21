@@ -78,6 +78,10 @@ class Election(BASE):
     voters = S.orm.relationship('Voter')
     created_at = S.Column(S.DateTime, default=S.func.now())
 
+    def __repr__(self):
+        return "<Election(election_id={}, key={}, name={})>".format(
+            self.id, self.key, self.name)
+
 
 class Voter(BASE):
     """

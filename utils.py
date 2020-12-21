@@ -18,7 +18,8 @@ import os
 from dotenv import load_dotenv
 
 # Load the custom environment file into the program
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+targetenv = '.env.testing' if os.getenv('TESTING') else '.env'
+load_dotenv(os.path.join(os.path.dirname(__file__), targetenv))
 
 
 def env(key, default=None):

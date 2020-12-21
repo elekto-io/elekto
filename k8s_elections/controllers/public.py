@@ -21,7 +21,8 @@ not require authentication.
 
 import flask as F
 
-from k8s_elections import APP
+from k8s_elections import APP, SESSION
+from k8s_elections.models.sql import Election, Ballot, Voter
 from k8s_elections.controllers.elections import e_meta
 
 
@@ -51,4 +52,6 @@ def public_election(eid):
 
 @APP.route('/core/methods/schulze')
 def public_schulze():
-    return "Public Schulze"
+    query = SESSION.query(Election).all()
+    return "%s" % len(query)
+    # return "Public Schulze"
