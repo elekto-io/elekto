@@ -34,7 +34,7 @@ def create_session(url):
     Returns:
         (scoped_session): session for the database
     """
-    engine = S.create_engine(url)
+    engine = S.create_engine(url, pool_pre_ping=True)
     session = scoped_session(sessionmaker(bind=engine))
 
     return session
