@@ -139,7 +139,11 @@ class Election(Meta):
         """
         Meta.__init__(self, meta)
         self._path = os.path.join(self.META, 'elections')
-        self.keys = os.listdir(self._path)
+        self.keys = []
+
+    def update_keys(self):
+        self.keys = [k for k in os.listdir(
+            self._path) if os.path.isdir(os.path.join(self._path, k))]
 
     def update_store(self):
         """
@@ -155,7 +159,7 @@ class Election(Meta):
             os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
                 pull origin main'.format(self.META, self.META))
 
-        self.keys = os.listdir(self._path)
+        self.update_keys()
         self.query()
         log = utils.sync_db_with_meta(SESSION, self.all())
         return self, log
