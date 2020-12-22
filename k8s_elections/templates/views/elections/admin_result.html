@@ -17,35 +17,32 @@
     <div class="space--md pb-1rem">
         <div class="border--bottom pb-10px mb-1rem">
             <h1 class="title title-has-subtitle pb-0">
-                {{ election['name'] }}
-                <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+                Private Results | {{ election['name'] }}
             </h1>
             <span>{{ election['organization'] }}</span>
         </div>
-        <div>
+        <div class="pt-1rem">
             {% for idx, winner in result.ranks %}
             {% if idx == 0 %}
-            <h3 class="border--bottom pb-1rem" style="font-weight: 300;">
-                {% for w in winner %}
-                {{w}} is the Condorcet winner
-                {% endfor %}
-            </h3>
+            <div class="border--bottom t-center pb-2rem">
+                <h1 class="" style="font-weight: 200; font-size: 2rem;">
+                    {% for w in winner %}
+                    {{w}}
+                    {% endfor %}
+                </h1>
+                <small>is the Condorcet winner </small>
+            </div>
             {% else %}
             <div class="row border--bottom">
-                <div class="col-1">
+                <div class="col-1 t-center">
                     {{ idx + 1 }}
                 </div>
                 <div class="col-11">
                     {% for w in winner %}
-                    <a href="">
-                        <span class="row-title">
-                            {{w}}
-                        </span>
-                    </a>
+                    <span class="row-title">
+                        {{w}}
+                    </span>
                     {% endfor %}
-                </div>
-                <div class="col-3 text--right">
-                    <a href="">view profile</a>
                 </div>
             </div>
             {% endif %}

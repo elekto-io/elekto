@@ -1,0 +1,23 @@
+{% extends 'layouts/public.html' %}
+
+{% block header %}
+<h1>{% block title %}500 - Server Error{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--100 center-y">
+    <div class="space--md">
+        <h1 class="title t-center">
+            Server Error | {{ g.NAME }}
+        </h1>
+        <p class="t-center">
+            well thats embarrassing, head back to 
+            <a href="/">
+                home
+            </a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}

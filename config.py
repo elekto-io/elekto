@@ -82,6 +82,7 @@ META = {
     'PATH': env('META_PATH', 'meta'),
     'DEPLOYMENT': env('META_DEPLOYMENT', 'local'),
     'BRANCH': env('META_BRANCH', 'main'),
+    'SECRET': env('META_SECRET')
 }
 
 # Third Party Integrations

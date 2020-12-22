@@ -6,10 +6,8 @@
 
 {% block breadcrums %}
 <a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
-<a href="{{ url_for('elections_single', eid=election['key']) }}"
-    class="breadcrums">{{ election['name'] }}</a>
-<a href=""
-    class="breadcrums breadcrums-active">Admin</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">Admin</a>
 {% endblock %}
 
 {% block content %}
@@ -19,15 +17,36 @@
     <div class="space--md pb-1rem">
         <div class="border--bottom pb-10px mb-1rem">
             <h1 class="title title-has-subtitle pb-0">
-                {{ election['name'] }}
-                <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+                Admin | {{ election['name'] }} 
+                <span class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</span>
             </h1>
             <span>{{ election['organization'] }}</span>
         </div>
-        <div>
-            Voters count - {{ voters | length }} 
+        <div class="mb-1rem">
+            <div class="row">
+                <div class="col-10">
+                    {% if e.voters | length %}
+                    last ballot was created at - {{ e.ballots[-1].created_at }}
+                    {% else %}
+                    No one has voted.
+                    {% endif %}
+
+                    {% if election['status'] == 'completed' %}
+                    <div class="mt-2rem">
+                        <a href="{{ url_for('elections_admin_results', eid=election['key'])}}"
+                            class="btn btn-grey">Generate
+                            Results</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-2 t-center">
+                    <h1 style="font-weight: 100; font-size: 5rem;">
+                        {{  e.voters | length }}
+                    </h1>
+                    <span>voter's count</span>
+                </div>
+            </div>
         </div>
-        <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Results</a>
     </div>
 </div>
 

@@ -122,16 +122,18 @@ def extract_candidate_description(md):
 
 def sync_db_with_meta(session, elections):
     try:
+        log = ""
         for e in elections:
             query = session.query(Election).filter_by(key=e['key']).first()
             if query:
                 query.name = e['name']
             else:
                 session.add(Election(key=e['key'], name=e['name']))
+                log += "{} added in the db.\n".format(e['key'])
         session.commit()
-        print("Synced DB with META")
+        return log + "Synced DB with META"
     except:
-        print("Tables does not exists yet")
+        return "Tables does not exists yet"
 
 
 def renderMD(md, path=True):
@@ -140,6 +142,6 @@ def renderMD(md, path=True):
             md = open(md, 'r').read()
         return markdown.markdown(md, extras=['cuddled-lists'])
     except FileNotFoundError:
-        return 'There was an error opening the markdown file!'
+        return None
     except:
         return 'Markdown format not Correct'

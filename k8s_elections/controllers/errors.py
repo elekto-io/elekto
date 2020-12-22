@@ -27,3 +27,13 @@ from k8s_elections import APP
 @APP.errorhandler(404)
 def not_found(e):
     return F.render_template('/errors/404.html')
+
+
+@APP.errorhandler(401)
+def unauthorized(e):
+    return F.render_template('/errors/401.html')
+
+
+@APP.errorhandler(500)
+def server_error(e):
+    return F.render_template('/errors/500.html')

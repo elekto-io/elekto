@@ -37,6 +37,7 @@ class Meta:
         self.META = os.path.abspath(meta['PATH'])
         self.REMOTE = meta['REMOTE']
         self.BRANCH = meta['BRANCH']
+        self.SECRET = meta['SECRET']
         self.store = {}  # store for the backend, populated by child class
         self.keys = []  # present keys in the store (always populated)
 
@@ -155,8 +156,8 @@ class Election(Meta):
 
         self.keys = os.listdir(self._path)
         self.query()
-        utils.sync_db_with_meta(SESSION, self.all())
-        return self
+        log = utils.sync_db_with_meta(SESSION, self.all())
+        return self, log
 
     def query(self):
         """
@@ -210,9 +211,7 @@ class Election(Meta):
             os.path.join(_path, 'election_desc.md'))
 
         # check for results.md
-        if election['status'] == constants.ELEC_STAT_RUNNING:
-            election['results'] = utils.renderMD(
-                os.path.join(_path, 'results.md'))
+        election['results'] = utils.renderMD(os.path.join(_path, 'results.md'))
 
         return election
 
