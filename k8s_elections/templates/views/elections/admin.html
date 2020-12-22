@@ -13,38 +13,45 @@
 {% block content %}
 
 
-<div class="dashboard">
-    <div class="space--md pb-1rem">
-        <div class="border--bottom pb-10px mb-1rem">
-            <h1 class="title title-has-subtitle pb-0">
-                Admin | {{ election['name'] }} 
-                <span class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</span>
-            </h1>
-            <span>{{ election['organization'] }}</span>
-        </div>
-        <div class="mb-1rem">
-            <div class="row">
-                <div class="col-10">
-                    {% if e.voters | length %}
-                    last ballot was created at - {{ e.ballots[-1].created_at }}
-                    {% else %}
-                    No one has voted.
-                    {% endif %}
-
-                    {% if election['status'] == 'completed' %}
-                    <div class="mt-2rem">
-                        <a href="{{ url_for('elections_admin_results', eid=election['key'])}}"
-                            class="btn btn-grey">Generate
-                            Results</a>
-                    </div>
-                    {% endif %}
+<div class="">
+    <div class="space--md pb-0">
+        <h1 class="banner-title space-lr">
+            Election Officer's Dashboard
+        </h1>
+        <p class="banner-subtitle space-lr">
+            {{ election['name'] }} | {{ election['organization'] }} | <span
+                class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</span>
+        </p>
+    </div>
+    <div class="space--md">
+        <div class="row space-lr justify-content-around">
+            <div class="col-md-6 p-0">
+                <h3 class="title">Statistics</h3>
+                {% if e.voters | length %}
+                Last ballot was created at - {{ e.ballots[-1].created_at }}
+                {% else %}
+                No one has voted.
+                {% endif %}
+                {% if election['status'] == 'completed' %}
+                <div class="mt-1rem">
+                    <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Generate
+                        Results</a>
+                    <a href="" class="btn mt-10px btn-grey">
+                        Export and download ballots to CSV</a>
                 </div>
-                <div class="col-2 t-center">
-                    <h1 style="font-weight: 100; font-size: 5rem;">
-                        {{  e.voters | length }}
-                    </h1>
-                    <span>voter's count</span>
-                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-2 text-center boxed-2 p-1rem">
+                <h1 class="mt-1rem" style="font-weight: 100; font-size: 5rem;">
+                    {{ election['no_winners'] }}
+                </h1>
+                <span>No winners</span>
+            </div>
+            <div class="col-md-3 text-center boxed-2 p-2rem">
+                <h1 style="font-weight: 100; font-size: 5rem;">
+                    {{ e.voters | length }}
+                </h1>
+                <span>voter's count</span>
             </div>
         </div>
     </div>

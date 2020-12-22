@@ -2,6 +2,8 @@
     width: $sidebar-width;
     min-height: 100vh;
     position: fixed;
+    background-color: $color-white;
+    transition: all 0.2s ease-in;
 
     & > * {
         font-size: 13px;
@@ -55,5 +57,13 @@
         font-weight: 300;
         font-size: 10px;
         padding-bottom: 10px;
+    }
+
+    &-active {
+        left: 0 !important;
+    }
+
+    @media screen and (max-width: 420px) and (orientation: portrait) {
+        left: -$sidebar-width;
     }
 }

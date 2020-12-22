@@ -57,7 +57,7 @@
         color: var(--color-grey);
     }
 
-    @media screen and (max-width: 400px) and (orientation: portrait) {
+    @media screen and (max-width: 420px) and (orientation: portrait) {
         width: 290px;
         box-shadow: none;
         padding: 4rem 0;

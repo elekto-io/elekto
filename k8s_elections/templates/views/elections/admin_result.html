@@ -7,46 +7,50 @@
 {% block breadcrums %}
 <a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
 <a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
-<a href="" class="breadcrums breadcrums-active">Admin</a>
+<a href="" class="breadcrums">Admin</a>
+<a href="" class="breadcrums breadcrums-active">Private Result</a>
 {% endblock %}
 
 {% block content %}
 
 
-<div class="dashboard">
+<div>
     <div class="space--md pb-1rem">
-        <div class="border--bottom pb-10px mb-1rem">
-            <h1 class="title title-has-subtitle pb-0">
-                Private Results | {{ election['name'] }}
+        <div class="space--md pb-0">
+            <h1 class="banner-title space-lr">
+                Election Officer's Dashboard
             </h1>
-            <span>{{ election['organization'] }}</span>
+            <p class="banner-subtitle space-lr">
+                {{ election['name'] }} | {{ election['organization'] }} | <span
+                    class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</span>
+            </p>
         </div>
-        <div class="pt-1rem">
-            {% for idx, winner in result.ranks %}
-            {% if idx == 0 %}
-            <div class="border--bottom t-center pb-2rem">
-                <h1 class="" style="font-weight: 200; font-size: 2rem;">
-                    {% for w in winner %}
-                    {{w}}
-                    {% endfor %}
-                </h1>
-                <small>is the Condorcet winner </small>
-            </div>
-            {% else %}
-            <div class="row border--bottom">
-                <div class="col-1 t-center">
-                    {{ idx + 1 }}
-                </div>
-                <div class="col-11">
-                    {% for w in winner %}
-                    <span class="row-title">
+        <div class="space--md pb-0">
+            <div class="space-lr">
+                {% for idx, winner in result.ranks %}
+                {% if idx == 0 %}
+                <div class="border--bottom pb-1rem">
+                    <h4 class="title">
+                        {% for w in winner %}
                         {{w}}
-                    </span>
-                    {% endfor %}
+                        {% endfor %}
+                    </h4>
+                    <small>is the Condorcet winner </small>
                 </div>
+                {% else %}
+                <div class="row border--bottom">
+                    <div class="col-md-1 t-center">
+                        {{ idx + 1 }}
+                    </div>
+                    <div class="col-md-11">
+                        {% for w in winner %}
+                        {{w}}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
             </div>
-            {% endif %}
-            {% endfor %}
         </div>
     </div>
 </div>

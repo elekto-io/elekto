@@ -4,12 +4,33 @@ body {
     color: var(--body-color);
 }
 
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+.banner {
+    &-title {
+        font-weight: 200;
+        color: $color-black;
+    }
+
+    &-subtitle {
+        color: $color-black-2;
+        font-size: $font-size-body;
+    }
+}
+
 p {
     font-weight: 400;
     font-size: $font-size-para;
 
     &.description {
-        font-size: 12.6px;
+        font-size: 13px;
         line-height: 20px;
         text-align: justify;
         font-weight: 300;
@@ -19,7 +40,7 @@ p {
     }
 
     & > br {
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
     &.disclaimer {
@@ -35,13 +56,14 @@ p {
 }
 
 div.description {
-    & > h3  {
+    & > h3 {
         font-size: 1.1rem;
         line-height: 33px;
     }
 
-    & > h2  {
+    & > h2 {
         line-height: 33px;
+        font-size: 1.2rem;
     }
 
     & > p {
@@ -60,11 +82,15 @@ div.description {
     }
 }
 
+.color {
+    &-primary {
+        color: $color-primary !important;
+    }
+}
+
 .title {
-    font-size: 23px;
-    font-weight: 500;
+    font-weight: 300;
     color: $color-black;
-    padding-bottom: 10px;
 
     &-has-subtitle {
         line-height: 28px;
