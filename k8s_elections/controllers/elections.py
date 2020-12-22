@@ -18,6 +18,8 @@
 The module is responsible for handling all the election's related request.
 """
 
+import hmac
+import hashlib
 import flask as F
 
 from functools import wraps
@@ -40,8 +42,20 @@ def webhook_guard(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # signature = F.request.headers.get("X-Hub-Signature-256")
-        print(F.request.headers)
+        sign = F.request.headers.get("X-Hub-Signature-256")
+
+        if not sign or not sign.startswith('sha256='):
+            F.abort(400, "X-Hub-Signature-256 is not provided or invalid")
+        try:
+            digest = hmac.new(e_meta.SECRET.encode(),
+                              F.request.data, hashlib.sha256).hexdigest()
+        except AttributeError:
+            F.abort(500, 'Secret not set at server')
+
+        if not hmac.compare_digest(sign, "sha256=" + digest):
+            F.abort(400, "Invalid X-Hub-Signature-256 ")
+
+        print('verified ' + sign + ' with ' + digest)
         return f(*args, **kwargs)
     return decorated_function
 
