@@ -86,7 +86,7 @@ def has_voted_condition(f):
             return F.abort(404)
         e = SESSION.query(Election).filter_by(key=kwargs['eid']).first()
 
-        if F.g.user['login'] not in e.voters:
+        if F.g.user['login'] not in [v.handle for v in e.voters]:
             F.flash('You have not voted yet')
             return F.redirect(F.url_for('elections_single', eid=kwargs['eid']))
 

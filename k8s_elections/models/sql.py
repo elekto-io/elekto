@@ -101,6 +101,9 @@ class Voter(BASE):
     handle = S.Column(S.String(255), nullable=False)
     election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
 
+    def __repr__(self):
+        return "<Voter(election_id={}, handle={})>".format(
+            self.election_id, self.handle)
 
 class Ballot(BASE):
     """
