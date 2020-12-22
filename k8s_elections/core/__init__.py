@@ -52,44 +52,9 @@ def schulze_p(candidates, d):
     return p
 
 
-def generate_result(candidates, ballots, no_winners):
-    # choices = [c['ID'] for c in candidates]  # init all candidates with zero
-    preferences = {}  # this contains the voter's preferences
-    ballots = [b for b in ballots if b.rank > 0]
-    candidates = [c['ID'] for c in candidates]
-
-    for b in ballots:
-        if b.voter not in preferences.keys():
-            preferences[b.voter] = []
-        preferences[b.voter].append(b)
-
-    #  d[V,W] be the number of voters who prefer candidate V to W.
-    d = {(V, W): 0 for V in candidates for W in candidates if V != W}
-
-    for voter in preferences.keys():
-        for V in preferences[voter]:
-            for W in preferences[voter]:
-                if (V.candidate != W.candidate):
-                    d[(V.candidate, W.candidate)] += 1 if V.rank > W.rank else 0
-
-    # compute p[X, Y]
-    p = {}
-    for X in candidates:
-        for Y in candidates:
-            if X != Y:
-                strength = d.get((X, Y), 0)
-                p[X, Y] = strength if strength > d.get((Y, X), 0) else 0
-
-    for X in candidates:
-        for Z in candidates:
-            if X != Z:
-                for Y in candidates:
-                    if X != Y and Z != Y:
-                        p[Z, Y] = max(p.get((Z, Y)), min(
-                            p.get((Z, X), 0), p.get((X, Y), 0)))
-
-    # Rank p
+def schulze_rank(candidates, p, no_winners):
     wins = defaultdict(list)
+
     for V in candidates:
         n = 0
         for W in candidates:
@@ -98,5 +63,4 @@ def generate_result(candidates, ballots, no_winners):
         wins[n].append(V)
 
     ranks = sorted(wins.items())
-
     return ranks[:min(no_winners, len(ranks))]

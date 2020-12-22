@@ -110,10 +110,14 @@ def elections_admin_results(eid):
 
     if F.g.user['login'] not in election['election_officers']:
         return F.abort(404)
+
     e = SESSION.query(Election).filter_by(key=eid).first()
-    print(CoreElection.build(candidates, e.ballots).result())
+    result = CoreElection.build(
+        candidates, e.ballots, election['no_winners']).schulze()
+
     return F.render_template('views/elections/admin_result.html',
-                             election=election)
+                             election=election,
+                             result=result)
 
 
 @APP.route('/app/elections/<eid>/results/')  # Election's Result

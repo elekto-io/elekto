@@ -14,24 +14,26 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-from k8s_elections.core import schulze_d, schulze_p
+from k8s_elections.core import schulze_d, schulze_p, schulze_rank
 
 
 class Election:
-    def __init__(self, candidates, ballots):
+    def __init__(self, candidates, ballots, no_winners):
         self.candidates = candidates
         self.ballots = ballots
+        self.no_winners = no_winners
         self.d = {}
         self.p = {}
 
-    def result(self):
+    def schulze(self):
         self.d = schulze_d(self.candidates, self.ballots)
         self.p = schulze_p(self.candidates, self.d)
+        self.ranks = schulze_rank(self.candidates, self.p, self.no_winners)
 
         return self
 
     @ staticmethod
-    def build(candidates, ballots):
+    def build(candidates, ballots, no_winners):
         candidates = [c['ID'] for c in candidates]
         pref = {}
 
@@ -42,10 +44,10 @@ class Election:
                 continue
             pref[b.voter].append((b.candidate, int(b.rank)))
 
-        return Election(candidates, pref)
+        return Election(candidates, pref, no_winners)
 
     @ staticmethod
-    def from_csv(df):
+    def from_csv(df, no_winners):
         candidates = list(df.columns)
         ballots = {}
 
@@ -56,4 +58,4 @@ class Election:
                     continue
                 ballots[v].append((c, int(row[c])))
 
-        return Election(candidates, ballots)
+        return Election(candidates, ballots, no_winners)

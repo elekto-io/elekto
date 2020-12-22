@@ -6,10 +6,8 @@
 
 {% block breadcrums %}
 <a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
-<a href="{{ url_for('elections_single', eid=election['key']) }}"
-    class="breadcrums">{{ election['name'] }}</a>
-<a href=""
-    class="breadcrums breadcrums-active">Admin</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">Admin</a>
 {% endblock %}
 
 {% block content %}
@@ -25,32 +23,32 @@
             <span>{{ election['organization'] }}</span>
         </div>
         <div>
-            {% for idx, winner in result %}
-                {% if idx == 0 %}
-                <h1 class="title border--bottom">
-                    {% for w in winner %}
-                        {{w}} is the winner
-                    {% endfor %}
-                </h1>
-                {% else %}
-                <div class="row border--bottom">
-                    <div class="col-1">
-                        {{ idx + 1 }}
-                    </div>
-                    <div class="col-11">
-                        {% for w in winner %}
-                        <a href="">
-                            <span class="row-title">
-                                {{w}}
-                            </span>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    <div class="col-3 text--right">
-                        <a href="">view profile</a>
-                    </div>
+            {% for idx, winner in result.ranks %}
+            {% if idx == 0 %}
+            <h3 class="border--bottom pb-1rem" style="font-weight: 300;">
+                {% for w in winner %}
+                {{w}} is the Condorcet winner
+                {% endfor %}
+            </h3>
+            {% else %}
+            <div class="row border--bottom">
+                <div class="col-1">
+                    {{ idx + 1 }}
                 </div>
-                {% endif %}
+                <div class="col-11">
+                    {% for w in winner %}
+                    <a href="">
+                        <span class="row-title">
+                            {{w}}
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="col-3 text--right">
+                    <a href="">view profile</a>
+                </div>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

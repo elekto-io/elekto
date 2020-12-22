@@ -67,40 +67,21 @@ def test_welcome(client):
 def test_custom(client):
     from k8s_elections.core.election import Election
 
-    election = Election.from_csv(pd.read_csv('BALLOTS.csv')).result()
+    election = Election.from_csv(pd.read_csv('BALLOTS.csv'), 10).schulze()
 
-    candidates = election.candidates
     d = election.d
-    p = election.p
-
-    # Rank p
-    from collections import defaultdict
-    wins = defaultdict(list)
-    for V in candidates:
-        n = 0
-        for W in candidates:
-            if V != W and p.get((V, W), 0) > p.get((W, V), 0):
-                n += 1
-        wins[n].append(V)
-
-    ranks = sorted(wins.items())
-    results = []
-
-    for i in range(1, min(10, len(ranks))):
-        results.append(ranks[i - 1][1])
-
-    # print(ranks)
+    results = election.ranks
 
     for i in range(len(results)):
         if (i == 0):
-            print('{} {} is the condorcet winner'.format(i + 1, results[i][0]))
+            print('{} {} is the condorcet winner'.format(i + 1, results[i][1][0]))
         else:
             print('{} {} loses to {} by {} {}'.format(
                 i + 1,
-                results[i][0],
-                results[i - 1][0],
-                d.get((results[i][0], results[i - 1][0]), 0),
-                d.get((results[i - 1][0], results[i][0]), 0)
+                results[i][1][0],
+                results[i - 1][1][0],
+                d.get((results[i][1][0], results[i - 1][1][0]), 0),
+                d.get((results[i - 1][1][0], results[i][1][0]), 0)
             ))
 
     # print(results)
