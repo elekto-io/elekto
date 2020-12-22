@@ -20,6 +20,7 @@
         </p>
     </div>
 
+    {% if upcoming | length %}
     <div class="space--md pb-0">
         <h4 class="title space-lr">
             Elections in progress
@@ -40,7 +41,9 @@
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 
+    {% if past | length %}
     <div class="space--md">
         <h4 class="title space-lr">
             Previously Voted
@@ -55,36 +58,22 @@
                 </h2>
                 <small class="text-muted">
                     {{ e['organization']}} |
-                    Voting ended on {{ e['end_datetime'] }}. |
-                    {% if e['results'] %} <a href="">Results</a> {% endif %}
+                    Voting ended on {{ e['end_datetime'] }}.
+                    {% if e['results'] %} | <a href="">Results</a> {% endif %}
                 </small>
             </div>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 
-    <!-- <div class="boxed boxed-2 space--lg">
-        <h1 class="title border--bottom">
-            Previously Voted
-        </h1>
-        <div>
-            {% for e in past %}
-
-            <div class="row border--bottom">
-                <div class="col-md-9">
-                    <a href="{{ url_for('elections_single', eid=e['key']) }}">
-                        <span class="row-title">
-                            {{ e['name'] }}
-                        </span>
-                    </a>
-                </div>
-                <div class="col-md-3 text--right">
-                    <a href="">view results</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div> -->
+    {% if past | length == 0 and upcoming | length == 0 %}    
+    <div class="space--md">
+        <p class="space-lr">
+            Sit back and Relax, there is not to do yet.
+        </p>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}
