@@ -85,7 +85,7 @@
         {% if g.user['login'] not in voted %}
         <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-grey">vote</a>
         {% else %}
-        <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-grey">Edit your ballot</a>
+        <a href="{{ url_for('elections_edit_ballot', eid=election['key'])}}" class="btn btn-grey">Edit your ballot</a>
         {% endif %}
         {% endif %}
     </div>

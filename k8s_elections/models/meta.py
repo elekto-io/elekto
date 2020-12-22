@@ -17,7 +17,8 @@
 import os
 import flask as F
 
-from k8s_elections import SESSION, constants
+
+from k8s_elections import SESSION
 from k8s_elections.models import utils
 from abc import abstractmethod
 

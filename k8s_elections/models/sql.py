@@ -65,7 +65,15 @@ class User(BASE):
     id = S.Column(S.Integer, primary_key=True)
     username = S.Column(S.String(255), unique=True)
     name = S.Column(S.String(255), nullable=True)
+    token = S.Column(S.String(255), nullable=True)
+    token_expires_at = S.Column(S.DateTime, nullable=True)
     created_at = S.Column(S.DateTime, default=S.func.now())
+
+    def github_compatible(self):
+        return {
+            'login': self.username,
+            'name': self.name
+        }
 
 
 class Election(BASE):

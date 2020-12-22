@@ -21,33 +21,10 @@ queries, and user's session management
 
 import flask as F
 
-from functools import wraps
+from k8s_elections import constants, APP, SESSION
+from k8s_elections.models.sql import User
+from k8s_elections.middlewares.auth import authenticated
 from authlib.integrations.requests_client import OAuth2Session
-from k8s_elections import constants, APP
-
-
-# Helper Functions for authentication
-
-
-def authenticated():
-    """
-    Check the state of user's authentication
-
-    Returns:
-        (bool): user's authentication state
-    """
-    return hasattr(F.g, 'auth') and F.g.auth is not False
-
-
-def auth_guard(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not authenticated():
-            # r = str(base64.b64encode(
-            #     F.request.url.encode("ascii"))).replace('/', '$')
-            return F.redirect(F.url_for('render_login_page'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 
 def csrf_protection(ses, req):
@@ -65,6 +42,7 @@ def csrf_protection(ses, req):
             or constants.CSRF_STATE not in ses.keys() \
             or req.args[constants.CSRF_STATE] != ses[constants.CSRF_STATE]:
         # TODO -> Flash a message here for invalid csrf
+        F.flash('Invalid CSRF token')
         return F.redirect(F.url_for('render_login_page'))
 
 
@@ -153,8 +131,26 @@ def oauth_github_redirect():
     client = oauth_session(github)
     token = client.fetch_token(constants.GITHUB_ACCESS,
                                authorization_response=F.request.url)
-
     # Add user's authentication token to the flask session
-    F.session[constants.AUTH_STATE] = token
+    oauthsession = OAuth2Session(client_id=github['client_id'],
+                                 client_secret=github['client_secret'],
+                                 token=token)
+    resp = oauthsession.get(constants.GITHUB_PROFILE)
+    if resp.status_code != 200:
+        F.g.user = None
+        F.g.auth = False
+        F.session.pop(constants.AUTH_STATE)
+    else:
+        data = resp.json()
+        query = SESSION.query(User).filter_by(username=data['login']).first()
+        if query:
+            query.token = token['access_token']
+        else:
+            SESSION.add(User(username=data['login'],
+                             name=data['name'],
+                             token=token['access_token']))
+        SESSION.commit()
+        F.session[constants.AUTH_STATE] = token['access_token']
+        F.g.auth = True
 
     return F.redirect('/app')

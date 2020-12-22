@@ -1,4 +1,4 @@
-{% extends 'layouts/public.html' %}
+{% extends 'layouts/app.html' %}
 
 {% block header %}
 <h1>{% block title %}401 - Unauthorized{% endblock %}</h1>
@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<section class="h--100 center-y">
+<section class="h--80 center-y">
     <div class="space--md">
         <h1 class="title t-center">
             Unauthorized | {{ g.NAME }}

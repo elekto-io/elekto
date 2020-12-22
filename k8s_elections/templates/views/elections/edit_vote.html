@@ -37,7 +37,7 @@
             Candidates
         </h1>
         <div>
-            <form action="" method="post">
+            <form action="{{ url_for('elections_edit_ballot', eid=election['key'])}}" method="post">
                 <div id="draggable">
                     {% for candidate in candidates %}
                     <div class="row border--bottom draggable-row" id="div-{{ candidate['key'] }}"

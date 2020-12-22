@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
-<body>
+<body onload="onload()">
     <section class="d-flex">
         <div class="sidebar-container">
             {% include "components/sidebar.html" %}
@@ -24,15 +24,26 @@
                     <a class="text-dark" href="{{ url_for('logout') }}">Logout</a>
                 </div>
             </nav>
-            {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
             <div class="content">
+                <section id="message">
+                    <div class="space--sm">
+                        {% for message in get_flashed_messages() %}
+                        <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                </section>
                 {% block content %}{% endblock %}
             </div>
         </div>
     </section>
     {% block script %}{% endblock %}
+    <script>
+        const onload = () => {
+            setTimeout(() => {
+                document.getElementById('message').hidden = true
+            }, 10000);
+        }
+    </script>
 </body>
 
 </html>

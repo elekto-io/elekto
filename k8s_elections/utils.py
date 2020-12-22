@@ -20,8 +20,8 @@ k8s.elections.utils include utils related to flask application
 
 import flask as F
 
-from k8s_elections import constants
-from authlib.integrations.requests_client import OAuth2Session
+from k8s_elections import constants, SESSION
+from k8s_elections.models.sql import User
 
 
 def set_session(app):
@@ -29,19 +29,16 @@ def set_session(app):
     if constants.AUTH_STATE in F.session.keys() and \
             F.session[constants.AUTH_STATE] is not None:
         # Authenticate with every request if the user's token correct or not
-        github = app.config.get('GITHUB')
-        oauthsession = OAuth2Session(client_id=github['client_id'],
-                                     client_secret=github['client_secret'],
-                                     token=F.session[constants.AUTH_STATE])
-        resp = oauthsession.get(constants.GITHUB_PROFILE)
+        query = SESSION.query(User).filter_by(
+            token=F.session[constants.AUTH_STATE]).first()
 
         # if unable to fetch the user's info, set auth to False
-        if resp.status_code != 200:
+        if not query:
             F.g.user = None
             F.g.auth = False
             F.session.pop(constants.AUTH_STATE)
         else:
-            F.g.user = resp.json()
+            F.g.user = query.github_compatible()
             F.g.auth = True
     else:
         F.g.user = None
