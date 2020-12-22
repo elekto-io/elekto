@@ -1,0 +1,59 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Admin {% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}"
+    class="breadcrums">{{ election['name'] }}</a>
+<a href=""
+    class="breadcrums breadcrums-active">Admin</a>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="dashboard">
+    <div class="space--md pb-1rem">
+        <div class="border--bottom pb-10px mb-1rem">
+            <h1 class="title title-has-subtitle pb-0">
+                {{ election['name'] }}
+                <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+            </h1>
+            <span>{{ election['organization'] }}</span>
+        </div>
+        <div>
+            {% for idx, winner in result %}
+                {% if idx == 0 %}
+                <h1 class="title border--bottom">
+                    {% for w in winner %}
+                        {{w}} is the winner
+                    {% endfor %}
+                </h1>
+                {% else %}
+                <div class="row border--bottom">
+                    <div class="col-1">
+                        {{ idx + 1 }}
+                    </div>
+                    <div class="col-11">
+                        {% for w in winner %}
+                        <a href="">
+                            <span class="row-title">
+                                {{w}}
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="col-3 text--right">
+                        <a href="">view profile</a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

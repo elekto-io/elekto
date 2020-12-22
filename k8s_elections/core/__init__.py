@@ -22,6 +22,36 @@ methods like condorcet, schulze, irv and more.
 from collections import defaultdict
 
 
+def schulze_d(candidates, ballots):
+    d = {(V, W): 0 for V in candidates for W in candidates if V != W}
+    for voter in ballots.keys():
+        for V, Vr in ballots[voter]:
+            for W, Wr in ballots[voter]:
+                if V != W:
+                    d[(V, W)] += 1 if Vr > Wr else 0
+
+    return d
+
+
+def schulze_p(candidates, d):
+    p = {}
+    for X in candidates:
+        for Y in candidates:
+            if X != Y:
+                strength = d.get((X, Y), 0)
+                p[X, Y] = strength if strength > d.get((Y, X), 0) else 0
+
+    for X in candidates:
+        for Z in candidates:
+            if X != Z:
+                for Y in candidates:
+                    if X != Y and Z != Y:
+                        p[Z, Y] = max(p.get((Z, Y), 0), min(
+                            p.get((Z, X), 0), p.get((X, Y), 0)))
+
+    return p
+
+
 def generate_result(candidates, ballots, no_winners):
     # choices = [c['ID'] for c in candidates]  # init all candidates with zero
     preferences = {}  # this contains the voter's preferences
@@ -67,9 +97,6 @@ def generate_result(candidates, ballots, no_winners):
                 n += 1
         wins[n].append(V)
 
-    ranks = sorted(wins.items(), reverse=True)
-    results = []
-    for i in range(1, min(no_winners, len(ranks))):
-        results.append(ranks[i - 1][1])
+    ranks = sorted(wins.items())
 
-    return results
+    return ranks[:min(no_winners, len(ranks))]

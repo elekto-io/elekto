@@ -17,6 +17,7 @@
 import os
 import sys
 import pytest
+import pandas as pd
 
 # Workaround to safely import the k8s_elections module
 currentdir = os.path.dirname(os.path.realpath(__file__))
@@ -64,41 +65,13 @@ def test_welcome(client):
 
 
 def test_custom(client):
-    import pandas as pd
-    df = pd.read_csv('BALLOTS.csv')
+    from k8s_elections.core.election import Election
 
-    candidates = list(df.columns)
-    print('\n')
-    ballots = {}
-    for v, row in df.iterrows():
-        ballots[v] = []
-        for c in candidates:
-            if row[c] == 'No opinion':
-                continue
-            ballots[v].append((c, int(row[c])))
+    election = Election.from_csv(pd.read_csv('BALLOTS.csv')).result()
 
-    d = {(V, W): 0 for V in candidates for W in candidates if V != W}
-    for voter in ballots.keys():
-        for V in ballots[voter]:
-            for W in ballots[voter]:
-                if V[0] != W[0]:
-                    d[(V[0], W[0])] += 1 if V[1] > W[1] else 0
-
-    # # # compute p[X, Y]
-    p = {}
-    for X in candidates:
-        for Y in candidates:
-            if X != Y:
-                strength = d.get((X, Y), 0)
-                p[X, Y] = strength if strength > d.get((Y, X), 0) else 0
-
-    for X in candidates:
-        for Z in candidates:
-            if X != Z:
-                for Y in candidates:
-                    if X != Y and Z != Y:
-                        p[Z, Y] = max(p.get((Z, Y)), min(
-                            p.get((Z, X), 0), p.get((X, Y), 0)))
+    candidates = election.candidates
+    d = election.d
+    p = election.p
 
     # Rank p
     from collections import defaultdict
@@ -115,6 +88,8 @@ def test_custom(client):
 
     for i in range(1, min(10, len(ranks))):
         results.append(ranks[i - 1][1])
+
+    # print(ranks)
 
     for i in range(len(results)):
         if (i == 0):

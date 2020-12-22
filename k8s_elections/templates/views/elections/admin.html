@@ -27,6 +27,7 @@
         <div>
             Voters count - {{ voters | length }} 
         </div>
+        <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Results</a>
     </div>
 </div>
 

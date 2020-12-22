@@ -22,7 +22,8 @@ import flask as F
 from werkzeug.security import generate_password_hash
 
 from k8s_elections import constants, APP, SESSION
-from k8s_elections.core import generate_result
+# from k8s_elections.core import generate_result
+from k8s_elections.core.election import Election as CoreElection
 from k8s_elections.models import meta
 from k8s_elections.models.sql import Election, Ballot, Voter
 from k8s_elections.controllers.authentication import auth_guard
@@ -89,18 +90,30 @@ def elections_candidate(eid, cid):
 @auth_guard
 def elections_admin(eid):
     election = e_meta.get(eid)
-    candidates = e_meta.candidates(eid)
 
     if F.g.user['login'] not in election['election_officers']:
         return F.abort(404)
 
     e = SESSION.query(Election).filter_by(key=eid).first()
     voters = e.voters
-    print(generate_result(candidates, e.ballots, election['no_winners']))
 
     return F.render_template('views/elections/admin.html',
                              election=election,
                              voters=voters)
+
+
+@APP.route('/app/elections/<eid>/admin/results')  # Admin page for the election
+@auth_guard
+def elections_admin_results(eid):
+    election = e_meta.get(eid)
+    candidates = e_meta.candidates(eid)
+
+    if F.g.user['login'] not in election['election_officers']:
+        return F.abort(404)
+    e = SESSION.query(Election).filter_by(key=eid).first()
+    print(CoreElection.build(candidates, e.ballots).result())
+    return F.render_template('views/elections/admin_result.html',
+                             election=election)
 
 
 @APP.route('/app/elections/<eid>/results/')  # Election's Result
