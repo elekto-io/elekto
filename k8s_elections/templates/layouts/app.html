@@ -14,7 +14,6 @@
         {% include "components/sidebar.html" %}
         <div class="content-container content-has-sidebar" id="content">
             <nav class="nav">
-                <!-- <button id="sidebar-btn">x</button> -->
                 <div>
                     <a href="{{ url_for('app') }}" class="breadcrums">{{g.NAME}}</a>
                     {% block breadcrums %}{% endblock %}
@@ -42,10 +41,6 @@
                 document.getElementById('message').hidden = true
             }, 10000);
         }
-        document.getElementById('sidebar-btn').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('sidebar-active')
-            document.getElementById('content').classList.toggle('content-active')
-        });
     </script>
 </body>
 
