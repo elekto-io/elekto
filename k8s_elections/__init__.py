@@ -24,7 +24,6 @@ SESSION = sql.create_session(APP.config.get('DATABASE_URL'))  # database
 
 from k8s_elections.models import meta  # noqa
 from k8s_elections import utils  # noqa
-META, log = meta.Election(APP.config.get('META')).update_store()
 
 
 @APP.before_request

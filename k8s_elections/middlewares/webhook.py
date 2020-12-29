@@ -19,7 +19,7 @@ import hashlib
 import flask as F
 
 from functools import wraps
-from k8s_elections import META
+from k8s_elections import APP
 
 
 def webhook_guard(f):
@@ -28,12 +28,14 @@ def webhook_guard(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        if APP.config['DEBUG']:
+            return f(*args, **kwargs)
         sign = F.request.headers.get("X-Hub-Signature-256")
 
         if not sign or not sign.startswith('sha256='):
             F.abort(400, "X-Hub-Signature-256 is not provided or invalid")
         try:
-            digest = hmac.new(META.SECRET.encode(),
+            digest = hmac.new(APP.config['META']['SECRET'].encode(),
                               F.request.data, hashlib.sha256).hexdigest()
         except AttributeError:
             F.abort(500, 'Error while creating a digest')

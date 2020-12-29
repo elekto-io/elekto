@@ -18,35 +18,17 @@ import os
 import yaml
 import markdown2 as markdown
 
-from datetime import datetime
 from k8s_elections import constants
 from k8s_elections.models.sql import Election
 
-
-def check_election_status(election):
-    """
-    Compute and return election's running status
-
-    Args:
-        election (dict): dict with required election's info like start, end
-                         datetime
-
-    Returns:
-        string: status of the election
-    """
-    start = election['start_datetime']
-    end = election['end_datetime']
-    now = datetime.now()
-
-    if now < start:
-        return constants.ELEC_STAT_UPCOMING
-    elif end < now:
-        return constants.ELEC_STAT_COMPLETED
-    else:
-        return constants.ELEC_STAT_RUNNING
+# to preserve the import consistency
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 
-def parse_yaml_from_file(yaml_path):
+def parse_yaml(yaml_path):
     """
     Loads a yaml from the system and return a dict
 
@@ -58,12 +40,6 @@ def parse_yaml_from_file(yaml_path):
     """
     if os.path.exists(yaml_path) is False:
         return None
-
-    # to preserve the import consistency
-    try:
-        from yaml import CLoader as Loader
-    except ImportError:
-        from yaml import Loader
 
     return yaml.load(open(yaml_path, 'r').read(), Loader=Loader)
 
@@ -78,11 +54,6 @@ def parse_yaml_from_string(yaml_string):
     Returns:
         dict: parsed yaml dict object
     """
-    try:
-        from yaml import CLoader as Loader
-    except ImportError:
-        from yaml import Loader
-
     return yaml.load(yaml_string, Loader=Loader)
 
 
@@ -136,7 +107,7 @@ def sync_db_with_meta(session, elections):
         return "Tables does not exists yet"
 
 
-def renderMD(md, path=True):
+def parse_md(md, path=True):
     try:
         if path:
             md = open(md, 'r').read()

@@ -18,3 +18,4 @@ import k8s_elections.controllers.errors  # noqa
 import k8s_elections.controllers.authentication  # noqa
 import k8s_elections.controllers.elections  # noqa
 import k8s_elections.controllers.public  # noqa
+import k8s_elections.controllers.webhook  # noqa

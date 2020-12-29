@@ -17,8 +17,9 @@
 import flask as F
 
 from functools import wraps
-from k8s_elections import META, SESSION, constants
+from k8s_elections import SESSION, constants
 from k8s_elections.models.sql import Election
+from k8s_elections.models import meta
 
 
 def admin_guard(f):
@@ -29,7 +30,7 @@ def admin_guard(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'eid' not in kwargs.keys() or F.g.user['login'] \
-                not in META.get(kwargs['eid'])['election_officers']:
+                not in meta.Election(kwargs['eid']).get()['election_officers']:
             F.flash('You are not an Election officer')
             F.abort(401)
         return f(*args, **kwargs)
@@ -46,12 +47,12 @@ def voter_guard(f):
         if 'eid' not in kwargs.keys():
             return F.abort(404)
 
-        election = META.get(kwargs['eid'])
-        voters = META.voters(kwargs['eid'])
+        election = meta.Election(kwargs['eid'])
+        voters = election.voters()
 
         if F.g.user['login'] not in voters['eligible_voters']:
             return F.render_template('errors/not_eligible.html',
-                                     election=election)
+                                     election=election.get())
         return f(*args, **kwargs)
     return decorated_function
 
@@ -65,7 +66,7 @@ def has_completed_condition(f):
         if 'eid' not in kwargs.keys():
             return F.abort(404)
 
-        election = META.get(kwargs['eid'])
+        election = meta.Election(kwargs['eid']).get()
         if election['status'] != constants.ELEC_STAT_COMPLETED:
             return F.render_template('errors/message.html',
                                      title='The election is not completed yet',

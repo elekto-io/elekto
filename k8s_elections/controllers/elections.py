@@ -22,11 +22,11 @@ import flask as F
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from k8s_elections import constants, APP, SESSION, META
-from k8s_elections.models.sql import Election, Ballot, Voter
+from k8s_elections import constants, APP, SESSION
+from k8s_elections.models import meta
 from k8s_elections.core.election import Election as CoreElection
+from k8s_elections.models.sql import Election, Ballot, Voter
 from k8s_elections.middlewares.auth import auth_guard
-from k8s_elections.middlewares.webhook import webhook_guard
 from k8s_elections.middlewares.election import (
     voter_guard, admin_guard,
     has_completed_condition,
@@ -43,9 +43,8 @@ def app():
             Voter.handle == F.g.user['login']).subquery()
     )).all()
 
-    past = [META.get(e.key) for e in query]
-    upcoming = META.where('status', constants.ELEC_STAT_RUNNING)
-
+    past = [meta.Election(e.key).get() for e in query]
+    upcoming = meta.Election.where('status', constants.ELEC_STAT_RUNNING)
     return F.render_template('views/dashboard.html',
                              upcoming=upcoming,
                              past=past)
@@ -55,7 +54,7 @@ def app():
 @auth_guard
 def elections():
     status = F.request.args.get('status')
-    res = META.all() if status is None else META.where('status', status)
+    res = meta.Election.all() if status is None else meta.Election.where('status', status)
     res.sort(key=lambda e: e['start_datetime'], reverse=True)
 
     return F.render_template('views/elections/index.html',
@@ -66,13 +65,13 @@ def elections():
 @APP.route('/app/elections/<eid>')  # Particular Election
 @auth_guard
 def elections_single(eid):
-    election = META.get(eid)
-    candidates = META.candidates(eid)
-    voters = META.voters(eid)
+    election = meta.Election(eid)
+    candidates = election.candidates()
+    voters = election.voters()
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     return F.render_template('views/elections/single.html',
-                             election=election,
+                             election=election.get(),
                              candidates=candidates,
                              voters=voters,
                              voted=[v.handle for v in e.voters])
@@ -81,11 +80,11 @@ def elections_single(eid):
 @APP.route('/app/elections/<eid>/candidates/<cid>')  # Particular Candidate
 @auth_guard
 def elections_candidate(eid, cid):
-    election = META.get(eid)
-    candidate = META.candidate(eid, cid)
+    election = meta.Election(eid)
+    candidate = election.candidate(cid)
 
     return F.render_template('views/elections/candidate.html',
-                             election=election,
+                             election=election.get(),
                              candidate=candidate)
 
 
@@ -93,9 +92,9 @@ def elections_candidate(eid, cid):
 @auth_guard
 @voter_guard
 def elections_voting_page(eid):
-    election = META.get(eid)  # eid is also validated here
-    candidates = META.candidates(eid)
-    voters = META.voters(eid)
+    election = meta.Election(eid)  # eid is also validated here
+    candidates = election.candidates()
+    voters = election.voters()
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     # Redirect to thankyou page if already voted
@@ -121,7 +120,7 @@ def elections_voting_page(eid):
         return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
 
     return F.render_template('views/elections/vote.html',
-                             election=election,
+                             election=election.get(),
                              candidates=candidates,
                              voters=voters)
 
@@ -131,9 +130,9 @@ def elections_voting_page(eid):
 @voter_guard
 @has_voted_condition
 def elections_edit_ballot(eid):
-    election = META.get(eid)  # eid is also validated here
-    candidates = META.candidates(eid)
-    voters = META.voters(eid)
+    election = meta.Election(eid)  # eid is also validated here
+    candidates = election.candidates()
+    voters = election.voters()
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     if F.request.method == 'POST':
@@ -160,7 +159,7 @@ def elections_edit_ballot(eid):
         return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
 
     return F.render_template('views/elections/edit_vote.html',
-                             election=election,
+                             election=election.get(),
                              candidates=candidates,
                              voters=voters)
 
@@ -168,12 +167,12 @@ def elections_edit_ballot(eid):
 @APP.route('/app/elections/<eid>/confirmation', methods=['GET'])
 @auth_guard
 def elections_confirmation_page(eid):
-    election = META.get(eid)
+    election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     if F.g.user['login'] in [v.handle for v in e.voters]:
         return F.render_template('views/elections/confirmation.html',
-                                 election=election)
+                                 election=election.get())
 
     return F.redirect(F.url_for('elections_single', eid=eid))
 
@@ -182,9 +181,10 @@ def elections_confirmation_page(eid):
 @auth_guard
 @has_completed_condition
 def elections_results(eid):
-    election = META.get(eid)
+    election = meta.Election(eid)
 
-    return F.render_template('views/elections/results.html', election=election)
+    return F.render_template('views/elections/results.html',
+                             election=election.get())
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -197,11 +197,11 @@ def elections_results(eid):
 @auth_guard
 @admin_guard
 def elections_admin(eid):
-    election = META.get(eid)
+    election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     return F.render_template('views/elections/admin.html',
-                             election=election,
+                             election=election.get(),
                              e=e)
 
 
@@ -210,26 +210,14 @@ def elections_admin(eid):
 @admin_guard
 @has_completed_condition
 def elections_admin_results(eid):
-    election = META.get(eid)
-    candidates = META.candidates(eid)
+    election = meta.Election(eid)
+    candidates = election.candidates()
     e = SESSION.query(Election).filter_by(key=eid).first()
 
-    result = CoreElection.build(
-        candidates, e.ballots, election['no_winners']).schulze()
+    result = CoreElection.build(candidates,
+                                e.ballots,
+                                election.get()['no_winners']).schulze()
 
     return F.render_template('views/elections/admin_result.html',
-                             election=election,
+                             election=election.get(),
                              result=result)
-
-
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-#                                                                            #
-#                       /!/ Webhook routes section \!\                       #
-#                                                                            #
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-
-@APP.route('/v1/webhooks/meta/updated', methods=['POST'])
-@webhook_guard
-def update_meta():
-    store, log = META.update_store()
-    return log
