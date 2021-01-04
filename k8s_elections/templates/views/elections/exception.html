@@ -1,0 +1,32 @@
+
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}{{ election['name'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{
+    election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">Exception</a>
+{% endblock %}
+
+{% block content %}
+<div class="">
+    <div class="space--md pb-0">
+        <h3 class="banner-title space-lr">
+            Voter Exception form for {{election['name']}}
+        </h3>
+        <p class="banner-subtitle space-lr mb-2rem">
+            <span class="mr-5px">{{ election['organization'] }}</span>
+            <span class="text-muted mr-5px">|</span>
+            <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+        </p>
+        <div class="description space-lr">
+            {{ election['exception_description']}}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

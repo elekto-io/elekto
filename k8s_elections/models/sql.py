@@ -84,6 +84,7 @@ class Election(BASE):
     name = S.Column(S.String(255), nullable=True)
     ballots = S.orm.relationship('Ballot')
     voters = S.orm.relationship('Voter')
+    requests = S.orm.relationship('Request')
     created_at = S.Column(S.DateTime, default=S.func.now())
 
     def __repr__(self):
@@ -129,3 +130,15 @@ class Ballot(BASE):
     def __repr__(self):
         return "<Ballot(election_id={}, candidate={}, rank={})>".format(
             self.election_id, self.candidate, self.rank)
+
+class Request(BASE):
+    __tablename__ = 'request'
+
+    id = S.Column(S.Integer, primary_key=True)
+    handle = S.Column(S.String(255), nullable=False)
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+    name = S.Column(S.String(255), nullable=True)
+    email = S.Column(S.String(255), nullable=True)
+    chat = S.Column(S.String(255), nullable=True)
+    description = S.Column(S.Text, nullable=True)
+    comments = S.Column(S.Text, nullable=True)

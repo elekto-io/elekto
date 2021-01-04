@@ -11,44 +11,37 @@
 {% endblock %}
 
 {% block content %}
-<div class="dashboard">
-    <div class="space--md pb-1rem">
-        <div class="border--bottom pb-10px mb-1rem">
-            <h1 class="title title-has-subtitle pb-0">
-                {{ election['name'] }}
-            </h1>
-            <span>{{ election['organization'] }}</span>
-        </div>
-        <p class="disclaimer">
-            The poll ends <b>{{ election['end_datetime'] }}</b>.
-            The poll is supervised by
-            <b>
-                {% for eo in election['election_officers'] %}
-                <a class="text-dark" target="__blank" href="https://github.com/{{ eo }}">
-                    {{ eo + ', ' if election['election_officers']|length > loop.index else eo + '.' }}
-                </a>
-                {% endfor %}
-            </b>
-            Contact the poll supervisor if you need help.
+<div class="">
+    <div class="space--md pb-0">
+        <h1 class="banner-title space-lr">
+            {{ election['name'] }}
+        </h1>
+        <p class="banner-subtitle space-lr mb-2rem">
+            <span class="mr-5px">{{ election['organization'] }}</span>
+            <span class="text-muted mr-5px">|</span>
+            <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+        </p>
+        <p class="disclaimer space-lr mt-1rem">
+            The poll ends at <b>{{ election['end_datetime'] }} UTC</b>. Contact the poll supervisor(s) if you need help.
         </p>
     </div>
     <div class="space--md pt-0">
-        <h1 class="subtitle border--bottom">
+        <h4 class="title space-lr mb-1rem">
             Candidates
-        </h1>
-        <div>
+        </h4>
+        <div class="space-lr">
             <form action="" method="post">
                 <div id="draggable">
                     {% for candidate in candidates %}
-                    <div class="row border--bottom draggable-row" id="div-{{ candidate['key'] }}"
-                        data-candidate="{{candidate['key']}}" data-rank="100000000">
-                        <div class="col-6">
-                            <span class="row-title">
+                    <div class="boxed-hover row  draggable-row" id="div-{{ candidate['key'] }}"
+                        data-candidate="{{candidate['key']}}" data-rank="100000000" style="border: 1px solid #80808012;">
+                        <div class="col-10 pt-5px pl-0">
+                            <h6 class="title mt-5px pb-0 mb-0">
                                 {{ candidate['name'] }}
-                            </span>
+                            </h6>
                         </div>
-                        <div class="col-6 text--right">
-                            <select class="input" name="candidate@{{ candidate['key'] }}"
+                        <div class="col-2 text--right">
+                            <select class="form-control" name="candidate@{{ candidate['key'] }}"
                                 data-candidate="{{candidate['key']}}" id="select-{{ candidate['key'] }}"
                                 onchange="handleChange(this);">
                                 <option value="100000000">No opinion</option>
@@ -61,9 +54,13 @@
                     {% endfor %}
                 </div>
                 <div class="mt-10px">
+                    <div class="mb-5px">
                     <small>Enter a password to secure you ballot. You will need this password if you wish to delete or
                         edit your ballot. <br /></small>
-                    <input class="input" type="password" name="password" placeholder="password" required>
+                    </div>
+                    <div>
+                        <input class="input" type="password" name="password" placeholder="password" required>
+                    </div>
                 </div>
                 <div class="mt-1rem">
                     <button class="btn btn-grey" type="submit">Submit Vote</button>

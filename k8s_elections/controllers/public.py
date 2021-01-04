@@ -27,7 +27,7 @@ from k8s_elections.models import meta
 
 @APP.route('/')
 def welcome():
-    return F.render_template('/views/public/welcome.html')
+    return F.redirect(F.url_for('app'))
 
 
 @APP.route('/elections')

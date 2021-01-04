@@ -20,7 +20,7 @@ from functools import wraps
 from k8s_elections import SESSION, constants
 from k8s_elections.models.sql import Election
 from k8s_elections.models import meta
-
+from datetime import datetime
 
 def admin_guard(f):
     """
@@ -53,6 +53,31 @@ def voter_guard(f):
         if F.g.user['login'] not in voters['eligible_voters']:
             return F.render_template('errors/not_eligible.html',
                                      election=election.get())
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def exception_guard(f):
+    """
+    Middleware (guard): checks if the current authorized user can created an
+    exception request
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'eid' not in kwargs.keys():
+            return F.abort(404)
+
+        election = meta.Election(kwargs['eid'])
+        voters = election.voters()
+
+        if election.get()['exception_due'] < datetime.now():
+            F.flash('Not accepting any exception request.')
+            return F.redirect(F.url_for('elections_single', eid=kwargs['eid']))
+
+        if F.g.user['login'] in voters['eligible_voters']:
+            F.flash('You are already eligible to vote in the election.')
+            return F.redirect(F.url_for('elections_single', eid=kwargs['eid']))
+
         return f(*args, **kwargs)
     return decorated_function
 

@@ -78,6 +78,8 @@ class Election(Meta):
         self.election['description'] = self.description()
         self.election['results'] = self.results()
 
+        if 'exception_due' not in self.election.keys():
+            self.election['exception_due'] = self.election['start_datetime']
         return self.election
 
     def status(self):

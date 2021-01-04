@@ -30,7 +30,8 @@ from k8s_elections.middlewares.auth import auth_guard
 from k8s_elections.middlewares.election import (
     voter_guard, admin_guard,
     has_completed_condition,
-    has_voted_condition
+    has_voted_condition,
+    exception_guard,
 )
 
 
@@ -184,6 +185,17 @@ def elections_results(eid):
     election = meta.Election(eid)
 
     return F.render_template('views/elections/results.html',
+                             election=election.get())
+
+
+@APP.route('/app/elections/<eid>/exception')  # Exception Request form
+@auth_guard
+@exception_guard
+def elections_exception(eid):
+    election = meta.Election(eid)
+    e = SESSION.query(Election).filter_by(key=eid).first()
+    print(election.get())
+    return F.render_template('views/elections/exception.html',
                              election=election.get())
 
 

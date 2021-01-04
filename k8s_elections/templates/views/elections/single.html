@@ -29,23 +29,11 @@
             <small class="badge badge-blue">Not eligible</small>
             {% endif %}
         </p>
-        <div class="description space-lr">
+        <div class="description space-lr pb-0">
             {{ election['description'] | safe }}
         </div>
-        <p class="disclaimer space-lr">
-            The poll ends <b>{{ election['end_datetime'] }}</b>.
-            The poll is supervised by
-            <b>
-                {% for eo in election['election_officers'] %}
-                <a class="text-dark" target="__blank" href="https://github.com/{{ eo }}">
-                    {{ eo + ', ' if election['election_officers']|length > loop.index else eo + '.' }}
-                </a>
-                {% endfor %}
-            </b>
-            Contact the poll supervisor if you need help.
-        </p>
     </div>
-    <div class="space--md">
+    <div class="space--md pt-1rem">
         <h4 class="title space-lr">
             Candidates
         </h4>
@@ -66,6 +54,10 @@
             </div>
             {% endfor %}
         </div>
+        <p class="disclaimer space-lr mt-1rem">
+            The poll starts from <b>{{ election['start_datetime'] }} UTC</b> and ends at
+            <b>{{ election['end_datetime'] }} UTC</b>.
+        </p>
     </div>
 
     <div class="space--md pt-0">
@@ -86,8 +78,7 @@
             {% if g.user['login'] not in voted %}
             <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-grey">vote</a>
             {% else %}
-            <a href="{{ url_for('elections_edit_ballot', eid=election['key'])}}" class="btn btn-grey">Edit your
-                ballot</a>
+            <a href="{{ url_for('elections_edit_ballot', eid=election['key'])}}" class="btn btn-grey">Change the vote</a>
             {% endif %}
             {% endif %}
         </div>
