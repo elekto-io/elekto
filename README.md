@@ -1,16 +1,16 @@
 ![banner.js](/static/banner.jpg)
 
-**k8s.elections** is an opensource organization wide application for conducting community elections. It provides the necessary support for conducting elections with security. 
+**elekto** is an opensource organization wide application for conducting community elections. It provides the necessary support for conducting elections with security. 
 
-k8s.elections is built upon the **CIVS's** voting logic know as **Condorcet method** (and has an ability to extend to other logics as well).
+elekto is built upon the **CIVS's** voting logic know as **Condorcet method** (and has an ability to extend to other logics as well).
 
-### To start using k8s.elections
+### To start using elekto
 
 See our detailed instruction [docs](/docs/README.md)
 
-### To start developing k8s.elections
+### To start developing elekto
 
-See the application's design and architecture [documentation](/docs/DESIGN.md), that has all information about building k8s.elections from source, how to contribute code and documentation, who to contact about what, etc.
+See the application's design and architecture [documentation](/docs/DESIGN.md), that has all information about building elekto from source, how to contribute code and documentation, who to contact about what, etc.
 
 The repository contains an conda `environment.yml` file for creating virtual environment (refer to - [conda docs](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)) and also has an `requirements.txt` for pip usage.
 
