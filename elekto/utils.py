@@ -26,7 +26,6 @@ from elekto.models.sql import User, Election, Voter
 
 
 def set_session(app):
-    print('init')
     F.session.permanent = True
     if constants.AUTH_STATE in F.session.keys() and \
             F.session[constants.AUTH_STATE] is not None:
