@@ -16,9 +16,9 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-# import os
+import os
 import argparse
-from config import DEBUG, DATABASE_URL
+from config import DEBUG, DATABASE_URL, META
 
 from utils import env
 from elekto.models.sql import migrate
@@ -35,6 +35,7 @@ parser.add_argument('--host',
                     making the it only visable on localhost')
 parser.add_argument('--migrate',
                     help='Create the database tables', action='store_true')
+parser.add_argument('--sync', action="store_true")
 
 args = parser.parse_args()
 
@@ -43,6 +44,23 @@ if args.migrate:
     print('migrating - creating the database tables')
     migrate(DATABASE_URL)
     exit()
+
+if args.sync:
+    print('Syncing the db with meta')
+    from elekto.models import meta
+    from elekto.models.sql import create_session
+    from elekto.models.utils import sync_db_with_meta
+
+    SESSION = create_session(DATABASE_URL)
+
+    if not os.path.exists(META['PATH']) or not os.path.isdir(META['PATH']):
+        os.system('/usr/bin/git clone {} {} '.format(
+            META['REMOTE'], META['PATH']
+        ))
+    else:
+        os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
+            pull origin main'.format(META['PATH'], META['PATH']))
+    sync_db_with_meta(SESSION, meta.Election.all())
 
 if DEBUG:
     from elekto import APP
