@@ -21,7 +21,7 @@ import argparse
 from config import DEBUG, DATABASE_URL
 
 from utils import env
-from k8s_elections.models.sql import migrate
+from elekto.models.sql import migrate
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
@@ -45,6 +45,6 @@ if args.migrate:
     exit()
 
 if DEBUG:
-    from k8s_elections import APP
+    from elekto import APP
     APP.jinja_env.auto_reload = DEBUG
     APP.run(debug=DEBUG, host=args.host, port=args.port)

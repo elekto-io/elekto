@@ -1,0 +1,94 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Elections{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="" class="breadcrums breadcrums-active">
+    {% if status %}
+    <span class="badge badge-{{status}}">{{status}}</span>
+    {% endif %}
+</a>
+{% endblock %}
+
+{% block content %}
+
+{% if elections|length == 0 %}
+<section class="h--80 center-y">
+    <div class="space--md t-center">
+        <h1 class="title t-center">
+            No Elections found
+            {% if status %}
+            in <span class="badge badge-{{status}}">{{status}}</span>
+            {% endif %}
+        </h1>
+    </div>
+</section>
+
+{% else %}
+
+<div class="">
+    <div class="space--md pb-0">
+
+        <h1 class="banner-title space-lr">
+            Elections
+        </h1>
+        <p class="banner-subtitle space-lr">
+            Index for all the elections contained by the repository.
+        </p>
+        <div class="space-lr text-right">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                   Filter 
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item pt-2px pb-2px" href="{{ url_for('elections', status='completed')}}">
+                        <small>Completed</small>
+                    </a>
+                    <a class="dropdown-item pt-2px pb-2px" href="{{ url_for('elections', status='running')}}">
+                        <small>Running</small>
+                    </a>
+                    <a class="dropdown-item pt-2px pb-2px" href="{{ url_for('elections', status='upcoming')}}">
+                        <small>Upcoming</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="space--md pt-0">
+        <div class="">
+            {% for e in elections %}
+            <div class="boxed-hover">
+                <h2 class="title pb-0 mb-0">
+                    <a href="{{ url_for('elections_single', eid=e['key']) }}" class="color-primary ">
+                        {{ e['name'] }}
+                    </a>
+                </h2>
+                <div class="row">
+                    <div class="col-md-12 col-lg-5 col-sm-12">
+                        <small>
+                        {{ e['organization']}} <span class="pl-5px pr-5px">|</span> 
+                        </small>
+                        <a href="{{ url_for('elections', status=e['status']) }}">
+                            <span class="badge badge-{{  e['status'] }}">{{ e['status'] }}</span>
+                        </a>
+                    </div>
+                    <div class="col-md-12 col-lg-7 col-sm-12 text-lg-right">
+                        <span class="text-right text-muted">
+                            <small>
+                            Running from  {{ e['start_datetime'] }} to {{ e['end_datetime'] }} |
+                            </small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

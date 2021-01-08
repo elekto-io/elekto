@@ -1,0 +1,32 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}{{ candidate['name'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">{{ candidate['name'] }}</a>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="">
+    <div class="space--md pb-0">
+        <h1 class="banner-title space-lr">
+            {{ candidate['name'] }}
+        </h1>
+        <p class="banner-subtitle space-lr">
+            <small class="badge badge-green" style="text-transform: none;">{{ candidate['ID'] }}</small> | <span>Running for {{ election['name'] }}</span>
+        </p>
+    </div>
+    <div class="space--md  pb-1rem">
+        <div class="description space-lr">
+            {{ candidate['description'] | safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
