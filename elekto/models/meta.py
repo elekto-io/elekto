@@ -15,6 +15,7 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import os
+import random
 import flask as F
 
 from datetime import datetime
@@ -104,6 +105,9 @@ class Election(Meta):
         return utils.parse_yaml(os.path.join(self.path, Election.VOT))
 
     def candidates(self):
+        """
+        Build candidates and a list of candidates in random order
+        """
         files = [k for k in os.listdir(self.path) if 'candidate' in k]
         candidates = []
         for f in files:
@@ -111,6 +115,10 @@ class Election(Meta):
             c = utils.extract_candidate_info(md)
             c['key'] = c['ID']
             candidates.append(c)
+
+        # As per the specifications the candidates must!! be in random order
+        random.shuffle(candidates)
+
         return candidates
 
     def candidate(self, cid):
