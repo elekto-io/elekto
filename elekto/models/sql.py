@@ -220,6 +220,7 @@ class Request(BASE):
     chat = S.Column(S.String(255), nullable=True)
     description = S.Column(S.Text, nullable=True)
     comments = S.Column(S.Text, nullable=True)
+    reviewed = S.Column(S.Boolean, default=False)
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
 

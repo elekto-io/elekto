@@ -23,8 +23,58 @@
             <span class="text-muted mr-5px">|</span>
             <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
         </p>
-        <div class="description space-lr">
+        <div class="description mb-2rem space-lr">
             {{ election['exception_description']}}
+        </div>
+        <div class="space-lr row">
+            <div class="col-md-8">
+                <form action="" method="post">
+                    <div class="form-group">
+                        <input
+                             type="text"
+                             name="name"
+                             class="form-control"
+                             placeholder="Enter your full name"
+                             required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                            type="text"
+                            name="chat"
+                            class="form-control"
+                            placeholder="Enter your chat ID"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            placeholder="Description"
+                            id=""
+                            cols="30"
+                            rows="6"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="comments" class="form-control" placeholder="Comments" id="" cols="30" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-dark">Submit Request</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

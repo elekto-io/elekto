@@ -25,14 +25,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from elekto import constants, APP, SESSION
 from elekto.models import meta
 from elekto.core.election import Election as CoreElection
-from elekto.models.sql import Election, Ballot, Voter
+from elekto.models.sql import Election, Ballot, Voter, Request
 from elekto.middlewares.auth import auth_guard
 from elekto.middlewares.election import *
 
 @APP.route('/app')
 @auth_guard
 def app():
-    print('app')
     running = meta.Election.where('status', constants.ELEC_STAT_RUNNING)
 
     return F.render_template('views/dashboard.html', running=running)
@@ -151,7 +150,6 @@ def elections_confirmation_page(eid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
-    print(F.g.user.id)
     if F.g.user.id in [v.user_id for v in e.voters]:
         return F.render_template('views/elections/confirmation.html',
                                  election=election.get())
@@ -169,13 +167,25 @@ def elections_results(eid):
                              election=election.get())
 
 
-@APP.route('/app/elections/<eid>/exception')  # Exception Request form
+@APP.route('/app/elections/<eid>/exception', methods=['POST', 'GET'])  # Exception Request form
 @auth_guard
 @exception_guard
 def elections_exception(eid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
-    print(election.get())
+
+    if F.request.method == 'POST':
+        erequest = Request(name=F.request.form['name'],
+                           email=F.request.form['email'],
+                           chat=F.request.form['chat'],
+                           description=F.request.form['description'],
+                           comments=F.request.form['comments'])
+        e.requests.append(erequest)
+        SESSION.commit()
+
+        F.flash('Request sucessfully submitted.')
+        return F.redirect(F.url_for('elections_single', eid=eid))
+
     return F.render_template('views/elections/exception.html',
                              election=election.get())
 
