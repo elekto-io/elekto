@@ -8,7 +8,7 @@
 <a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
 <a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
 <a href="{{ url_for('elections_admin', eid=election['key'])  }}" class="breadcrums">Admin</a>
-<a href="" class="breadcrums breadcrums-active">Exceptioni for {{ req.name }}</a>
+<a href="" class="breadcrums breadcrums-active">Exception for {{ req.name }}</a>
 {% endblock %}
 
 {% block content %}
