@@ -25,20 +25,12 @@
     </div>
     <div class="space--md">
         <div class="row space-lr justify-content-around">
-            <div class="col-md-6 p-0">
+            <div class="boxed-2 p-2rem col-md-6 p-0">
                 <h3 class="title">Statistics</h3>
                 {% if e.voters | length %}
                 Last ballot was created at - {{ e.ballots[-1].created_at }}
                 {% else %}
                 No one has voted.
-                {% endif %}
-                {% if election['status'] == 'completed' %}
-                <div class="mt-1rem">
-                    <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Generate
-                        Results</a>
-                    <a href="" class="btn mt-10px btn-grey">
-                        Export and download ballots to CSV</a>
-                </div>
                 {% endif %}
             </div>
             <div class="col-md-2 text-center boxed-2 p-1rem">
@@ -85,6 +77,18 @@
                 </div>
             </div>
         {% endfor %}
+    </div>
+    <div class="space--md pt-0">
+        <div class="space-lr">
+            {% if election['status'] != 'completed' %}
+            <div class="mt-1rem">
+                <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Generate
+                    Results</a>
+                <a href="" class="btn btn-grey">
+                    Export and download ballots to CSV</a>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 

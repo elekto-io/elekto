@@ -71,7 +71,7 @@
             {% if election['status'] == 'running' and g.user.username in voters['eligible_voters'] %}
                 {% if g.user.id not in voted %}
                 <div class="col-md-2 pr-0">
-                    <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-dark pl-2rem pr-2rem">Vote</a>
+                    <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-dark pl-3rem pr-3rem">Vote</a>
                 </div>
                 {% else %}
                 <div class="col-md-6">
