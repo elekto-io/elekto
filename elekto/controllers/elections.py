@@ -175,7 +175,8 @@ def elections_exception(eid):
     e = SESSION.query(Election).filter_by(key=eid).first()
 
     if F.request.method == 'POST':
-        erequest = Request(name=F.request.form['name'],
+        erequest = Request(user_id=F.g.user.id,
+                           name=F.request.form['name'],
                            email=F.request.form['email'],
                            chat=F.request.form['chat'],
                            description=F.request.form['description'],
@@ -207,6 +208,19 @@ def elections_admin(eid):
                              election=election.get(),
                              e=e)
 
+@APP.route('/app/elections/<eid>/admin/exception/<rid>')  # Admin page for the
+@auth_guard                                               # reviewing exception
+@admin_guard
+def elections_admin_review(eid, rid):
+    election = meta.Election(eid)
+    e = SESSION.query(Election).filter_by(key=eid).first()
+    req = SESSION.query(Request).join(Request, Election.requests).filter(Request.id==rid).first()
+
+    return F.render_template('views/elections/admin_exception.html',
+                             election=election.get(),
+                             req=req,
+                             e=e)
+
 
 @APP.route('/app/elections/<eid>/admin/results')  # Admin page for the election
 @auth_guard
@@ -224,3 +238,5 @@ def elections_admin_results(eid):
     return F.render_template('views/elections/admin_result.html',
                              election=election.get(),
                              result=result)
+
+

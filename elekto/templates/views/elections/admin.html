@@ -55,6 +55,37 @@
             </div>
         </div>
     </div>
+    <div class="space--md pt-0">
+        <h3 class="title space-lr">Exception Requests</h3>
+        {% for r in e.requests  %}
+            <div class="boxed-hover">
+                <h2 class="title pb-0 mb-0">
+                    <a href="{{ url_for('elections_admin_review', eid=election['key'], rid=r.id) }}" class="color-primary ">
+                        {{ r.name }}
+                    </a>
+                </h2>
+                <div class="row">
+                    <div class="col-md-12 col-lg-7 col-sm-12">
+                        <span class="text-muted">
+                        {{ r.email }} <span class="pl-5px pr-5px">|</span>
+                        </span>
+                        <span class="text-muted">{{ r.chat }}</span>
+                        <span class="pl-5px pr-5px">|</span>
+                        <span class="badge badge-{% if r.reviewed %}completed{% else %}upcoming{% endif %}">
+                            {% if r.reviewed %}Reviewed{% else %}Not Reviewed{% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-12 col-lg-5 col-sm-12 text-lg-right">
+                        <span class="text-right text-muted">
+                            <small>
+                            Created at {{ r.created_at }}
+                            </small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

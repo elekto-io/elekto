@@ -1,0 +1,41 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}Admin {% endblock %}</h1>
+{% endblock %}
+
+{% block breadcrums %}
+<a href="{{ url_for('elections') }}" class="breadcrums">elections</a>
+<a href="{{ url_for('elections_single', eid=election['key']) }}" class="breadcrums">{{ election['name'] }}</a>
+<a href="" class="breadcrums breadcrums-active">Admin</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="">
+    <div class="space--md pb-0">
+        <h1 class="banner-title space-lr">
+            Exception Request for {{req.name}}
+        </h1>
+        <p class="banner-subtitle space-lr">
+            {{ req.email }} | {{ req.chat }} |
+            <span class="badge badge-{% if req.reviewed %}completed{% else %}upcoming{% endif %}">
+                {% if req.reviewed %}Reviewed{% else %}Not Reviewed{% endif %}
+            </span>
+        </p>
+    </div>
+    <div class="space--md">
+        <div class="space-lr">{{ req.description }}</div>
+    </div>
+    <div class="space--md pt-0">
+        <h3 class="title space-lr">Comments</h3>
+        <p class="space-lr">{{ req.comments }}</p>
+        <div class="space-lr space--md">
+            <form action="" method="post">
+                <button type="submit" class="btn btn-dark">Mark as Reviewed</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
