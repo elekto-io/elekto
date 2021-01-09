@@ -87,8 +87,10 @@ def elections_voting_page(eid):
 
     # Redirect to thankyou page if already voted
     if F.g.user.id in [v.user_id for v in e.voters]:
-        F.flash('You have already Voted, to change your vote visit edit page.')
-        return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
+        return F.render_template('errors/message.html',
+                                 title='You have already voted',
+                                 message='To re-cast your vote, please visit\
+                                 the election page.')
 
     if F.request.method == 'POST':
         # encrypt the voter identity
@@ -113,43 +115,34 @@ def elections_voting_page(eid):
                              voters=voters)
 
 
-@APP.route('/app/elections/<eid>/vote/edit', methods=['GET', 'POST'])
+@APP.route('/app/elections/<eid>/vote/edit', methods=['POST'])
 @auth_guard
 @voter_guard
 @has_voted_condition
-def elections_edit_ballot(eid):
-    election = meta.Election(eid)  # eid is also validated here
-    candidates = election.candidates()
-    voters = election.voters()
+def elections_edit(eid):
+    election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
 
-    if F.request.method == 'POST':
-        # encrypt the voter identity
-        vstr = F.g.user.username + '+' + F.request.form['password']
+    # encrypt the voter identity
+    voter = F.g.user.username + '+' + F.request.form['password']
+    ballots = [b for b in e.ballots if check_password_hash(b.voter, voter)]
 
-        ballots = {
-            b.candidate: b for b in e.ballots if check_password_hash(b.voter, vstr)}
+    if not len(ballots):
+        F.flash('Incorrect password, the password must match with the one used\
+                before')
+        return F.redirect(F.url_for('elections_single', eid=eid))
 
-        if len(ballots.keys()) == 0:
-            F.flash('Incorrect password, the password must match with the one \
-                used before')
-            return F.redirect(F.url_for('elections_edit_ballot', eid=eid))
+    # Delete all the ballots for the user
+    for b in ballots:
+        SESSION.delete(b)
+    # Remove the voter from the voted list
+    for voter in e.voters:
+        if voter.user_id == F.g.user.id:
+            SESSION.delete(voter)
 
-        for k in F.request.form.keys():
-            if k.split('@')[0] == 'candidate':
-                candidate = k.split('@')[-1]
-                rank = F.request.form[k]
-                if candidate in ballots.keys():
-                    ballots[candidate].rank = rank
-
-        SESSION.commit()
-        F.flash('Upated Ballot sucessfully')
-        return F.redirect(F.url_for('elections_confirmation_page', eid=eid))
-
-    return F.render_template('views/elections/edit_vote.html',
-                             election=election.get(),
-                             candidates=candidates,
-                             voters=voters)
+    SESSION.commit()
+    F.flash('The old ballot is sucessfully deleted, please re-cast the ballot.')
+    return F.redirect(F.url_for('elections_voting_page', eid=eid))
 
 
 @APP.route('/app/elections/<eid>/confirmation', methods=['GET'])

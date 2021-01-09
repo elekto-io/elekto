@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="">
-    <div class="space--md pb-0">
+    <div class="space--md pb-1rem">
         <h1 class="banner-title space-lr">
             {{ election['name'] }}
         </h1>
@@ -22,7 +22,11 @@
             <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
         </p>
         <p class="disclaimer space-lr mt-1rem">
-            The poll ends at <b>{{ election['end_datetime'] }} UTC</b>. Contact the poll supervisor(s) if you need help.
+            Only the {{ election['no_winners']}} favorite chocie{% if election['no_winners'] > 1 %}s {% endif %} will win the election.
+            The poll ends at <b>{{ election['end_datetime'] }} UTC</b>. Contact the poll supervisor{% if election['election_officers'] | length > 1 %}s{% endif %} if you need help.
+            <br />
+
+            <b>Note:</b> "No opinion" does not means the lowest possible rank; it means you do not want choose to rank this choice with respect to other choices.
         </p>
     </div>
     <div class="space--md pt-0">
@@ -54,17 +58,22 @@
                     {% endfor %}
                 </div>
                 <div class="mt-2rem pt-2rem row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-justify">
                         <small>
                             If you wish to be able to re-cast this ballot, please enter a passphrase here. If you do not enter a passphrase, you will not be able to change your vote later.
                         </small>
                     </div>
                     <div class="col-md-6 pt-5px">
                         <div class="input-group mb-2">
-                            <input type="password" name="password" class="form-control" placeholder="Enter a passphrase"id="">
+                            <input type="password" name="password" class="form-control" placeholder="Enter a passphrase"id="password">
                             <div class="input-group-append">
                                 <button class="btn btn-dark" type="submit">Submit Vote</button>
                             </div>
+                            <span class="text-muted mt-1rem">
+                                <small>
+                                    Please save your passphrase somewhere. If you forget it, it cannot be recovered through the election portal.
+                                </small>
+                            </span>
                         </div>
                     </div>
                 </div>

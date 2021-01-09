@@ -67,26 +67,42 @@
     </div>
 
     <div class="space--md pt-0">
-        <div class="space-lr">
-            {% if election['status'] == 'completed' %}
-                {% if election['results'] %}
-                <a href="{{ url_for('elections_results', eid=election['key'])}}" class="btn btn-grey">Results</a>
-                {% else %}
-                <div class="mb-2rem">The results are not published yet.</div>
-                {% endif %}
-            {% endif %}
-
-            {% if g.user.username in election['election_officers'] %}
-            <a href="{{ url_for('elections_admin', eid=election['key'])}}" class="btn btn-dark">Admin</a>
-            {% endif %}
-
+        <div class="space-lr row">
             {% if election['status'] == 'running' and g.user.username in voters['eligible_voters'] %}
                 {% if g.user.id not in voted %}
-                <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-dark">Vote</a>
+                <div class="col-md-2 pr-0">
+                    <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-dark pl-2rem pr-2rem">Vote</a>
+                </div>
                 {% else %}
-                <a href="{{ url_for('elections_edit_ballot', eid=election['key'])}}" class="btn btn-dark">Change the vote</a>
+                <div class="col-md-6">
+                    <form action="{{ url_for('elections_edit', eid=election['key']) }}" method="post">
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" placeholder="Enter the passphrase" id="">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-dark">Re-Cast Ballot</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 {% endif %}
             {% endif %}
+            <div class="col-md-6
+                {% if election['status'] == 'running' and g.user.username in voters['eligible_voters'] %}
+                pl-0
+                {% endif %}
+                ">
+                {% if election['status'] == 'completed' %}
+                    {% if election['results'] %}
+                    <a href="{{ url_for('elections_results', eid=election['key'])}}" class="btn btn-dark">Results</a>
+                    {% else %}
+                    <button class="btn btn-dark" disabled>Results (not published)</button>
+                    {% endif %}
+                {% endif %}
+
+                {% if g.user.username in election['election_officers'] %}
+                <a href="{{ url_for('elections_admin', eid=election['key'])}}" class="btn btn-dark">Admin</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
