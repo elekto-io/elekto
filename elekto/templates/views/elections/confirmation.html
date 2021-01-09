@@ -16,15 +16,15 @@
 
 <section class="h--80 center-y">
     <div class="">
-        <h1 class="title t-center">
-            Thank you for voting | {{ election['name'] }}
+        <h1 class="banner-title space-lr">
+            Thank you for voting in {{ election['name'] }}
         </h1>
-        <p class="t-center">
-            your vote has been stored securely, to see the result see
-            <a href="/">
+        <p class="space-lr ml-5px">
+            Your vote has been stored securely; To see the result see
+            <a href="{{ url_for('elections_single', eid=election['key']) }}">
                 {{ election['name'] }}'s
             </a>
-            description page
+            description page.
         </p>
     </div>
 </section>
