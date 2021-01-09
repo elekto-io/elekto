@@ -74,6 +74,16 @@ class User(BASE):
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
+    # Relationships
+    voters = S.orm.relationship('Voter',
+                                cascade="all, delete",
+                                back_populates='user',
+                                passive_deletes=True)
+    requests = S.orm.relationship('Request',
+                                  cascade="all, delete",
+                                  back_populates='user',
+                                  passive_deletes=True)
+
     def __repr__(self):
         return "<User(id={}, username={}, name={})>".format(
             self.id, self.username, self.name)
@@ -103,9 +113,18 @@ class Election(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    ballots = S.orm.relationship('Ballot')
-    voters = S.orm.relationship('Voter')
-    requests = S.orm.relationship('Request')
+    ballots = S.orm.relationship('Ballot',
+                                 cascade="all, delete",
+                                 back_populates='election',
+                                 passive_deletes=True)
+    voters = S.orm.relationship('Voter',
+                                cascade="all, delete",
+                                back_populates='election',
+                                passive_deletes=True)
+    requests = S.orm.relationship('Request',
+                                  cascade="all, delete",
+                                  back_populates='election',
+                                  passive_deletes=True)
 
     def __repr__(self):
         return "<Election(election_id={}, key={}, name={})>".format(
@@ -123,12 +142,14 @@ class Voter(BASE):
     __tablename__ = 'voter'
 
     id = S.Column(S.Integer, primary_key=True)
+    user_id = S.Column(S.Integer, S.ForeignKey('user.id', ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete="CASCADE"))
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    user_id = S.Column(S.Integer, S.ForeignKey('user.id'))
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+    user = S.orm.relationship('User', back_populates='voters')
+    election = S.orm.relationship('Election', back_populates='voters')
 
     def __repr__(self):
         return "<Voter(election_id={}, user_id={})>".format(
@@ -158,6 +179,7 @@ class Ballot(BASE):
 
     # Attributes
     id = S.Column(S.Integer, primary_key=True)
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete='CASCADE'))
     rank = S.Column(S.Integer, default=100000000)
     candidate = S.Column(S.String(255), nullable=False)
     voter = S.Column(S.String(255), nullable=False)
@@ -165,7 +187,7 @@ class Ballot(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+    election = S.orm.relationship('Election', back_populates='ballots')
 
     def __repr__(self):
         return "<Ballot(election_id={}, candidate={}, rank={})>".format(
@@ -191,6 +213,8 @@ class Request(BASE):
 
     # Attributes
     id = S.Column(S.Integer, primary_key=True)
+    user_id = S.Column(S.Integer, S.ForeignKey('user.id', ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete="CASCADE"))
     name = S.Column(S.String(255), nullable=True)
     email = S.Column(S.String(255), nullable=True)
     chat = S.Column(S.String(255), nullable=True)
@@ -200,8 +224,8 @@ class Request(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    user_id = S.Column(S.Integer, S.ForeignKey('user.id'))
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id'))
+    user = S.orm.relationship('User', back_populates='requests')
+    election = S.orm.relationship('Election', back_populates="requests")
 
     def __repr__(self):
         return "<Request election_id={}, user_id={}, name={}".format(

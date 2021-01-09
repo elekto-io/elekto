@@ -27,20 +27,25 @@ def webhook_guard(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # if the development env is local don't verfiy the webhook
         if APP.config['DEBUG']:
             return f(*args, **kwargs)
+
+        # The webhook must be configured with a secret and content type should
+        # be set to application/json.
         sign = F.request.headers.get("X-Hub-Signature-256")
 
         if not sign or not sign.startswith('sha256='):
-            F.abort(400, "X-Hub-Signature-256 is not provided or invalid")
+            return F.abort(400, "X-Hub-Signature-256 is not provided or invalid")
+
         try:
             digest = hmac.new(APP.config['META']['SECRET'].encode(),
                               F.request.data, hashlib.sha256).hexdigest()
         except AttributeError:
-            F.abort(500, 'Error while creating a digest')
+            return F.abort(500, 'Error while creating a digest')
 
         if not hmac.compare_digest(sign, "sha256=" + digest):
-            F.abort(400, "Invalid X-Hub-Signature-256 ")
+            return F.abort(400, "Invalid X-Hub-Signature-256 ")
 
         return f(*args, **kwargs)
     return decorated_function
