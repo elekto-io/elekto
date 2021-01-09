@@ -173,6 +173,13 @@ def elections_results(eid):
 def elections_exception(eid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
+    req = SESSION.query(Request).join(Request, Election.requests).filter(Request.user_id==F.g.user.id).first()
+
+    if req:
+        return F.render_template('errors/message.html',
+                                 title="You have already filled the form.",
+                                 message="please wait for the election's\
+                                 supervisor to view your request.")
 
     if F.request.method == 'POST':
         erequest = Request(user_id=F.g.user.id,
@@ -208,13 +215,17 @@ def elections_admin(eid):
                              election=election.get(),
                              e=e)
 
-@APP.route('/app/elections/<eid>/admin/exception/<rid>')  # Admin page for the
-@auth_guard                                               # reviewing exception
+@APP.route('/app/elections/<eid>/admin/exception/<rid>', methods=['GET', 'POST'])
+@auth_guard                             # Admin page for the reviewing exception
 @admin_guard
 def elections_admin_review(eid, rid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
     req = SESSION.query(Request).join(Request, Election.requests).filter(Request.id==rid).first()
+
+    if F.request.method == 'POST':
+        req.reviewed = False if req.reviewed else True
+        SESSION.commit()
 
     return F.render_template('views/elections/admin_exception.html',
                              election=election.get(),
