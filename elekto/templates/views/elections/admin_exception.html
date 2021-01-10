@@ -35,6 +35,7 @@
         <h3 class="title space-lr">Comments</h3>
         <p class="space-lr">{{ req.comments }}</p>
         <div class="space-lr space--md">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <form action="" method="post">
                 <button type="submit" class="btn btn-dark">Change the review status</button>
             </form>

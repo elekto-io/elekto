@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import flask as F
+from flask_wtf.csrf import CSRFProtect
 
 from elekto.models import sql
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
+csrf = CSRFProtect(APP)
 SESSION = sql.create_session(APP.config.get('DATABASE_URL'))  # database
 
 from elekto.models import meta  # noqa - imports SESSION from here
-from elekto import utils  # noqa - imports SESSION from here 
+from elekto import utils  # noqa - imports SESSION from here
 
 
 @APP.before_request

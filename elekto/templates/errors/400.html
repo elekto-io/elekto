@@ -1,0 +1,23 @@
+{% extends 'layouts/app.html' %}
+
+{% block header %}
+<h1>{% block title %}401 - CSRF Error{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<section class="h--80 center-y">
+    <div class="space--md">
+        <h1 class="title t-center">
+            Bad Request | {{ g.NAME }}
+        </h1>
+        <p class="t-center">
+            you ran into a 400. Go back to
+            <a href="/">
+                home
+            </a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}

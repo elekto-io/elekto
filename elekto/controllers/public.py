@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,11 +32,13 @@ def welcome():
 
 @APP.route('/elections')
 def public_elections():
-    elections = meta.Election.all()
-    elections.sort(key=lambda e: e['start_datetime'], reverse=True)
+    status = F.request.args.get('status')
+    res = meta.Election.all() if status is None else meta.Election.where('status', status)
+    res.sort(key=lambda e: e['start_datetime'], reverse=True)
 
     return F.render_template('views/public/elections_index.html',
-                             elections=elections)
+                             elections=res,
+                             status=status)
 
 
 @APP.route('/elections/<eid>')

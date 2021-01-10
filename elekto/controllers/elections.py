@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ from elekto.models import meta
 from elekto.core.election import Election as CoreElection
 from elekto.models.sql import Election, Ballot, Voter, Request
 from elekto.middlewares.auth import auth_guard
-from elekto.middlewares.election import *
+from elekto.middlewares.election import *  # noqa
+
 
 @APP.route('/app')
 @auth_guard
@@ -167,13 +168,15 @@ def elections_results(eid):
                              election=election.get())
 
 
-@APP.route('/app/elections/<eid>/exception', methods=['POST', 'GET'])  # Exception Request form
+# Exception Request form
+@APP.route('/app/elections/<eid>/exception', methods=['POST', 'GET'])
 @auth_guard
 @exception_guard
 def elections_exception(eid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
-    req = SESSION.query(Request).join(Request, Election.requests).filter(Request.user_id==F.g.user.id).first()
+    req = SESSION.query(Request).join(Request, Election.requests).filter(
+        Request.user_id == F.g.user.id).first()
 
     if req:
         return F.render_template('errors/message.html',
@@ -215,13 +218,15 @@ def elections_admin(eid):
                              election=election.get(),
                              e=e)
 
+
 @APP.route('/app/elections/<eid>/admin/exception/<rid>', methods=['GET', 'POST'])
 @auth_guard                             # Admin page for the reviewing exception
 @admin_guard
 def elections_admin_review(eid, rid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
-    req = SESSION.query(Request).join(Request, Election.requests).filter(Request.id==rid).first()
+    req = SESSION.query(Request).join(
+        Request, Election.requests).filter(Request.id == rid).first()
 
     if F.request.method == 'POST':
         req.reviewed = False if req.reviewed else True
@@ -248,6 +253,7 @@ def elections_admin_results(eid):
                              election=election.get(),
                              result=result)
 
+
 @APP.route('/app/elections/<eid>/admin/download')  # download ballots as csv
 @auth_guard
 @admin_guard
@@ -259,7 +265,7 @@ def elections_admin_download(eid):
 
     # Generate a csv
     ballots = CoreElection.build(candidates, e.ballots).ballots
-    candidates = {c['key']:'' for c in candidates}
+    candidates = {c['key']: '' for c in candidates}
     csv = ','.join(list(candidates.keys())) + '\n'
     for b in ballots.keys():
         for c in candidates.keys():
@@ -271,4 +277,3 @@ def elections_admin_download(eid):
     return F.Response(csv,
                       mimetype="text/csv",
                       headers={"Content-disposition": "attachment; filename=ballots.csv"})
-

@@ -7,8 +7,8 @@
     "build-scss": "node-sass scss -o ../static/css --output-style compressed",
     "watch": "node-sass --watch scss -o ../static/css --output-style compressed"
   },
-  "author": "Manish Sahani",
-  "license": "MIT",
+  "author": "The C",
+  "license": "Apache License 2.0",
   "dependencies": {
     "bootstrap": "^4.5.3",
     "node-sass": "^5.0.0"

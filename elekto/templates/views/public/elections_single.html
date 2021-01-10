@@ -5,57 +5,50 @@
 {% endblock %}
 
 {% block content %}
-<section class="space--xl">
-
-    <div class="dashboard">
-        <div class="space--md pb-1rem">
-            <div class="border--bottom pb-10px mb-1rem">
-                <h1 class="title title-has-subtitle pb-0">
-                    {{ election['name'] }}
-                    <small class="badge badge-{{  election['status'] }} ">{{ election['status'] }}</small>
-                </h1>
-                <span>{{ election['organization'] }}</span>
-            </div>
-            <div class="description">
-                {{ election['description'] | safe }}
-            </div>
-            <p class="disclaimer">
-                The poll ends <b>{{ election['end_datetime'] }}</b>.
-                The poll is supervised by
-                <b>
-                    {% for eo in election['election_officers'] %}
-                    <a class="text-dark" target="__blank" href="https://github.com/{{ eo }}">
-                        {{ eo + ', ' if election['election_officers']|length > loop.index else eo + '.' }}
-                    </a>
-                    {% endfor %}
-                </b>
-                Contact the poll supervisor if you need help.
-            </p>
+<div class="">
+    <div class="space--xl pb-1rem">
+        <h1 class="banner-title space-lr">
+            {{ election['name'] }}
+        </h1>
+        <p class="banner-subtitle space-lr mb-2rem">
+            <span class="mr-5px">{{ election['organization'] }}</span>
+            <span class="text-muted mr-5px">|</span>
+            <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
+        </p>
+        <div class="description space-lr pb-0">
+            {{ election['description'] | safe }}
         </div>
-        <div class="space--md pt-0">
-            <h1 class="subtitle border--bottom">
-                Candidates
-            </h1>
-            <div>
-                {% for candidate in candidates %}
-
-                <div class="row border--bottom">
-                    <div class="col-9">
-                        <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">
-                            <span class="row-title">
-                                {{ candidate['name'] }}
-                            </span>
-                        </a>
-                    </div>
-                    <div class="col-3 text--right">
-                        <a class="text-dark"
-                            href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">view
-                            profile</a>
-                    </div>
-                </div>
-                {% endfor %}
+    </div>
+    <div class="space--xl pt-0">
+        <h4 class="title space-lr">
+            Candidates
+        </h4>
+        <div class="d-flex flex-wrap">
+            {% for candidate in candidates %}
+            <div class="boxed-hover" style="min-width: 8rem;">
+                <h2 class="title pb-0 mb-0">
+                    <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}"
+                        class="color-primary ">
+                        {{ candidate['name'] }}
+                    </a>
+                </h2>
+                <small class="text-muted">
+                    {{ candidate['ID']}} |
+                    <a class=""
+                        href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">profile</a>
+                </small>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="space-xl pt-2rem">
+            <div class="space-lr">
+                <a href="{{ url_for('elections_single', eid=election['key'])}}"
+                    class="btn btn-dark pl-3rem pr-3rem">
+                    {% if g.auth %} Goto the election's page {% else %} Login {% endif %}  to 
+                    {% if election['status'] == 'completed' %} see the results {% else %} check eligibility {% endif %}
+                </a>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

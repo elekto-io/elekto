@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import flask as F
+import base64
 from functools import wraps
+from elekto import constants
 
 
 def authenticated():
@@ -32,8 +34,22 @@ def auth_guard(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not authenticated():
-            # r = str(base64.b64encode(
-            #     F.request.url.encode("ascii"))).replace('/', '$')
+            r = F.request.url.encode('ascii')
+            redirect = base64.b64encode(r).decode('ascii').replace('/', '$')
+            return F.redirect(F.url_for('render_login_page', r=redirect))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def csrf_guard(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if constants.CSRF_STATE not in F.request.args.keys() \
+                or constants.CSRF_STATE not in F.session.keys() \
+                or F.request.args[constants.CSRF_STATE] != F.session[constants.CSRF_STATE]:
+            F.flash('Missing or Invalid csrf token')
             return F.redirect(F.url_for('render_login_page'))
+
         return f(*args, **kwargs)
     return decorated_function

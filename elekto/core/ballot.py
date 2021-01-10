@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,4 +13,3 @@
 # limitations under the License.
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
-

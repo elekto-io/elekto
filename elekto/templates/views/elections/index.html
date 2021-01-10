@@ -16,14 +16,17 @@
 {% block content %}
 
 {% if elections|length == 0 %}
-<section class="h--80 center-y">
-    <div class="space--md t-center">
-        <h1 class="title t-center">
+<section class="h--80 center-y space--md">
+    <div class="">
+        <h1 class="banner-title space-lr">
             No Elections found
-            {% if status %}
-            in <span class="badge badge-{{status}}">{{status}}</span>
-            {% endif %}
         </h1>
+        <p class="space-lr ml-3px">
+            Currently there no elections in the meta
+            {% if status %}
+            for <span class="badge badge-{{status}}">{{status}}</span> filter.
+            {% endif %}
+        </p>
     </div>
 </section>
 
