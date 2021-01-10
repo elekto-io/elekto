@@ -80,7 +80,7 @@
     </div>
     <div class="space--md pt-0">
         <div class="space-lr">
-            {% if election['status'] != 'completed' %}
+            {% if election['status'] == 'completed' %}
             <div class="mt-1rem">
                 <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Generate
                     Results</a>
