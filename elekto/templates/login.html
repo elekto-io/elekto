@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<section class="h--100 center-y" style="justify-content: center;">
+<section class="h--90 pt-3rem center-y" style="justify-content: center;">
     <div class="boxed login space--xl">
         <div class="login__brand">
             <img class="login__brand-img"
@@ -19,7 +19,8 @@
             </span>
         </div>
         <div class="login__action">
-            <form action="{{ url_for('oauth_github_login') }}" method="POST">
+            <form action="{{ url_for('oauth_github_login', r=request.args.get('r')) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="btn btn__login">
                     <span class="text-white">
                         Sign in with Github

@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ some kind or error.
 """
 
 import flask as F
+from flask_wtf.csrf import CSRFError
 
 from elekto import APP
 
@@ -37,3 +38,8 @@ def unauthorized(e):
 @APP.errorhandler(500)
 def server_error(e):
     return F.render_template('/errors/500.html')
+
+
+@APP.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return F.render_template('/errors/400.html', reason=e.description), 400

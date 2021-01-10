@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ from elekto import SESSION, constants
 from elekto.models.sql import Election
 from elekto.models import meta
 from datetime import datetime
+
 
 def admin_guard(f):
     """
@@ -112,7 +113,7 @@ def has_voted_condition(f):
             return F.abort(404)
         e = SESSION.query(Election).filter_by(key=kwargs['eid']).first()
 
-        if F.g.user.id  not in [v.user_id for v in e.voters]:
+        if F.g.user.id not in [v.user_id for v in e.voters]:
             F.flash('You have not voted yet')
             return F.redirect(F.url_for('elections_single', eid=kwargs['eid']))
 

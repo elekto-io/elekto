@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ class Meta:
     def pull(self):
         os.system('{} pull origin {}'.format(self.pref, self.BRANCH))
 
+
 class Election(Meta):
     DES = 'election_desc.md'
     RES = 'results.md'
@@ -64,9 +65,16 @@ class Election(Meta):
 
     @staticmethod
     def all():
+        """
+        Get all elections in the repository
+
+        Returns:
+            list: list of all the elections
+        """
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, 'elections')
-        keys = [k for k in os.listdir(path) if os.path.isdir(os.path.join(path, k))]
+        keys = [k for k in os.listdir(
+            path) if os.path.isdir(os.path.join(path, k))]
 
         return [Election(k).get() for k in keys]
 

@@ -1,4 +1,4 @@
-# Copyright 2020 Manish Sahani
+# Copyright 2020 The Elekto Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,35 +14,15 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-"""
-The module is responsible for handling all the user authentication related
-queries, and user's session management
-"""
-
 import flask as F
+import base64
+
+from datetime import datetime, timedelta
 from authlib.integrations.requests_client import OAuth2Session
 
 from elekto import constants, APP, SESSION
 from elekto.models.sql import User
-from elekto.middlewares.auth import authenticated
-
-
-def csrf_protection(ses, req):
-    """
-    Validate the CSRF_STATE token
-
-    Args:
-        ses (dict): application's session dict
-        req (dict): request's args dict
-
-    Returns:
-        F.redirect: if not same redirect to login or error url
-    """
-    if constants.CSRF_STATE not in req.args.keys() \
-            or constants.CSRF_STATE not in ses.keys() \
-            or req.args[constants.CSRF_STATE] != ses[constants.CSRF_STATE]:
-        F.flash('Invalid CSRF token')
-        return F.redirect(F.url_for('render_login_page'))
+from elekto.middlewares.auth import authenticated, csrf_guard, auth_guard
 
 
 def oauth_session(vendor):
@@ -65,12 +45,7 @@ def oauth_session(vendor):
 
 @APP.route('/login', methods=['GET'])
 def render_login_page():
-    """
-    Render login page, see prototype document - http://bit.ly/k8s-markup
-
-    Returns:
-        F.redirect: redirect to the login page.
-    """
+    # If the user is already is authenticated redirect it to the dashboard
     if authenticated():
         return F.redirect('/app')
 
@@ -78,13 +53,14 @@ def render_login_page():
 
 
 @APP.route('/logout', methods=['GET', 'POST'])
+@auth_guard
 def logout():
-    """
-    Logout the authenticated user and destory his session
+    # Remove the authentication token from user
+    F.g.user.token = None
+    F.g.user.token_expires_at = None
+    SESSION.commit()
 
-    Returns:
-        F.redirect: redirect to the login page.
-    """
+    # Remove the authentication token from current session
     F.session.pop(constants.AUTH_STATE)
     return F.redirect('/login')
 
@@ -101,36 +77,25 @@ github = APP.config.get('GITHUB')
 
 @APP.route('/oauth/github/login', methods=['POST'])
 def oauth_github_login():
-    """
-    Redirect the user to the github vendor login page
-
-    Returns:
-        F.redirect
-    """
     client = oauth_session(github)
     uri, state = client.create_authorization_url(
         constants.GITHUB_AUTHORIZE)
-    # CSRF protection
-    F.session[constants.CSRF_STATE] = state
+    F.session[constants.CSRF_STATE] = state  # Enable CSRF protection
+    # Set the redirect url
+    if 'r' in F.request.args.keys():
+        r = F.request.args.get('r').replace('$', '/').encode('ascii')
+        redirect = base64.b64decode(r).decode('ascii')
+        F.session['redirect'] = redirect
 
     return F.redirect(uri)
 
 
 @APP.route(github['redirect'])
+@csrf_guard
 def oauth_github_redirect():
-    """
-    Callback for the OAuth vendor and start the user's session.
-
-    Returns:
-        F.redirect: redirect to application's dashboard
-    """
-    # CSRF protection with the previously store state
-    csrf_protection(F.session, F.request)
-
     client = oauth_session(github)
     token = client.fetch_token(constants.GITHUB_ACCESS,
                                authorization_response=F.request.url)
-    # Add user's authentication token to the flask session
     oauthsession = OAuth2Session(client_id=github['client_id'],
                                  client_secret=github['client_secret'],
                                  token=token)
@@ -141,15 +106,24 @@ def oauth_github_redirect():
         F.session.pop(constants.AUTH_STATE)
     else:
         data = resp.json()
+        expries = datetime.now() + timedelta(days=1)
         query = SESSION.query(User).filter_by(username=data['login']).first()
         if query:
             query.token = token['access_token']
+            query.token_expires_at = expries
         else:
             SESSION.add(User(username=data['login'],
                              name=data['name'],
-                             token=token['access_token']))
+                             token=token['access_token'],
+                             token_expires_at=expries))
         SESSION.commit()
+        # Add user's authentication token to the flask session
         F.session[constants.AUTH_STATE] = token['access_token']
         F.g.auth = True
 
-    return F.redirect('/app')
+    redirect = '/app'
+    if 'redirect' in F.session.keys():
+        redirect = F.session['redirect']
+        F.session.pop('redirect')
+
+    return F.redirect(redirect)

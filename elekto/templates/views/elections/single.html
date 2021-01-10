@@ -76,6 +76,7 @@
                 {% else %}
                 <div class="col-md-6">
                     <form action="{{ url_for('elections_edit', eid=election['key']) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="input-group">
                             <input type="password" name="password" class="form-control" placeholder="Enter the passphrase" id="">
                             <div class="input-group-append">
