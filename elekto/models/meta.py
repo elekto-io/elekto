@@ -54,12 +54,14 @@ class Election(Meta):
         self.key = key
         self.election = {}
 
+        if not os.path.exists(self.path):
+            F.abort(404)
+
     @staticmethod
     def all():
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, 'elections')
-        keys = [k for k in os.listdir(
-            path) if os.path.isdir(os.path.join(path, k))]
+        keys = [k for k in os.listdir(path) if os.path.isdir(os.path.join(path, k))]
 
         return [Election(k).get() for k in keys]
 

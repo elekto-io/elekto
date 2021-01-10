@@ -60,7 +60,8 @@ if args.sync:
     else:
         os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
             pull origin main'.format(META['PATH'], META['PATH']))
-    sync_db_with_meta(SESSION, meta.Election.all())
+    print(sync_db_with_meta(SESSION, meta.Election.all()))
+    exit()
 
 if DEBUG:
     from elekto import APP
