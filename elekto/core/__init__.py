@@ -52,7 +52,7 @@ def schulze_p(candidates, d):
     return p
 
 
-def schulze_rank(candidates, p, no_winners):
+def schulze_rank(candidates, p, no_winners=1):
     wins = defaultdict(list)
 
     for V in candidates:
