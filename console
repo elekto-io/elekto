@@ -18,52 +18,70 @@
 
 import os
 import argparse
-from config import DEBUG, DATABASE_URL, META
 
 from utils import env
-from elekto.models.sql import migrate
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
-parser.add_argument('--port', '-p',
+parser.add_argument('-p',
+                    '--port',
                     default=env('APP_PORT', '5000'),
                     help='Port for the flask application.')
+
 parser.add_argument('--host',
                     default=env('APP_HOST', '127.0.0.1'),
                     help='Hostname to listen on. When set to 0.0.0.0 the \
                     server is available externally. Defaults to 127.0.0.1 \
                     making the it only visable on localhost')
+
 parser.add_argument('--migrate',
-                    help='Create the database tables', action='store_true')
-parser.add_argument('--sync', action="store_true")
+                    help='Create the database tables',
+                    action='store_true')
 
-args = parser.parse_args()
+parser.add_argument('--sync',
+                    action="store_true",
+                    help="sync the database to the meta")
+
+parser.add_argument('--run',
+                    action="store_true",
+                    help="Run the application at the debug mode")
 
 
-if args.migrate:
-    print('migrating - creating the database tables')
-    migrate(DATABASE_URL)
-    exit()
+if __name__ == "__main__":
+    # ###################################################################### #
+    #                            /!\ console /!\                             #
+    # ###################################################################### #
+    args = parser.parse_args()
 
-if args.sync:
-    print('Syncing the db with meta')
-    from elekto.models import meta
-    from elekto.models.sql import create_session
-    from elekto.models.utils import sync_db_with_meta
+    if args.migrate:
+        from config import DATABASE_URL
+        from elekto.models.sql import migrate
 
-    SESSION = create_session(DATABASE_URL)
+        print('# ----- Migrating the database and creating the tables ----- #')
+        migrate(DATABASE_URL)
+        exit()
 
-    if not os.path.exists(META['PATH']) or not os.path.isdir(META['PATH']):
-        os.system('/usr/bin/git clone {} {} '.format(
-            META['REMOTE'], META['PATH']
-        ))
-    else:
-        os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
-            pull origin main'.format(META['PATH'], META['PATH']))
-    print(sync_db_with_meta(SESSION, meta.Election.all()))
-    exit()
+    if args.sync:
+        from config import META, DATABASE_URL
+        from elekto.models import meta
+        from elekto.models.sql import create_session
+        from elekto.models.utils import sync
 
-if DEBUG:
-    from elekto import APP
-    APP.jinja_env.auto_reload = DEBUG
-    APP.run(debug=DEBUG, host=args.host, port=args.port)
+        SESSION = create_session(DATABASE_URL)
+        backend = meta.Meta(META)
+
+        print('# ----------- Syncing the meta with the database ----------- #')
+
+        if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
+            backend.clone()
+        else:
+            backend.pull()
+
+        print(sync(SESSION, meta.Election.all()))
+        exit()
+
+    if args.run:
+        from elekto import APP
+
+        APP.jinja_env.auto_reload = APP.config.get('DEBUG')
+        APP.run(debug=APP.config.get('DEBUG'), host=args.host, port=args.port)

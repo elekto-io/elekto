@@ -18,19 +18,16 @@ import os
 
 from elekto import APP, SESSION
 from elekto.models import meta
-from elekto.models.utils import sync_db_with_meta
+from elekto.models.utils import sync
 from elekto.middlewares.webhook import webhook_guard
 
 
 @APP.route('/v1/webhooks/meta/sync', methods=['POST'])
 @webhook_guard
-def sync():
-    META = APP.config['META']
-    if not os.path.exists(META['PATH']) or not os.path.isdir(META['PATH']):
-        os.system('/usr/bin/git clone {} {} '.format(
-            META['REMOTE'], META['PATH']
-        ))
+def webhook_sync():
+    backend = meta.Meta(APP.config['META'])
+    if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
+        backend.clone()
     else:
-        os.system('/usr/bin/git --git-dir={}/.git --work-tree={} \
-            pull origin main'.format(META['PATH'], META['PATH']))
-    return sync_db_with_meta(SESSION, meta.Election.all())
+        backend.pull()
+    return sync(SESSION, meta.Election.all())

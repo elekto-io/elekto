@@ -91,7 +91,7 @@ def extract_candidate_description(md):
     return desc
 
 
-def sync_db_with_meta(session, elections):
+def sync(session, elections):
     """
     Sync db with the meta - add and delete old elections
 
