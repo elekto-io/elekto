@@ -36,10 +36,15 @@ class Meta:
         self.REMOTE = config['REMOTE']
         self.BRANCH = config['BRANCH']
         self.SECRET = config['SECRET']
+        self.git = '/usr/bin/git'
+        self.pref = "/usr/bin/git --git-dir={}/.git --work-tree={}\
+            ".format(self.META, self.META)
 
-        if not os.path.exists(self.META):
-            raise 'Meta Path does not exists'
+    def clone(self):
+        os.system('{} clone {} {}'.format(self.git, self.REMOTE, self.META))
 
+    def pull(self):
+        os.system('{} pull origin {}'.format(self.pref, self.BRANCH))
 
 class Election(Meta):
     DES = 'election_desc.md'
