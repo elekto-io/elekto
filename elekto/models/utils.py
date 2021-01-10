@@ -92,22 +92,52 @@ def extract_candidate_description(md):
 
 
 def sync_db_with_meta(session, elections):
-    try:
-        log = ""
-        for e in elections:
-            query = session.query(Election).filter_by(key=e['key']).first()
-            if query:
-                query.name = e['name']
-            else:
-                session.add(Election(key=e['key'], name=e['name']))
-                log += "{} added in the db.\n".format(e['key'])
-        session.commit()
-        return log + "Synced DB with META"
-    except:
-        return "Tables does not exists yet"
+    """
+    Sync db with the meta - add and delete old elections
 
+    Args:
+        session (object): database session
+        elections (dict): list of all the elections from the meta
+
+    Returns:
+        string: returns a log
+    """
+    meta_elections = {e['key']: e for e in elections}
+    log = "---------------------*=  Syncing started =*----------------------\n\n"
+
+    # Delete election from the database that are not in the meta anymore
+    try:
+        elections = session.query(Election).all()
+        for election in elections:
+            if election.key not in meta_elections.keys():
+                log += " - Deleted {} from the database.\n".format(election.key)
+                session.delete(election)
+    except:
+        log += " x Error while querying to the database.\n"
+
+    # Add the new added elections from the meta in the database.
+    for e in meta_elections.keys():
+        try:
+            q = session.query(Election).filter_by(key=e).first()
+            if q:
+                q.name = meta_elections[e]['name']
+            else:
+                session.add(Election(key=e, name=meta_elections[e]['name']))
+                # Add the entry to the log
+                log += " + {} added in the database.\n".format(meta_elections[e]['name'])
+        except:
+            # Add error to the log
+            log += " x while adding {} in the database, application ran in to error.\n"
+
+    log += "\n\n---------------------*= Syncing completed *=--------------------"
+    session.commit()
+
+    return log
 
 def parse_md(md, path=True):
+    """
+    Parse the mardown string
+    """
     try:
         if path:
             md = open(md, 'r').read()

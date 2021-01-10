@@ -63,4 +63,4 @@ def schulze_rank(candidates, p, no_winners):
         wins[n].append(V)
 
     ranks = sorted(wins.items())
-    return ranks[:min(no_winners, len(ranks))]
+    return ranks

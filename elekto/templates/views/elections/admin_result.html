@@ -29,8 +29,9 @@
             <div class="space-lr">
                 {% for idx, winner in result.ranks %}
                 {% if idx == 0 %}
-                <div class="border--bottom pb-1rem">
+                <div class="boxed-2 p-2rem mb-1rem">
                     <h4 class="title">
+                        &#127881;
                         {% for w in winner %}
                         {{w}}
                         {% endfor %}
@@ -38,7 +39,7 @@
                     <small>is the Condorcet winner </small>
                 </div>
                 {% else %}
-                <div class="row border--bottom">
+                <div class="row boxed-hover" style="border: 0.5px solid #615E5E1F">
                     <div class="col-md-1 t-center">
                         {{ idx + 1 }}
                     </div>
