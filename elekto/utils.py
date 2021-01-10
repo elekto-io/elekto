@@ -42,13 +42,14 @@ def set_session(app):
             F.g.user = query
             F.g.auth = True
 
-            # Find all the user's past and all upcoming (meta only) elections
-            query = SESSION.query(Election).filter(Election.id.in_(
-                SESSION.query(Voter.election_id).filter(
-                    Voter.user_id == F.g.user.id).subquery()
-            )).all()
+            if str(F.request.path).find("static") == -1:
+                # Find all the user's past and all upcoming (meta only) elections
+                query = SESSION.query(Election).filter(Election.id.in_(
+                    SESSION.query(Voter.election_id).filter(
+                        Voter.user_id == F.g.user.id).subquery()
+                )).all()
 
-            F.g.past_elections = [meta.Election(e.key).get() for e in query]
+                F.g.past_elections = [meta.Election(e.key).get() for e in query]
     else:
         F.g.user = None
         F.g.auth = False
