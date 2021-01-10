@@ -67,7 +67,7 @@
                             {% if r.reviewed %}Reviewed{% else %}Not Reviewed{% endif %}
                         </span>
                     </div>
-                    <div class="col-md-12 col-lg-5 col-sm-12 text-lg-right">
+                     <div class="col-md-12 col-lg-5 col-sm-12 text-lg-right">
                         <span class="text-right text-muted">
                             <small>
                             Created at {{ r.created_at }}
@@ -84,7 +84,7 @@
             <div class="mt-1rem">
                 <a href="{{ url_for('elections_admin_results', eid=election['key'])}}" class="btn btn-grey">Generate
                     Results</a>
-                <a href="" class="btn btn-grey">
+                <a href="{{ url_for('elections_admin_download', eid=election['key'])}}" class="btn btn-grey">
                     Export and download ballots to CSV</a>
             </div>
             {% endif %}

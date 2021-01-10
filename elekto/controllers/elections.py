@@ -242,12 +242,33 @@ def elections_admin_results(eid):
     candidates = election.candidates()
     e = SESSION.query(Election).filter_by(key=eid).first()
 
-    result = CoreElection.build(candidates,
-                                e.ballots,
-                                election.get()['no_winners']).schulze()
+    result = CoreElection.build(candidates, e.ballots).schulze()
 
     return F.render_template('views/elections/admin_result.html',
                              election=election.get(),
                              result=result)
 
+@APP.route('/app/elections/<eid>/admin/download')  # download ballots as csv
+@auth_guard
+@admin_guard
+@has_completed_condition
+def elections_admin_download(eid):
+    election = meta.Election(eid)
+    candidates = election.candidates()
+    e = SESSION.query(Election).filter_by(key=eid).first()
+
+    # Generate a csv
+    ballots = CoreElection.build(candidates, e.ballots).ballots
+    candidates = {c['key']:'' for c in candidates}
+    csv = ','.join(list(candidates.keys())) + '\n'
+    for b in ballots.keys():
+        for c in candidates.keys():
+            candidates[c] = 'No opinion'
+        for c, rank in ballots[b]:
+            candidates[c] = rank
+        csv += ','.join([str(candidates[c]) for c in candidates.keys()]) + '\n'
+
+    return F.Response(csv,
+                      mimetype="text/csv",
+                      headers={"Content-disposition": "attachment; filename=ballots.csv"})
 

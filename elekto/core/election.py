@@ -18,22 +18,21 @@ from elekto.core import schulze_d, schulze_p, schulze_rank
 
 
 class Election:
-    def __init__(self, candidates, ballots, no_winners):
+    def __init__(self, candidates, ballots):
         self.candidates = candidates
         self.ballots = ballots
-        self.no_winners = no_winners
         self.d = {}
         self.p = {}
 
     def schulze(self):
         self.d = schulze_d(self.candidates, self.ballots)
         self.p = schulze_p(self.candidates, self.d)
-        self.ranks = schulze_rank(self.candidates, self.p, self.no_winners)
+        self.ranks = schulze_rank(self.candidates, self.p)
 
         return self
 
     @ staticmethod
-    def build(candidates, ballots, no_winners):
+    def build(candidates, ballots):
         candidates = [c['ID'] for c in candidates]
         pref = {}
 
@@ -44,7 +43,7 @@ class Election:
                 continue
             pref[b.voter].append((b.candidate, int(b.rank)))
 
-        return Election(candidates, pref, no_winners)
+        return Election(candidates, pref)
 
     @ staticmethod
     def from_csv(df, no_winners):
