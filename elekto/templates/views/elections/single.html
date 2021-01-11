@@ -42,6 +42,7 @@
             <div class="boxed-hover" style="min-width: 8rem;">
                 <h2 class="title pb-0 mb-0">
                     <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}"
+                        target="__blank"
                         class="color-primary ">
                         {{ candidate['name'] }}
                     </a>
@@ -49,6 +50,7 @@
                 <small class="text-muted">
                     {{ candidate['ID']}} |
                     <a class=""
+                        target="__blank"
                         href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">profile</a>
                 </small>
             </div>
