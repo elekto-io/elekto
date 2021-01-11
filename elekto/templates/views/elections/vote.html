@@ -22,7 +22,7 @@
             <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
         </p>
         <p class="disclaimer space-lr mt-1rem">
-            Only the {{ election['no_winners']}} favorite chocie{% if election['no_winners'] > 1 %}s {% endif %} will win the election.
+            Only the {% if election['no_winners'] > 1 %} {{ election['no_winners']}} {% else %} single {% endif %}  favorite chocie{% if election['no_winners'] > 1 %}s {% endif %} will win the election.
             The poll ends at <b>{{ election['end_datetime'] }} UTC</b>. Contact the poll supervisor{% if election['election_officers'] | length > 1 %}s{% endif %} if you need help.
             <br />
 
@@ -70,6 +70,9 @@
                             <div class="input-group-append">
                                 <button class="btn btn-dark" type="submit">Submit Vote</button>
                             </div>
+                        </div>
+
+                        <div class="mt-1rem ml-4px">
                             <span class="text-muted mt-1rem">
                                 <small>
                                     Please save your passphrase somewhere. If you forget it, it cannot be recovered through the election portal.

@@ -18,6 +18,8 @@
 The module is responsible for handling all the election's related request.
 """
 
+import secrets
+import string
 import flask as F
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -94,8 +96,10 @@ def elections_voting_page(eid):
 
     if F.request.method == 'POST':
         # encrypt the voter identity
-        voter_str = F.g.user.username + '+' + F.request.form['password']
-        voter = generate_password_hash(voter_str)
+        passcode = ''.join(secrets.choice(string.digits) for i in range(6))
+        if len(F.request.form['password']):
+            passcode = F.request.form['password']
+        voter = generate_password_hash(F.g.user.username + '+' + passcode)
 
         for k in F.request.form.keys():
             if k.split('@')[0] == 'candidate':
