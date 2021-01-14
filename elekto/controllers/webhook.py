@@ -16,7 +16,7 @@
 
 import os
 
-from elekto import APP, SESSION
+from elekto import APP, SESSION, csrf
 from elekto.models import meta
 from elekto.models.utils import sync
 from elekto.middlewares.webhook import webhook_guard
@@ -24,6 +24,7 @@ from elekto.middlewares.webhook import webhook_guard
 
 @APP.route('/v1/webhooks/meta/sync', methods=['POST'])
 @webhook_guard
+@csrf.exempt
 def webhook_sync():
     backend = meta.Meta(APP.config['META'])
     if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
