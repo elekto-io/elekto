@@ -4,6 +4,6 @@ WORKDIR /app
 
 ADD . /app
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt 
 
 CMD uwsgi --http 127.0.0.1:3031 --wsgi-file console --callable APP --processes 4 --threads 2 --stats 127.0.0.1:9191

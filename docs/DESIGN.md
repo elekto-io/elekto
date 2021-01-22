@@ -14,7 +14,7 @@ This document helps in understanding the different design aspects of the applica
 
 The general idea of the application is shown below. A seperate repository - **k8s.elections.meta** is maintained to keep track of all the meta files (`.yaml`) for elections, this repository serves as the single source of truth for the application's operation which is operated by gitops model. All the adminstrative tasks like creation of new elections, updation of voter's list, register of a candidate profile etc will be performed by raising specific pull requests in this repository.
 
-![architecture.png](/static/architecture.png)
+![architecture.png](/static/arch.png)
 
 After rasing a pull request, the gitops-bot will push events to the **k8s.elections** application (flask server) via web hooks. `k8s.elections` server is responsible for conducting the elections, receiving responses and computing the results. 
 
