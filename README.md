@@ -60,14 +60,14 @@ META_REPO=https://github.com/elekto-io/elekto.meta.test.git
 META_DEPLOYMENT=local
 META_PATH=meta
 META_BRANCH=main
-META_SECRET=db5a951969c379e75d0bf15ad6ff8b4a36fbeb02  # same as webhook of the same meta repository
+META_SECRET=  # same as webhook of the same meta repository
 ```
 
 Update the Oauth info, create an github oauth app if already not created.
 ```bash
 GITHUB_REDIRECT=/oauth/github/callback
-GITHUB_CLIENT_ID=d79f002c1d2e3cf20521
-GITHUB_CLIENT_SECRET=2f64fff6612c46f87314ad5bb81d05c8fd29c561
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
 ```
 
 #### Migrate and Sync DB with Meta
