@@ -30,5 +30,5 @@ ELEC_STAT_RUNNING = 'running'
 ELEC_STAT_UPCOMING = 'upcoming'
 
 # Candidates attribiutes related constants
-CAND_START_DEL = '------n'
-CAND_END_DEL = '-------'
+CAND_START_DEL = '--n'
+CAND_END_DEL = '---'

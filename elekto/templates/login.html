@@ -10,18 +10,16 @@
     <div class="boxed login space--xl">
         <div class="login__brand">
             <img class="login__brand-img"
-                src="https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png" alt="" srcset="">
+                src="{{ url_for('static', filename='logo.png') }}" alt="" srcset="">
             <span class="login__brand-subtitle">
                 Community wide application for conducting elections
-            </span>
-            <span class="login__brand-title">
-                Login to {{g.NAME}}
             </span>
         </div>
         <div class="login__action">
             <form action="{{ url_for('oauth_github_login', r=request.args.get('r')) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="btn btn__login">
+                    <img width="17" src="https://cdn2.iconfinder.com/data/icons/social-icons-grey/512/GITHUB-512.png" />
                     <span class="text-white">
                         Sign in with Github
                     </span>

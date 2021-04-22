@@ -74,7 +74,7 @@ class Election(Meta):
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, 'elections')
         keys = [k for k in os.listdir(
-            path) if os.path.isdir(os.path.join(path, k))]
+            path) if os.path.isdir(os.path.join(path, k)) and os.path.exists(os.path.join(path, k, 'election.yaml'))]
 
         return [Election(k).get() for k in keys]
 
@@ -123,13 +123,16 @@ class Election(Meta):
         """
         Build candidates and a list of candidates in random order
         """
-        files = [k for k in os.listdir(self.path) if 'candidate' in k]
+        files = [k for k in os.listdir(self.path) if k.startswith('candidate')]
         candidates = []
         for f in files:
             md = open(os.path.join(self.path, f)).read()
-            c = utils.extract_candidate_info(md)
-            c['key'] = c['ID']
-            candidates.append(c)
+            try:
+                c = utils.extract_candidate_info(md)
+                c['key'] = c['ID']
+                candidates.append(c)
+            except:
+                raise Exception("Invalid candidate file : {}".format(f))
 
         # As per the specifications the candidates must!! be in random order
         random.shuffle(candidates)
