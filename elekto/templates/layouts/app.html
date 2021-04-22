@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <title>{% block title %}{% endblock %} | k8s.elections</title>
+    <title>{% block title %}{% endblock %} | Elekto</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
@@ -15,7 +15,7 @@
         <div class="content-container content-has-sidebar" id="content">
             <nav class="nav">
                 <div>
-                    <a href="{{ url_for('app') }}" class="breadcrums">elekto</a>
+                    <a href="{{ url_for('app') }}" class="breadcrums">elekto ({{g.NAME}})</a>
                     {% block breadcrums %}{% endblock %}
                 </div>
                 <div class="">

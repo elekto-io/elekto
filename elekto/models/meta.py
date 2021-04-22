@@ -74,7 +74,7 @@ class Election(Meta):
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, 'elections')
         keys = [k for k in os.listdir(
-            path) if os.path.isdir(os.path.join(path, k))]
+            path) if os.path.isdir(os.path.join(path, k)) and os.path.exists(os.path.join(path, k, 'election.yaml'))]
 
         return [Election(k).get() for k in keys]
 
