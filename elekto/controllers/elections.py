@@ -55,16 +55,21 @@ def elections():
 @APP.route('/app/elections/<eid>')  # Particular Election
 @auth_guard
 def elections_single(eid):
-    election = meta.Election(eid)
-    candidates = election.candidates()
-    voters = election.voters()
-    e = SESSION.query(Election).filter_by(key=eid).first()
+    try:
+        election = meta.Election(eid)
+        candidates = election.candidates()
+        voters = election.voters()
+        e = SESSION.query(Election).filter_by(key=eid).first()
 
-    return F.render_template('views/elections/single.html',
-                             election=election.get(),
-                             candidates=candidates,
-                             voters=voters,
-                             voted=[v.user_id for v in e.voters])
+        return F.render_template('views/elections/single.html',
+                                 election=election.get(),
+                                 candidates=candidates,
+                                 voters=voters,
+                                 voted=[v.user_id for v in e.voters])
+    except Exception as err:
+        return F.render_template('errors/message.html',
+                                 title='Error While rendering the election',
+                                 message=err.args[0])
 
 
 @APP.route('/app/elections/<eid>/candidates/<cid>')  # Particular Candidate

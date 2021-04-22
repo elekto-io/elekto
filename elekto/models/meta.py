@@ -127,9 +127,12 @@ class Election(Meta):
         candidates = []
         for f in files:
             md = open(os.path.join(self.path, f)).read()
-            c = utils.extract_candidate_info(md)
-            c['key'] = c['ID']
-            candidates.append(c)
+            try:
+                c = utils.extract_candidate_info(md)
+                c['key'] = c['ID']
+                candidates.append(c)
+            except:
+                raise Exception("Invalid candidate file : {}".format(f))
 
         # As per the specifications the candidates must!! be in random order
         random.shuffle(candidates)
