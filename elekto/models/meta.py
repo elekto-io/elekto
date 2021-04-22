@@ -123,7 +123,7 @@ class Election(Meta):
         """
         Build candidates and a list of candidates in random order
         """
-        files = [k for k in os.listdir(self.path) if 'candidate' in k]
+        files = [k for k in os.listdir(self.path) if k.startswith('candidate')]
         candidates = []
         for f in files:
             md = open(os.path.join(self.path, f)).read()
