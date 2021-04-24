@@ -74,13 +74,23 @@ class Election(Meta):
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, 'elections')
         keys = [k for k in os.listdir(
-            path) if os.path.isdir(os.path.join(path, k)) and os.path.exists(os.path.join(path, k, 'election.yaml'))]
+            path) if Election.is_elecdir(os.path.join(path, k))]
 
         return [Election(k).get() for k in keys]
 
     @staticmethod
     def where(key, value):
         return [r for r in Election.all() if r[key] == value]
+
+    def is_elecdir(epath):
+        if os.path.isdir(epath):
+            if os.path.exists(os.path.join(epath, Election.YML)):
+                return True
+            else:
+                return False
+        else:
+            return False
+            
 
     def get(self):
         if not os.path.exists(self.path) or not os.path.isdir(self.path):
