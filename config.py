@@ -58,6 +58,14 @@ if env('DB_CONNECTION') == 'mysql':
         port=env('DB_PORT', 3306),
         dbname=env('DB_DATABASE'),
     )
+elif env('DB_CONNECTION') == 'postgresql':
+    DATABASE_URL = "postgresql://{user}:{password}@{host}:{port}/{dbname}".format(
+        user=env('DB_USERNAME', 'root'),
+        password=env('DB_PASSWORD', ''),
+        host=env('DB_HOST', 'localhost'),
+        port=env('DB_PORT', 3306),
+        dbname=env('DB_DATABASE'),
+    )
 elif env('DB_CONNECTION') == 'sqlite':
     DATABASE_URL = "sqlite:///{path}".format(
         path=env('DB_PATH', os.path.join(
@@ -79,6 +87,7 @@ else:
 # - DEPLOYMENT : mode of deployment (local, sidecar)
 META = {
     'REMOTE': env('META_REPO'),
+    'ELECDIR': env('ELECTION_DIR'),
     'PATH': env('META_PATH', 'meta'),
     'DEPLOYMENT': env('META_DEPLOYMENT', 'local'),
     'BRANCH': env('META_BRANCH', 'main'),

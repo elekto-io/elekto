@@ -72,7 +72,7 @@ class Election(Meta):
             list: list of all the elections
         """
         meta = Meta(APP.config['META'])
-        path = os.path.join(meta.META, 'elections')
+        path = os.path.join(meta.META, meta.ELECDIR)
         keys = [k for k in os.listdir(
             path) if Election.is_elecdir(os.path.join(path, k))]
 
