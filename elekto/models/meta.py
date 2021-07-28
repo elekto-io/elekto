@@ -33,6 +33,7 @@ class Meta:
 
     def __init__(self, config):
         self.META = os.path.abspath(config['PATH'])
+        self.ELECDIR = config['ELECDIR']
         self.REMOTE = config['REMOTE']
         self.BRANCH = config['BRANCH']
         self.SECRET = config['SECRET']
@@ -55,7 +56,7 @@ class Election(Meta):
 
     def __init__(self, key):
         Meta.__init__(self, APP.config['META'])
-        self.store = os.path.join(self.META, 'elections')
+        self.store = os.path.join(self.META, self.ELECDIR)
         self.path = os.path.join(self.store, key)
         self.key = key
         self.election = {}
