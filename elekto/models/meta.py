@@ -33,6 +33,7 @@ class Meta:
 
     def __init__(self, config):
         self.META = os.path.abspath(config['PATH'])
+        self.ELECDIR = config['ELECDIR']
         self.REMOTE = config['REMOTE']
         self.BRANCH = config['BRANCH']
         self.SECRET = config['SECRET']
@@ -55,7 +56,7 @@ class Election(Meta):
 
     def __init__(self, key):
         Meta.__init__(self, APP.config['META'])
-        self.store = os.path.join(self.META, 'elections')
+        self.store = os.path.join(self.META, self.ELECDIR)
         self.path = os.path.join(self.store, key)
         self.key = key
         self.election = {}
@@ -72,7 +73,7 @@ class Election(Meta):
             list: list of all the elections
         """
         meta = Meta(APP.config['META'])
-        path = os.path.join(meta.META, 'elections')
+        path = os.path.join(meta.META, meta.ELECDIR)
         keys = [k for k in os.listdir(
             path) if Election.is_elecdir(os.path.join(path, k))]
 
