@@ -102,6 +102,9 @@ python console --run
 python console --port 8080 --host 0.0.0.0 --run
 ```
 
-### Support
+### Contact Us
 
-if you have questions, reach out to us one way or another.
+See the website at [Elekto.dev](https://elekto.dev).
+
+Elekto is a project of the CNCF, and you can reach us on [CNCF Slack](https://slack.cncf.io/),
+channel #elekto.
