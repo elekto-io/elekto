@@ -74,6 +74,7 @@ if __name__ == "__main__":
 
         if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
             backend.clone()
+            backend.pull()
         else:
             backend.pull()
 
