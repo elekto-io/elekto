@@ -74,8 +74,7 @@ class Election(Meta):
         """
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, meta.ELECDIR)
-        keys = [k for k in os.listdir(
-            path) if Election.is_elecdir(os.path.join(path, k))]
+        keys = [k for k in Election.listelecdirs(path)]
 
         return [Election(k).get() for k in keys]
 
@@ -83,15 +82,18 @@ class Election(Meta):
     def where(key, value):
         return [r for r in Election.all() if r[key] == value]
 
-    def is_elecdir(epath):
-        if os.path.isdir(epath):
-            if os.path.exists(os.path.join(epath, Election.YML)):
-                return True
-            else:
-                return False
-        else:
-            return False
-            
+    @staticmethod
+    def listelecdirs(path):
+        """Return the set of election directories"""
+        elecdirs = []
+        for file in os.listdir(path):
+            dir = os.path.join(path, file)
+            if os.path.isdir(dir):
+                if os.path.exists(os.path.join(path, Election.YML)):
+                    elecdirs.append(dir)
+                else:
+                    elecdirs.extend(Election.listelecdirs(dir))
+        return elecdirs
 
     def get(self):
         if not os.path.exists(self.path) or not os.path.isdir(self.path):
