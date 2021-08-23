@@ -57,7 +57,7 @@ class Election(Meta):
     def __init__(self, key):
         Meta.__init__(self, APP.config['META'])
         self.store = os.path.join(self.META, self.ELECDIR)
-        self.path = os.path.join(self.store, key)
+        self.path = os.path.join(self.store, key.replace('---','/'))
         self.key = key
         self.election = {}
 
@@ -74,7 +74,7 @@ class Election(Meta):
         """
         meta = Meta(APP.config['META'])
         path = os.path.join(meta.META, meta.ELECDIR)
-        keys = [k for k in Election.listelecdirs(path)]
+        keys = Election.listelecdirs(path)
 
         return [Election(k).get() for k in keys]
 
@@ -86,13 +86,15 @@ class Election(Meta):
     def listelecdirs(path):
         """Return the set of election directories"""
         elecdirs = []
-        for file in os.listdir(path):
-            dir = os.path.join(path, file)
-            if os.path.isdir(dir):
-                if os.path.exists(os.path.join(dir, Election.YML)):
-                    elecdirs.append(dir)
-                else:
-                    elecdirs.extend(Election.listelecdirs(dir))
+        for root, dirs, files in os.walk(path, topdown=True):
+           for name in dirs:
+               if os.path.exists(os.path.join(name, Election.YML)):
+                   """append each election directory to the list of directories
+                   and make nested dirs url-safe"""
+                   curdir = os.path.relpath(os.path.join(root,name),path)
+                   safedir = curdir.replace('/','---')
+                   elecdirs.append(safedir)
+
         return elecdirs
 
     def get(self):
