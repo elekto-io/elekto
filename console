@@ -74,8 +74,8 @@ if __name__ == "__main__":
 
         if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
             backend.clone()
-        else:
-            backend.pull()
+
+        backend.pull()
 
         print(sync(SESSION, meta.Election.all()))
         exit()
