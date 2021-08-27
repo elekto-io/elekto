@@ -88,10 +88,10 @@ class Election(Meta):
         elecdirs = []
         for root, dirs, files in os.walk(path, topdown=True):
            for name in dirs:
-               if os.path.exists(os.path.join(name, Election.YML)):
+               if os.path.exists(os.path.join(root, name, Election.YML)):
                    """append each election directory to the list of directories
                    and make nested dirs url-safe"""
-                   curdir = os.path.relpath(os.path.join(root,name),path)
+                   curdir = os.path.relpath(os.path.join(root, name),path)
                    safedir = curdir.replace('/','---')
                    elecdirs.append(safedir)
 
