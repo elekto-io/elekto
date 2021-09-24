@@ -49,3 +49,8 @@ def public_election(eid):
     return F.render_template('views/public/elections_single.html',
                              election=election.get(),
                              candidates=candidates)
+                             
+@APP.route('/health')
+def health_check():
+    status_code = F.Response(status=200)
+    return status_code
