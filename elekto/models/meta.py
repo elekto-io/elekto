@@ -63,6 +63,8 @@ class Election(Meta):
 
         if not os.path.exists(self.path):
             F.abort(404)
+        else:
+            self.build()
 
     @staticmethod
     def all():
