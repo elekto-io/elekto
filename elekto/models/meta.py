@@ -63,6 +63,8 @@ class Election(Meta):
 
         if not os.path.exists(self.path):
             F.abort(404)
+        else:
+            self.build()
 
     @staticmethod
     def all():
@@ -133,6 +135,9 @@ class Election(Meta):
 
     def voters(self):
         return utils.parse_yaml(os.path.join(self.path, Election.VOT))
+        
+    def showfields(self):
+        return dict.fromkeys(self.election['show_candidate_fields'], '')
 
     def candidates(self):
         """
@@ -164,5 +169,11 @@ class Election(Meta):
         candidate['key'] = cid
         candidate['description'] = utils.parse_md(
             utils.extract_candidate_description(md), False)
-
+        # return only the candidate optional fields that are listed in show_candidate_fields
+        # unfilled fields are returned as '' so the label still displays
+        candidate['fields'] = self.showfields()
+        for info in candidate['info']:
+            field = list(info.keys())[0]
+            if field in candidate['fields']:
+                candidate['fields'][field] = info[field]
         return candidate

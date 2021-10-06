@@ -21,6 +21,11 @@
         <p class="banner-subtitle space-lr">
             <small class="badge badge-green" style="text-transform: none;">{{ candidate['ID'] }}</small> | <span>Running for {{ election['name'] }}</span>
         </p>
+        {% for fieldname, info in candidate['fields'].items() %}
+        <p class="banner-subtitle space-lr">
+            <small class="badge badge-green" style="text-transform: none;">{{ fieldname }}</small> | <span>{{ info }}</span>
+        </p>
+        {% endfor %}
     </div>
     <div class="space--md  pb-1rem">
         <div class="description space-lr">
