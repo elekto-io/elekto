@@ -101,6 +101,6 @@ META = {
 GITHUB = {
     'client_id': env('GITHUB_CLIENT_ID'),
     'client_secret': env('GITHUB_CLIENT_SECRET'),
-    'redirect': env('GITHUB_REDIRECT'),
+    'redirect': env('GITHUB_REDIRECT', '/oauth/github/callback'),
     'scope': 'user:login,name',
 }
