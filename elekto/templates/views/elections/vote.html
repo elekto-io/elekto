@@ -22,11 +22,11 @@
             <small class="badge mr-5px badge-{{  election['status'] }} ">{{ election['status'] }}</small>
         </p>
         <p class="disclaimer space-lr mt-1rem">
-            Only the {% if election['no_winners'] > 1 %} {{ election['no_winners']}} {% else %} single {% endif %}  favorite chocie{% if election['no_winners'] > 1 %}s {% endif %} will win the election.
+            Only the {% if election['no_winners'] > 1 %} {{ election['no_winners']}} {% else %} single {% endif %}  preferred candidate{% if election['no_winners'] > 1 %}s {% endif %} will win the election.
             The poll ends at <b>{{ election['end_datetime'] }} UTC</b>. Contact the poll supervisor{% if election['election_officers'] | length > 1 %}s{% endif %} if you need help.
             <br />
 
-            <b>Note:</b> A lower rank indicates a higher preference and "No opinion" does not indicate the lowest preference; it means you do not choose to rank this choice with respect to other choices.
+            <b>Note:</b>  Rank your most preferred candidate as "1" and less preferred candidates with higher numbers. "No opinion" does not indicate the lowest preference; it means you do not choose to rank this choice with respect to other choices.
         </p>
     </div>
     <div class="space--md pt-0">
