@@ -151,7 +151,7 @@ def elections_edit(eid):
 
     SESSION.commit()
     F.flash('The old ballot is sucessfully deleted, please re-cast the ballot.')
-    return F.redirect(F.url_for('elections_voting_page', eid=eid))
+    return F.redirect(F.url_for('elections_single', eid=eid))
 
 
 @APP.route('/app/elections/<eid>/confirmation', methods=['GET'])
