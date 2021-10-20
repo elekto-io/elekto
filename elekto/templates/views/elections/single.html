@@ -81,20 +81,6 @@
                 <div class="col-md-2 pr-0">
                     <a href="{{ url_for('elections_voting_page', eid=election['key'])}}" class="btn btn-dark pl-3rem pr-3rem">Vote</a>
                 </div>
-<!--
-                {% else %}
-                <div class="col-md-6">
-                    <form action="{{ url_for('elections_edit', eid=election['key']) }}" method="post">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <div class="input-group">
-                            <input type="password" name="password" class="form-control" placeholder="Enter the passphrase" id="">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-dark">Revoke Ballot</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
--->
                 {% endif %}
             {% endif %}
             <div class="col-md-6
