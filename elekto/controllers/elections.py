@@ -101,9 +101,7 @@ def elections_voting_page(eid):
 
     if F.request.method == 'POST':
         # encrypt the voter identity
-        passcode = ''.join(secrets.choice(string.digits) for i in range(6))
-        if len(F.request.form['password']):
-            passcode = F.request.form['password']
+        passcode = str(secrets.randbits(128))
         voter = generate_password_hash(F.g.user.username + '+' + passcode)
 
         for k in F.request.form.keys():
