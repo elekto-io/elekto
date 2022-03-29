@@ -62,36 +62,35 @@ def migrate(url):
     return session
 
 
-class GUID(TypeDecorator):
-    """Platform-independent GUID type.
+class UUID(TypeDecorator):
+    """Platform-independent UUID type.
 
-    Uses CHAR(32), storing as stringified hex values.
+    Uses CHAR(32), storing as stringified byte values.
 
     """
 
     impl = CHAR
-    cache_ok = True
 
-    def load_dialect_impl(self, dialect):
-        return dialect.type_descriptor(CHAR(32))
+    def __init__(self):
+        self.impl.length = 32
+        TypeDecorator.__init__(self, length=self.impl.length)
 
-    def process_bind_param(self, value):
-        if value is None:
-            return value
+    def process_bind_param(self, value, dialect=None):
+        if value and isinstance(value, uuid.UUID):
+            return value.bytes
+        elif value and not isinstance(value, uuid.UUID):
+            raise ValueError
         else:
-            if not isinstance(value, uuid.UUID):
-                return "%.32x" % uuid.UUID(value).int
-            else:
-                # hexstring
-                return "%.32x" % value.int
+            return None
 
-    def process_result_value(self, value):
-        if value is None:
-            return value
+    def process_result_value(self, value, dialect=None):
+        if value:
+            return uuid.UUID(bytes=value)
         else:
-            if not isinstance(value, uuid.UUID):
-                value = uuid.UUID(value)
-            return value
+            return None
+
+    def is_mutable(self):
+        return False
 
 
 class User(BASE):
@@ -185,7 +184,7 @@ class Voter(BASE):
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
     salt = S.Column(S.LargeBinary, nullable=False)
-    key = S.Column(S.LargeBinary, nullable=False)
+    ballot_ids = S.Column(S.Text(4294000000), nullable=False)
 
     # Relationships
 
@@ -213,7 +212,7 @@ class Ballot(BASE):
     Attributes:
         - rank: rank of the candidate
         - candidate: election's candidate
-        - voter: uuid per ballot
+        - voter: uuid (same for all ballots of a voter in an election)
 
     Relationships:
         - election_id: inverse of the (Election has many Ballot) relation
@@ -222,11 +221,11 @@ class Ballot(BASE):
     __tablename__ = "ballot"
 
     # Attributes
-    id = S.Column(GUID, primary_key=True)
+    id = S.Column(UUID(), primary_key=True, default=uuid.uuid4)
     election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
     rank = S.Column(S.Integer, default=100000000)
     candidate = S.Column(S.String(255), nullable=False)
-    voter = S.Column(GUID, nullable=False)  # uuid
+    voter = S.Column(S.String(255), nullable=False)  # uuid
 
     # Relationships
     election = S.orm.relationship("Election", back_populates="ballots")
