@@ -18,20 +18,19 @@
 The module is responsible for handling all the election's related request.
 """
 
-import json
 import uuid
 import secrets
 import string
 import flask as F
 
-from base64 import b64encode, b64decode
-from nacl import secret, utils, pwhash, exceptions
+from nacl import utils, pwhash, exceptions
 
 from elekto import constants, APP, SESSION
 from elekto.models import meta
 from elekto.core.election import Election as CoreElection
 from elekto.models.sql import Election, Ballot, Voter, Request
 from elekto.middlewares.auth import auth_guard
+from elekto.middlewares.encryption import encrypt, decrypt
 from elekto.middlewares.election import *  # noqa
 
 
@@ -109,37 +108,23 @@ def elections_voting_page(eid):
         )
 
     if F.request.method == "POST":
-        # encrypt the voter identity
         passcode = "".join(secrets.choice(string.digits) for i in range(6))
         if len(F.request.form["password"]):
             passcode = F.request.form["password"]
 
-        passcode = passcode.encode("utf-8")
-        kdf = pwhash.argon2i.kdf
+        # encrypt ballot.voter with passcode
         salt = utils.random(pwhash.argon2i.SALTBYTES)
-        key = kdf(secret.SecretBox.KEY_SIZE, passcode, salt)
-        box = secret.SecretBox(key)
-
-        voter = Voter(user_id=F.g.user.id, salt=salt)
-
-        enc_ballot_ids = []  # list of encrypted ballot ids
-
         ballot_voter = str(uuid.uuid4())
+        ballot_id = encrypt(salt, passcode, ballot_voter)
+
+        voter = Voter(user_id=F.g.user.id, salt=salt, ballot_id=ballot_id)
 
         for k in F.request.form.keys():
             if k.split("@")[0] == "candidate":
                 candidate = k.split("@")[-1]
                 rank = F.request.form[k]
                 ballot = Ballot(rank=rank, candidate=candidate, voter=ballot_voter)
-                SESSION.add(ballot)
-                SESSION.commit()
-                enc_ballot_id = box.encrypt(str(ballot.id).encode("utf-8"))
-                enc_ballot_ids.append(b64encode(enc_ballot_id).decode("utf-8"))
                 e.ballots.append(ballot)
-
-        voter.ballot_ids = json.dumps(
-            enc_ballot_ids
-        )  # json serialized encrypted ballot ids
 
         # Add user to the voted list
         e.voters.append(voter)
@@ -163,19 +148,13 @@ def elections_edit(eid):
     e = SESSION.query(Election).filter_by(key=eid).first()
     voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id).first()
 
-    # decrypting encrypted ballot ids
-    kdf = pwhash.argon2i.kdf
-    passcode = F.request.form["password"].encode("utf-8")
-    key = kdf(secret.SecretBox.KEY_SIZE, passcode, voter.salt)
-    box = secret.SecretBox(key)
-
-    enc_ballot_ids = json.loads(voter.ballot_ids)  # deserializing
+    passcode = F.request.form["password"]
 
     try:
-        for enc_ballot_id in enc_ballot_ids:
-            enc_ballot_id = b64decode(enc_ballot_id.encode("utf-8"))
-            ballot_id = box.decrypt(enc_ballot_id).decode("utf-8")
-            b = SESSION.query(Ballot).filter_by(id=uuid.UUID(ballot_id)).first()
+        # decrypt ballot_id if passcode is correct
+        ballot_voter = decrypt(voter.salt, passcode, voter.ballot_id)
+        ballots = SESSION.query(Ballot).filter_by(voter=ballot_voter)
+        for b in ballots:
             SESSION.delete(b)
 
         SESSION.delete(voter)
