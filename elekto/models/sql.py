@@ -171,6 +171,10 @@ class Voter(BASE):
     """
     Voter Schema - Voters that have already voted for the election.
 
+    Attributes:
+        - salt: byte string for encryption
+        - ballot_id: byte string obtained after encrypting ballot.voter
+
     Relationships:
         - election_id: inverse of the (Election has many Voter) relation
         - user_id: inverse of the (User has many Voter) relation
@@ -184,7 +188,7 @@ class Voter(BASE):
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
     salt = S.Column(S.LargeBinary, nullable=False)
-    ballot_ids = S.Column(S.Text(4294000000), nullable=False)
+    ballot_id = S.Column(S.LargeBinary, nullable=False)  # encrypted
 
     # Relationships
 
