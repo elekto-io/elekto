@@ -15,7 +15,7 @@
 # Author(s):         Vedant Raghuwanshi <raghuvedant00@gmail.com>
 
 
-from nacl import secret, pwhash
+from nacl import secret, pwhash, exceptions
 
 
 def get_secret_box(salt, passcode):
@@ -38,6 +38,10 @@ def encrypt(salt, passcode, target):
 def decrypt(salt, passcode, encrypted):
     passcode = passcode.encode("utf-8")
     box = get_secret_box(salt, passcode)
-    target = box.decrypt(encrypted).decode("utf-8")
+    try:
+        target = box.decrypt(encrypted).decode("utf-8")
+
+    except exceptions.CryptoError:
+        raise Exception("Wrong passcode. Decryption Failed!")
 
     return target

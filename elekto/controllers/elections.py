@@ -23,14 +23,14 @@ import secrets
 import string
 import flask as F
 
-from nacl import utils, pwhash, exceptions
+from nacl import utils, pwhash
 
 from elekto import constants, APP, SESSION
 from elekto.models import meta
 from elekto.core.election import Election as CoreElection
 from elekto.models.sql import Election, Ballot, Voter, Request
 from elekto.middlewares.auth import auth_guard
-from elekto.middlewares.encryption import encrypt, decrypt
+from elekto.core.encryption import encrypt, decrypt
 from elekto.middlewares.election import *  # noqa
 
 
@@ -163,7 +163,7 @@ def elections_edit(eid):
         return F.redirect(F.url_for("elections_single", eid=eid))
 
     # if passcode is wrong
-    except exceptions.CryptoError:
+    except Exception:
         F.flash(
             "Incorrect password, the password must match with the one used\
                 before"
