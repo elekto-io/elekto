@@ -14,10 +14,13 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
+import uuid
 import sqlalchemy as S
 
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.types import TypeDecorator, CHAR
+
 
 BASE = declarative_base()
 
@@ -53,17 +56,49 @@ def migrate(url):
     engine = S.create_engine(url)
     BASE.metadata.create_all(bind=engine)
 
-    session = scoped_session(sessionmaker(bind=engine,
-                                          autocommit=False,
-                                          autoflush=False))
+    session = scoped_session(
+        sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    )
     return session
+
+
+class UUID(TypeDecorator):
+    """Platform-independent UUID type.
+
+    Uses CHAR(32), storing as stringified byte values.
+
+    """
+
+    impl = CHAR
+
+    def __init__(self):
+        self.impl.length = 32
+        TypeDecorator.__init__(self, length=self.impl.length)
+
+    def process_bind_param(self, value, dialect=None):
+        if value and isinstance(value, uuid.UUID):
+            return value.bytes
+        elif value and not isinstance(value, uuid.UUID):
+            raise ValueError
+        else:
+            return None
+
+    def process_result_value(self, value, dialect=None):
+        if value:
+            return uuid.UUID(bytes=value)
+        else:
+            return None
+
+    def is_mutable(self):
+        return False
 
 
 class User(BASE):
     """
     User Schema - registered from the oauth external application - github
     """
-    __tablename__ = 'user'
+
+    __tablename__ = "user"
 
     # Attributes
     id = S.Column(S.Integer, primary_key=True)
@@ -75,18 +110,17 @@ class User(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    voters = S.orm.relationship('Voter',
-                                cascade="all, delete",
-                                back_populates='user',
-                                passive_deletes=True)
-    requests = S.orm.relationship('Request',
-                                  cascade="all, delete",
-                                  back_populates='user',
-                                  passive_deletes=True)
+    voters = S.orm.relationship(
+        "Voter", cascade="all, delete", back_populates="user", passive_deletes=True
+    )
+    requests = S.orm.relationship(
+        "Request", cascade="all, delete", back_populates="user", passive_deletes=True
+    )
 
     def __repr__(self):
         return "<User(id={}, username={}, name={})>".format(
-            self.id, self.username, self.name)
+            self.id, self.username, self.name
+        )
 
 
 class Election(BASE):
@@ -103,7 +137,8 @@ class Election(BASE):
         - voters: Election has many Voter (that have voted)
         - requests: Election has many Request
     """
-    __tablename__ = 'election'
+
+    __tablename__ = "election"
 
     # Attributes
     id = S.Column(S.Integer, primary_key=True)
@@ -113,47 +148,58 @@ class Election(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    ballots = S.orm.relationship('Ballot',
-                                 cascade="all, delete",
-                                 back_populates='election',
-                                 passive_deletes=True)
-    voters = S.orm.relationship('Voter',
-                                cascade="all, delete",
-                                back_populates='election',
-                                passive_deletes=True)
-    requests = S.orm.relationship('Request',
-                                  cascade="all, delete",
-                                  back_populates='election',
-                                  passive_deletes=True)
+    ballots = S.orm.relationship(
+        "Ballot", cascade="all, delete", back_populates="election", passive_deletes=True
+    )
+    voters = S.orm.relationship(
+        "Voter", cascade="all, delete", back_populates="election", passive_deletes=True
+    )
+    requests = S.orm.relationship(
+        "Request",
+        cascade="all, delete",
+        back_populates="election",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return "<Election(election_id={}, key={}, name={})>".format(
-            self.id, self.key, self.name)
+            self.id, self.key, self.name
+        )
 
 
 class Voter(BASE):
     """
     Voter Schema - Voters that have already voted for the election.
 
+    Attributes:
+        - salt: byte string for encryption
+        - ballot_id: byte string obtained after encrypting ballot.voter
+
     Relationships:
         - election_id: inverse of the (Election has many Voter) relation
         - user_id: inverse of the (User has many Voter) relation
     """
-    __tablename__ = 'voter'
+
+    __tablename__ = "voter"
 
     id = S.Column(S.Integer, primary_key=True)
-    user_id = S.Column(S.Integer, S.ForeignKey('user.id', ondelete="CASCADE"))
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete="CASCADE"))
+    user_id = S.Column(S.Integer, S.ForeignKey("user.id", ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
+    salt = S.Column(S.LargeBinary, nullable=False)
+    ballot_id = S.Column(S.LargeBinary, nullable=False)  # encrypted
 
     # Relationships
-    user = S.orm.relationship('User', back_populates='voters')
-    election = S.orm.relationship('Election', back_populates='voters')
+
+    user = S.orm.relationship("User", back_populates="voters")
+    election = S.orm.relationship("Election", back_populates="voters")
 
     def __repr__(self):
         return "<Voter(election_id={}, user_id={})>".format(
-            self.election_id, self.user_id)
+            self.election_id, self.user_id
+        )
+
 
 class Ballot(BASE):
     """
@@ -170,28 +216,29 @@ class Ballot(BASE):
     Attributes:
         - rank: rank of the candidate
         - candidate: election's candidate
-        - voter: hashed voter (handle + password)
+        - voter: uuid (same for all ballots of a voter in an election)
 
     Relationships:
         - election_id: inverse of the (Election has many Ballot) relation
     """
-    __tablename__ = 'ballot'
+
+    __tablename__ = "ballot"
 
     # Attributes
-    id = S.Column(S.Integer, primary_key=True)
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete='CASCADE'))
+    id = S.Column(UUID(), primary_key=True, default=uuid.uuid4)
+    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
     rank = S.Column(S.Integer, default=100000000)
     candidate = S.Column(S.String(255), nullable=False)
-    voter = S.Column(S.String(255), nullable=False)
-    created_at = S.Column(S.DateTime, default=S.func.now())
-    updated_at = S.Column(S.DateTime, default=S.func.now())
+    voter = S.Column(S.String(255), nullable=False)  # uuid
 
     # Relationships
-    election = S.orm.relationship('Election', back_populates='ballots')
+    election = S.orm.relationship("Election", back_populates="ballots")
 
     def __repr__(self):
         return "<Ballot(election_id={}, candidate={}, rank={})>".format(
-            self.election_id, self.candidate, self.rank)
+            self.election_id, self.candidate, self.rank
+        )
+
 
 class Request(BASE):
     """
@@ -209,12 +256,13 @@ class Request(BASE):
         - election_id: inverse of the (Election has many Request) relation
         - user_id: inverse of the (User has many Request) relation
     """
-    __tablename__ = 'request'
+
+    __tablename__ = "request"
 
     # Attributes
     id = S.Column(S.Integer, primary_key=True)
-    user_id = S.Column(S.Integer, S.ForeignKey('user.id', ondelete="CASCADE"))
-    election_id = S.Column(S.Integer, S.ForeignKey('election.id', ondelete="CASCADE"))
+    user_id = S.Column(S.Integer, S.ForeignKey("user.id", ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
     name = S.Column(S.String(255), nullable=True)
     email = S.Column(S.String(255), nullable=True)
     chat = S.Column(S.String(255), nullable=True)
@@ -225,16 +273,10 @@ class Request(BASE):
     updated_at = S.Column(S.DateTime, default=S.func.now())
 
     # Relationships
-    user = S.orm.relationship('User', back_populates='requests')
-    election = S.orm.relationship('Election', back_populates="requests")
+    user = S.orm.relationship("User", back_populates="requests")
+    election = S.orm.relationship("Election", back_populates="requests")
 
     def __repr__(self):
         return "<Request election_id={}, user_id={}, name={}".format(
-            self.election_id, self.user_id, self.name)
-
-
-
-
-
-
-
+            self.election_id, self.user_id, self.name
+        )
