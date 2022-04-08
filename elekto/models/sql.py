@@ -65,32 +65,33 @@ def migrate(url):
 class UUID(TypeDecorator):
     """Platform-independent UUID type.
 
-    Uses CHAR(32), storing as stringified byte values.
+    Uses CHAR(32), storing as stringified hex values.
 
     """
 
     impl = CHAR
+    cache_ok = True
 
-    def __init__(self):
-        self.impl.length = 32
-        TypeDecorator.__init__(self, length=self.impl.length)
+    def load_dialect_impl(self, dialect):
+        return dialect.type_descriptor(CHAR(32))
 
-    def process_bind_param(self, value, dialect=None):
-        if value and isinstance(value, uuid.UUID):
-            return value.bytes
-        elif value and not isinstance(value, uuid.UUID):
-            raise ValueError
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
         else:
-            return None
+            if not isinstance(value, uuid.UUID):
+                return "%.32x" % uuid.UUID(value).int
+            else:
+                # hexstring
+                return "%.32x" % value.int
 
-    def process_result_value(self, value, dialect=None):
-        if value:
-            return uuid.UUID(bytes=value)
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
         else:
-            return None
-
-    def is_mutable(self):
-        return False
+            if not isinstance(value, uuid.UUID):
+                value = uuid.UUID(value)
+            return value
 
 
 class User(BASE):
