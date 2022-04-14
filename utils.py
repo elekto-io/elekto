@@ -15,11 +15,16 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 
 # Load the custom environment file into the program
 targetenv = '.env.testing' if os.getenv('TESTING') else '.env'
 load_dotenv(os.path.join(os.path.dirname(__file__), targetenv))
+
+
+def generate_app_key():
+    key = os.urandom(32).hex()
+    set_key(targetenv, "APP_KEY", key)
 
 
 def env(key, default=None):

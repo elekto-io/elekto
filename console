@@ -19,7 +19,7 @@
 import os
 import argparse
 
-from utils import env
+from utils import env, generate_app_key
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
@@ -33,6 +33,10 @@ parser.add_argument('--host',
                     help='Hostname to listen on. When set to 0.0.0.0 the \
                     server is available externally. Defaults to 127.0.0.1 \
                     making the it only visable on localhost')
+
+parser.add_argument('--generate',
+                    help='Generate 32 byte app secret key for session cookie encryption',
+                    action='store_true')
 
 parser.add_argument('--migrate',
                     help='Create the database tables',
@@ -52,6 +56,11 @@ if __name__ == "__main__":
     #                            /!\ console /!\                             #
     # ###################################################################### #
     args = parser.parse_args()
+
+    if args.generate:
+        print('# ----- Generating 32 byte app secret key ----- #')
+        generate_app_key()
+        exit()
 
     if args.migrate:
         from config import DATABASE_URL
