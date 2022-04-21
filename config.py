@@ -104,3 +104,5 @@ GITHUB = {
     'redirect': env('GITHUB_REDIRECT', '/oauth/github/callback'),
     'scope': 'user:login,name',
 }
+
+PASSCODE_LENGTH = env('MIN_PASSCODE_LENGTH', 6)
