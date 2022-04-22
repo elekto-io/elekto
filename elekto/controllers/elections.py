@@ -29,7 +29,7 @@ from elekto import constants, APP, SESSION
 from elekto.models import meta
 from elekto.core.election import Election as CoreElection
 from elekto.models.sql import Election, Ballot, Voter, Request
-from elekto.middlewares.auth import auth_guard
+from elekto.middlewares.auth import auth_guard, len_guard
 from elekto.core.encryption import encrypt, decrypt
 from elekto.middlewares.election import *  # noqa
 
@@ -92,6 +92,7 @@ def elections_candidate(eid, cid):
 @APP.route("/app/elections/<eid>/vote", methods=["GET", "POST"])
 @auth_guard
 @voter_guard
+@len_guard
 def elections_voting_page(eid):
     election = meta.Election(eid)
     candidates = election.candidates()
