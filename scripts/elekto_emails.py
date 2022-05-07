@@ -35,22 +35,21 @@ email contains the string 'noreply' it is not written to the csv file.
 
 As output, a csv file of this format containing comma separated email addresses 
 is created:
-elekto_emails_GHorgName_YYYYMMDD.csv
+elekto_emails_YYYYMMDD.csv
 
-A message with the number of email addresses found out of the total voters
-is printed to the screen
+Each email address found is printed to the screen as a way to indicate progress,
+and a message with the number of email addresses found out of the total voters
+along with the name of the results csv file is printed to the screen at the end.
 
 Parameters
 ----------
-org_name : str
-    The primary GitHub organization for the vote.
-    Used to gather email address from commits
 file_name : str
     This should be an Elekto yaml file starting with "eligible_voters:"
 """
 
 def read_args():
-    """Reads the org name and yaml filename where the votes can be found.
+    """Reads the yaml filename where the voters can be found and prompts for a 
+       GitHub API Personal Access Token.
     
     Parameters
     ----------
@@ -58,40 +57,66 @@ def read_args():
 
     Returns
     -------
-    org_name : str
-        The primary GitHub organization for the vote.
-        Used to gather email address from commits
     file_name : str
         This should be an Elekto yaml file (raw) starting with "eligible_voters:" Example:
-        https://raw.githubusercontent.com/knative/community/main/elections/2021-TOC/voters.yaml
+        https://raw.githubusercontent.com/knative/community/main/elections/2022-TOC/voters.yaml
     """
     import sys
 
-    # read org name and filename from command line or prompt if no 
+    # read filename from command line or prompt if no 
     # arguments were given.
     try:
-        org_name = str(sys.argv[1])
-        file_name = str(sys.argv[2])
+        file_name = str(sys.argv[1])
 
     except:
-        print("Please enter the org name and filename for voters.yaml.")
-        org_name = input("Enter a GitHub org name (like kubernetes): ")
+        print("Please enter the filename for voters.yaml.")
         file_name = input("Enter a file name (like https://raw.githubusercontent.com/knative/community/main/elections/2021-TOC/voters.yaml): ")
 
     api_token = input("Enter your GitHub Personal Access Token: ")
 
-    return org_name, file_name, api_token
+    return file_name, api_token
 
-def get_email(org, username, api_token):
+
+def email_query():
+    """This contains the GitHub GraphQL API Query to get an email address from the 
+       profile and commits
+    Returns
+    -------
+    str
+    """
+    return """query pr_info_query($user_login: String!, $start_date: DateTime!, $end_date: DateTime!){
+             user(login: $user_login) {
+                email
+                contributionsCollection(from: $start_date, to: $end_date){
+                    pullRequestContributions(first: 10){
+                        nodes{
+                            pullRequest{
+                                commits(first: 10){
+                                    nodes{
+                                        url
+                                        commit{
+                                            authoredByCommitter
+                                            author{
+                                                email
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            }"""
+
+def get_email(username, api_token):
     """Attempts to get an email address from the GitHub profile first. 
     Otherwise, it attempts to find an email address from the most recent
-    commit, which is why the name of the GitHub org is required. If the
-    email contains the string 'noreply' it is not written to the csv file.
+    commit. If the email contains the string 'noreply' it is not written 
+    to the csv file.
     
     Parameters
     ----------
-    org : str
-        The primary org name where the users can be found
     username : str
         GitHub username
 
@@ -100,38 +125,53 @@ def get_email(org, username, api_token):
     email : str
     """
 
-    import sys
-    from github import Github # Uses https://github.com/PyGithub/
+    import requests
+    import json
+    from dateutil.relativedelta import relativedelta
 
+    # Set GitHub GraphQL API variables
+    url = 'https://api.github.com/graphql'
+    headers = {'Authorization': 'token %s' % api_token}
+
+    # Set query variables including dates for past 12 months (req for query)
+    today = datetime.now()
+    end_date = today.isoformat() #isoformat required for json serialization
+    start_date = (today + relativedelta(months=-12)).isoformat() 
+    variables = {"user_login": username, "start_date": start_date, "end_date": end_date}
+
+    # Run query and load the results into a JSON file
+    query = email_query()
+    r = requests.post(url=url, json={'query': query, 'variables': variables}, headers=headers)
+    json_data = json.loads(r.text)
+
+    # Get email address
+    email = None
+
+    # Try to get the email address from the profile first
+    # This will fail and return immediately if the user has been deleted.
     try:
-        g = Github(api_token)
+        email = json_data['data']['user']['email']
     except:
-        print("Cannot read gh_key file or does not contain a valid GitHub API token?")
-        sys.exit()
-
-    try:
-        email = g.get_user(username).email
-
-        email_list = []
-
-        if email == None:
-            repo_list = g.get_organization(org).get_repos()
-
-            for repo in repo_list:
-                commits = repo.get_commits(author=username)
-
-                if commits.totalCount > 0:
-                    email_list.append([commits[0].commit.author.email, commits[0].commit.author.date, repo.name])
-
-            if len(email_list) > 0:
-                newest = sorted(email_list, key = lambda x: x[1], reverse = True)
-                email = newest[0][0]
-            else:
-                email = None
-        if 'noreply' in email:
-            email = None
-    except:
-        email = None
+        print(username, "not found")
+        return email
+    
+    # If the profile didn't have an email address, loop through the PRs and commits
+    # until you find an email address in a commit where the commit was authored by
+    # username (since PRs can have commits from other people) and does not contain
+    # 'noreply' anywhere in the email address.  
+    if email == None or email == '':
+        try:
+            for pr in json_data['data']['user']['contributionsCollection']['pullRequestContributions']['nodes']:
+                for commits in pr['pullRequest']['commits']['nodes']:
+                    authoredBy = commits['commit']['authoredByCommitter']
+                    if authoredBy:
+                        email = commits['commit']['author']['email']
+                        if 'noreply' not in email:
+                            break
+                        else:
+                            email = None
+        except:
+            pass
 
     return(email)
 
@@ -141,7 +181,7 @@ import csv
 import urllib.request
 from datetime import datetime
 
-org_name, file_name, api_token = read_args()
+file_name, api_token = read_args()
 
 # Loads the yaml file and creates a list of voters
 try:
@@ -154,7 +194,7 @@ except:
     print("Cannot load or process the yaml file. Did you use the raw link?")
     sys.exit()
 
-print("Gathering email addresses from GitHub. This may take a while.")
+print("Gathering email addresses from GitHub. This will take ~3 minutes for 100 voters.")
 
 # Create a list for the emails and initialize a counter for the
 # number of emails found.
@@ -162,22 +202,24 @@ email_list = []
 found_count = 0
 
 # Attempt to get an email address for each voter. If an email address is found
-# append it to the list and increment the counter.
+# append it to the list and increment the counter. Also print to the screen to
+# show that the script is progressing.
 for username in voter_list:
-    email = get_email(org_name, username, api_token)
+    email = get_email(username, api_token)
     if email:
         email_list.append(email)
         found_count+=1
         print(email)
 
-# Print status and write emails to the csv file.
-print("Found emails for", found_count, "out of", len(voter_list), "voters")
-
 # Open the CSV file for writing
 today = datetime.today().strftime('%Y-%m-%d')
-outfile_name = 'elekto_emails_' + org_name + "_" + today + '.csv'
+outfile_name = 'elekto_emails_' + today + '.csv'
 f = open(outfile_name,'w')
 csv_file = csv.writer(f)
+
+# Print status and write emails to the csv file.
+print("Found emails for", found_count, "out of", len(voter_list), "voters")
+print("Your results can be found in", outfile_name)
 
 csv_file.writerow(email_list)
 f.close()
