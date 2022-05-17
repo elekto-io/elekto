@@ -137,6 +137,7 @@ def elections_voting_page(eid):
         election=election.get(),
         candidates=candidates,
         voters=voters,
+        min_passcode_len=APP.config.get('PASSCODE_LENGTH')
     )
 
 
