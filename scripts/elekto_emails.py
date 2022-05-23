@@ -33,8 +33,8 @@ If an email address is in the GitHub profile, that is used first. Otherwise,
 it attempts to find an email address from the most recent commit. If the
 email contains the string 'noreply' it is not written to the csv file.
 
-As output, a csv file of this format containing comma separated email addresses 
-is created:
+As output, a csv file of this format containing semicolon separated email addresses 
+is created (semincolon separated allows for easy copy / paste into your email client):
 elekto_emails_YYYYMMDD.csv
 
 Each email address found is printed to the screen as a way to indicate progress,
@@ -215,7 +215,7 @@ for username in voter_list:
 today = datetime.today().strftime('%Y-%m-%d')
 outfile_name = 'elekto_emails_' + today + '.csv'
 f = open(outfile_name,'w')
-csv_file = csv.writer(f)
+csv_file = csv.writer(f, delimiter =';')
 
 # Print status and write emails to the csv file.
 print("Found emails for", found_count, "out of", len(voter_list), "voters")
