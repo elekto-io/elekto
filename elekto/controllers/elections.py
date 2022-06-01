@@ -155,7 +155,7 @@ def elections_view(eid):
         # decrypt ballot_id if passcode is correct
         ballot_voter = decrypt(voter.salt, passcode, voter.ballot_id)
         ballots = SESSION.query(Ballot).filter_by(voter=ballot_voter)
-        return F.render_template("views/elections/ballots.html", election=election.get(), voters=voters, voted=[v.user_id for v in e.voters], ballots=ballots)
+        return F.render_template("views/elections/view_ballots.html", election=election.get(), voters=voters, voted=[v.user_id for v in e.voters], ballots=ballots)
 
     # if passcode is wrong
     except Exception:
