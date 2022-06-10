@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
-
 import uuid
 import sqlalchemy as S
 
@@ -23,6 +23,10 @@ from sqlalchemy.types import TypeDecorator, CHAR
 
 
 BASE = declarative_base()
+
+# schema version remember to update this
+# whenever you make changes to the schema
+schema_version = 2
 
 
 def create_session(url):
@@ -46,6 +50,7 @@ def create_session(url):
 def migrate(url):
     """
     Create the tables in the database using the url
+    Check if we need to upgrade the schema, and do that as well
 
     Args:
         url (string): the URL used to connect the application to the
@@ -54,12 +59,65 @@ def migrate(url):
             ie: <engine>://<user>:<password>@<host>/<dbname>
     """
     engine = S.create_engine(url)
+    update_schema(engine, schema_version)
     BASE.metadata.create_all(bind=engine)
 
     session = scoped_session(
         sessionmaker(bind=engine, autocommit=False, autoflush=False)
     )
     return session
+    
+    
+def update_schema(engine, schema_version):
+    """
+    Primitive database schema upgrade facility, designed to work
+    with production Elekto databases
+    
+    Currently only works with PostgreSQL due to requiring transaction
+    support for DDL statements
+    
+    Start by figuring out our schema version, and then upgrade 
+    stepwise until we match
+    """
+    db_version = 1;
+    
+    if engine.dialect.has_table(engine, "schema_version"):
+        db_version = engine.execute('select version from schema_version').scalar()
+    
+    while db_version < schema_version:    
+        if engine.dialect.name != "postgresql":
+            raise RuntimeError('Upgrading the schema is required, but the database is not PostgreSQL')
+        
+        if db_version < 2:
+            db_version = update_schema_2(engine)
+            continue
+            
+    return db_version;
+
+
+def update_schema_2(engine):
+    """
+    update from schema version 1 to schema version 2
+    as a set of raw SQL statements
+    currently only works for PostgreSQL
+    """
+    session = scoped_session(sessionmaker(bind=engine))
+    
+    session.execute('CREATE TABLE schema_version ( version INT );')
+    session.execute('INSERT INTO schema_version VALUES ( 2 );')
+    session.execute('ALTER TABLE voter ADD COLUMN salt BYTEA, ADD COLUMN ballot_id BYTEA;')
+    session.execute('CREATE INDEX voter_election_id ON voter(election_id);')
+    session.execute('ALTER TABLE ballot DROP COLUMN created_at, DROP COLUMN updated_at;')
+    session.execute('ALTER TABLE ballot DROP CONSTRAINT ballot_pkey;')
+    session.execute("ALTER TABLE ballot ALTER COLUMN id TYPE CHAR(32) USING 'historical ballot               ';")
+    session.execute('LTER TABLE ballot ALTER COLUMN id DROP DEFAULT;')
+    session.execute('ALTER TABLE ballot ADD CONSTRAINT ballot_pkey PRIMARY KEY ( id );')
+    session.execute('CREATE INDEX ballot_election_id ON ballot(election_id);')
+    session.execute('')
+    session.execute('')
+    session.commit()
+    
+    return 2
 
 
 class UUID(TypeDecorator):
@@ -93,6 +151,15 @@ class UUID(TypeDecorator):
                 value = uuid.UUID(value)
             return value
 
+
+class Version(BASE):
+    """
+    Stores Elekto schema version in the database for ad-hoc upgrades
+    """
+    __tablename__ = "schema_version"
+    
+    # Attributes
+    version = S.Column(S.Integer, default=schema_version)
 
 class User(BASE):
     """
@@ -185,11 +252,11 @@ class Voter(BASE):
 
     id = S.Column(S.Integer, primary_key=True)
     user_id = S.Column(S.Integer, S.ForeignKey("user.id", ondelete="CASCADE"))
-    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"), index=True)
     created_at = S.Column(S.DateTime, default=S.func.now())
     updated_at = S.Column(S.DateTime, default=S.func.now())
-    salt = S.Column(S.LargeBinary, nullable=False)
-    ballot_id = S.Column(S.LargeBinary, nullable=False)  # encrypted
+    salt = S.Column(S.LargeBinary)
+    ballot_id = S.Column(S.LargeBinary)  # encrypted
 
     # Relationships
 
@@ -227,7 +294,7 @@ class Ballot(BASE):
 
     # Attributes
     id = S.Column(UUID(), primary_key=True, default=uuid.uuid4)
-    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"))
+    election_id = S.Column(S.Integer, S.ForeignKey("election.id", ondelete="CASCADE"), index=True)
     rank = S.Column(S.Integer, default=100000000)
     candidate = S.Column(S.String(255), nullable=False)
     voter = S.Column(S.String(255), nullable=False)  # uuid
