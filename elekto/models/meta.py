@@ -42,10 +42,10 @@ class Meta:
             ".format(self.META, self.META)
 
     def clone(self):
-        os.system('{} clone {} {}'.format(self.git, self.REMOTE, self.META))
+        os.system('{} clone -b {} -- {} {}'.format(self.git, self.BRANCH, self.REMOTE, self.META))
 
     def pull(self):
-        os.system('{} pull origin {}'.format(self.pref, self.BRANCH))
+        os.system('{} pull --ff-only origin {}'.format(self.pref, self.BRANCH))
 
 
 class Election(Meta):
