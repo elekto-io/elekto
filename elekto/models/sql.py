@@ -20,12 +20,15 @@ import sqlalchemy as S
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import TypeDecorator, CHAR
+from sqlalchemy import event
 
 
 BASE = declarative_base()
 
-# schema version remember to update this
-# whenever you make changes to the schema
+"""
+schema version, remember to update this
+whenever you make changes to the schema
+"""
 schema_version = 2
 
 
@@ -61,6 +64,7 @@ def migrate(url):
     engine = S.create_engine(url)
     update_schema(engine, schema_version)
     BASE.metadata.create_all(bind=engine)
+    
 
     session = scoped_session(
         sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -74,19 +78,27 @@ def update_schema(engine, schema_version):
     with production Elekto databases
     
     Currently only works with PostgreSQL due to requiring transaction
-    support for DDL statements
+    support for DDL statements.  MySQL, SQLite backends will error.
     
     Start by figuring out our schema version, and then upgrade 
     stepwise until we match
     """
-    db_version = 1;
+    db_version = 1
+    db_schema = S.inspect(engine)
     
-    if engine.dialect.has_table(engine, "schema_version"):
-        db_version = engine.execute('select version from schema_version').scalar()
+    if db_schema.has_table("election"):
+        if db_schema.has_table("schema_version"):
+            db_version = engine.execute('select version from schema_version').scalar()
+            if db_version is None:
+                """ intialize the table, if necessary """
+                engine.execute('insert into schema_version ( version ) values ( 2 )')
+    else:
+        """ new, empty db """
+        return schema_version
     
     while db_version < schema_version:    
         if engine.dialect.name != "postgresql":
-            raise RuntimeError('Upgrading the schema is required, but the database is not PostgreSQL')
+            raise RuntimeError('Upgrading the schema is required, but the database is not PostgreSQL.  You will need to upgrade manually.')
         
         if db_version < 2:
             db_version = update_schema_2(engine)
@@ -100,6 +112,8 @@ def update_schema_2(engine):
     update from schema version 1 to schema version 2
     as a set of raw SQL statements
     currently only works for PostgreSQL
+    written this way because SQLalchemy can't handle the
+    steps involved without data loss
     """
     session = scoped_session(sessionmaker(bind=engine))
     
@@ -110,11 +124,9 @@ def update_schema_2(engine):
     session.execute('ALTER TABLE ballot DROP COLUMN created_at, DROP COLUMN updated_at;')
     session.execute('ALTER TABLE ballot DROP CONSTRAINT ballot_pkey;')
     session.execute("ALTER TABLE ballot ALTER COLUMN id TYPE CHAR(32) USING 'historical ballot               ';")
-    session.execute('LTER TABLE ballot ALTER COLUMN id DROP DEFAULT;')
+    session.execute('ALTER TABLE ballot ALTER COLUMN id DROP DEFAULT;')
     session.execute('ALTER TABLE ballot ADD CONSTRAINT ballot_pkey PRIMARY KEY ( id );')
     session.execute('CREATE INDEX ballot_election_id ON ballot(election_id);')
-    session.execute('')
-    session.execute('')
     session.commit()
     
     return 2
@@ -159,7 +171,12 @@ class Version(BASE):
     __tablename__ = "schema_version"
     
     # Attributes
-    version = S.Column(S.Integer, default=schema_version)
+    version = S.Column(S.Integer, default=schema_version, primary_key=True)
+    
+@event.listens_for(Version.__table__, 'after_create')
+def create_version(*args, **kwargs):
+    db.session.add(Version(version=schema_version))
+    db.session.commit()
 
 class User(BASE):
     """
