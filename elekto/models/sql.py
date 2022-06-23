@@ -117,13 +117,13 @@ def update_schema_2(engine):
     """
     session = scoped_session(sessionmaker(bind=engine))
     
-    session.execute('CREATE TABLE schema_version ( version INT );')
+    session.execute('CREATE TABLE schema_version ( version INT PRIMARY KEY);')
     session.execute('INSERT INTO schema_version VALUES ( 2 );')
     session.execute('ALTER TABLE voter ADD COLUMN salt BYTEA, ADD COLUMN ballot_id BYTEA;')
     session.execute('CREATE INDEX voter_election_id ON voter(election_id);')
     session.execute('ALTER TABLE ballot DROP COLUMN created_at, DROP COLUMN updated_at;')
     session.execute('ALTER TABLE ballot DROP CONSTRAINT ballot_pkey;')
-    session.execute("ALTER TABLE ballot ALTER COLUMN id TYPE CHAR(32) USING 'historical ballot               ';")
+    session.execute("ALTER TABLE ballot ALTER COLUMN id TYPE CHAR(32) USING to_char(id , 'FM00000000000000000000000000000000');")
     session.execute('ALTER TABLE ballot ALTER COLUMN id DROP DEFAULT;')
     session.execute('ALTER TABLE ballot ADD CONSTRAINT ballot_pkey PRIMARY KEY ( id );')
     session.execute('CREATE INDEX ballot_election_id ON ballot(election_id);')
