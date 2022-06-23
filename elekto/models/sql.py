@@ -174,9 +174,8 @@ class Version(BASE):
     version = S.Column(S.Integer, default=schema_version, primary_key=True)
     
 @event.listens_for(Version.__table__, 'after_create')
-def create_version(*args, **kwargs):
-    db.session.add(Version(version=schema_version))
-    db.session.commit()
+def create_version(target, connection, **kwargs):
+    connection.execute(f"INSERT INTO schema_version ( version ) VALUES ( {schema_version} )")
 
 class User(BASE):
     """
