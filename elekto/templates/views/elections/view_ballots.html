@@ -33,26 +33,23 @@
             {{ election['description'] | safe }}
         </div>
     </div>
-    <div class="space--md pt-1rem">
-        <h4 class="title space-lr">
-            Candidates
+    <div class="space--md pt-0">
+        <h4 class="title space-lr mb-1rem">
+            Your Ballot
         </h4>
-        <div class="d-flex flex-wrap">
-            {% for candidate in candidates %}
-            <div class="boxed-hover" style="min-width: 8rem;">
-                <h2 class="title pb-0 mb-0">
-                    <a href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}"
-                        target="__blank"
-                        class="color-primary ">
-                        {{ candidate['name'] }}
-                    </a>
-                </h2>
-                <small class="text-muted">
-                    {{ candidate['ID']}} |
-                    <a class=""
-                        target="__blank"
-                        href="{{ url_for('elections_candidate', eid=election['key'], cid=candidate['key']) }}">profile</a>
-                </small>
+        <div class="space-lr"> 
+            {% for ballot in ballots %}
+            <div class="boxed-hover row" style="border: 1px solid #80808012;">
+                <div class="col-10 pt-5px pl-0">
+                    <h6 class="title mt-5px pb-0 mb-0">
+                        {{ ballot.candidate }}
+                    </h6>
+                </div>
+                <div class="col-2 text--right">
+                    <h6 class="title mt-5px pb-0 mb-0">
+                        {{ ballot.rank }}
+                    </h6>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -83,12 +80,12 @@
                 </div>
                 {% else %}
                 <div class="col-md-6">
-                    <form action="{{ url_for('elections_view', eid=election['key']) }}" method="post">
+                    <form action="{{ url_for('elections_edit', eid=election['key']) }}" method="post">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="input-group">
                             <input type="password" name="password" class="form-control" placeholder="Enter the passphrase" id="">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-dark">View Ballot</button>
+                                <button type="submit" class="btn btn-dark">Revoke Ballot</button>
                             </div>
                         </div>
                     </form>

@@ -29,7 +29,7 @@ from elekto import constants, APP, SESSION
 from elekto.models import meta
 from elekto.core.election import Election as CoreElection
 from elekto.models.sql import Election, Ballot, Voter, Request
-from elekto.middlewares.auth import auth_guard
+from elekto.middlewares.auth import auth_guard, len_guard
 from elekto.core.encryption import encrypt, decrypt
 from elekto.middlewares.election import *  # noqa
 
@@ -92,6 +92,7 @@ def elections_candidate(eid, cid):
 @APP.route("/app/elections/<eid>/vote", methods=["GET", "POST"])
 @auth_guard
 @voter_guard
+@len_guard
 def elections_voting_page(eid):
     election = meta.Election(eid)
     candidates = election.candidates()
@@ -136,7 +137,35 @@ def elections_voting_page(eid):
         election=election.get(),
         candidates=candidates,
         voters=voters,
+        min_passcode_len=APP.config.get('PASSCODE_LENGTH')
     )
+
+
+@APP.route("/app/elections/<eid>/vote/view", methods=["POST"])
+@auth_guard
+@voter_guard
+@has_voted_condition
+def elections_view(eid):
+    election = meta.Election(eid)
+    voters = election.voters()
+    e = SESSION.query(Election).filter_by(key=eid).first()
+    voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id).first()
+
+    passcode = F.request.form["password"]
+
+    try:
+        # decrypt ballot_id if passcode is correct
+        ballot_voter = decrypt(voter.salt, passcode, voter.ballot_id)
+        ballots = SESSION.query(Ballot).filter_by(voter=ballot_voter)
+        return F.render_template("views/elections/view_ballots.html", election=election.get(), voters=voters, voted=[v.user_id for v in e.voters], ballots=ballots)
+
+    # if passcode is wrong
+    except Exception:
+        F.flash(
+            "Incorrect password, the password must match with the one used\
+                before"
+        )
+        return F.redirect(F.url_for("elections_single", eid=eid))
 
 
 @APP.route("/app/elections/<eid>/vote/edit", methods=["POST"])

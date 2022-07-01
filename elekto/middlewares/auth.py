@@ -17,7 +17,7 @@
 import flask as F
 import base64
 from functools import wraps
-from elekto import constants
+from elekto import APP, constants
 
 
 def authenticated():
@@ -53,3 +53,18 @@ def csrf_guard(f):
 
         return f(*args, **kwargs)
     return decorated_function
+
+
+def len_guard(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if F.request.method == "POST":
+            passcode = F.request.form["password"]
+            min_passcode_len = int(APP.config.get('PASSCODE_LENGTH'))
+            if 0 < len(passcode) < min_passcode_len:
+                F.flash(f"Please enter a passphrase with minimum {min_passcode_len} characters")
+                return F.redirect(F.request.url)
+        return f(*args, **kwargs)
+    return decorated_function
+
+
