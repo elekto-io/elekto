@@ -16,6 +16,8 @@
 
 import os
 import random
+import subprocess
+import tempfile
 import flask as F
 
 from datetime import datetime
@@ -32,20 +34,18 @@ class Meta:
     """
 
     def __init__(self, config):
-        self.META = os.path.abspath(config['PATH'])
+        # keep this, as it ties the directory to the object lifecycle
+        self.TMPDIR = tempfile.TemporaryDirectory("elekto")
+        self.META = self.TMPDIR.name
         self.ELECDIR = config['ELECDIR']
         self.REMOTE = config['REMOTE']
         self.BRANCH = config['BRANCH']
         self.SECRET = config['SECRET']
         self.git = '/usr/bin/git'
-        self.pref = "/usr/bin/git --git-dir={}/.git --work-tree={}\
-            ".format(self.META, self.META)
 
     def clone(self):
-        os.system('{} clone -b {} -- {} {}'.format(self.git, self.BRANCH, self.REMOTE, self.META))
+        subprocess.check_call([self.git, 'clone', '-b', self.BRANCH, '--', self.REMOTE, self.META])
 
-    def pull(self):
-        os.system('{} pull --ff-only origin {}'.format(self.pref, self.BRANCH))
 
 
 class Election(Meta):

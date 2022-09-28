@@ -27,8 +27,5 @@ from elekto.middlewares.webhook import webhook_guard
 @csrf.exempt
 def webhook_sync():
     backend = meta.Meta(APP.config['META'])
-    if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
-        backend.clone()
-    else:
-        backend.pull()
+    backend.clone()
     return sync(SESSION, meta.Election.all())

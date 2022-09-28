@@ -83,12 +83,10 @@ else:
 # application via gitops, see the design documentation [/docs/DESIGN.md] for
 # more detailed information on working.
 # - REMOTE : Remote repository url
-# - PATH : Where the meta repository is cloned (if development is local)
 # - DEPLOYMENT : mode of deployment (local, sidecar)
 META = {
     'REMOTE': env('META_REPO'),
     'ELECDIR': env('ELECTION_DIR'),
-    'PATH': env('META_PATH', 'meta'),
     'DEPLOYMENT': env('META_DEPLOYMENT', 'local'),
     'BRANCH': env('META_BRANCH', 'main'),
     'SECRET': env('META_SECRET')

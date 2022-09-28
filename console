@@ -81,10 +81,8 @@ if __name__ == "__main__":
 
         print('# ----------- Syncing the meta with the database ----------- #')
 
-        if not os.path.exists(backend.META) or not os.path.isdir(backend.META):
-            backend.clone()
+        backend.clone()
 
-        backend.pull()
 
         print(sync(SESSION, meta.Election.all()))
         exit()
