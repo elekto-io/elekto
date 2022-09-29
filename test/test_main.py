@@ -15,6 +15,7 @@
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
 import os
+import subprocess
 import sys
 import pytest
 import pandas as pd
@@ -37,14 +38,14 @@ from k8s_elections.models.sql import migrate  # noqa
 def client():
     # Generate Database
     db = os.path.abspath('./test.db')
-    os.system('touch {}'.format(db))
+    subprocess.run(['touch', db], check=True)
 
     with APP.test_client() as client:
         with APP.app_context():
             migrate(APP.config['DATABASE_URL'])
         yield client
 
-    os.system('rm {}'.format(db))
+    subprocess.run('rm', db)
     # os.system('rm -rf {}'.format(APP.config['META']['PATH']))
 
 
