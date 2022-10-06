@@ -16,6 +16,7 @@
 
 import os
 import random
+import subprocess
 import flask as F
 
 from datetime import datetime
@@ -38,14 +39,12 @@ class Meta:
         self.BRANCH = config['BRANCH']
         self.SECRET = config['SECRET']
         self.git = '/usr/bin/git'
-        self.pref = "/usr/bin/git --git-dir={}/.git --work-tree={}\
-            ".format(self.META, self.META)
 
     def clone(self):
-        os.system('{} clone -b {} -- {} {}'.format(self.git, self.BRANCH, self.REMOTE, self.META))
+        subprocess.run([self.git, 'clone', '-b', self.BRANCH, '--', self.REMOTE, self.META], check=True)
 
     def pull(self):
-        os.system('{} pull --ff-only origin {}'.format(self.pref, self.BRANCH))
+        subprocess.run([self.git, '--git-dir', '{}/.git'.format(self.META),'--work-tree', self.META, 'pull', '--ff-only', 'origin', self.BRANCH], check=True)
 
 
 class Election(Meta):
