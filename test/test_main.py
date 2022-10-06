@@ -45,7 +45,7 @@ def client():
             migrate(APP.config['DATABASE_URL'])
         yield client
 
-    subprocess.run('rm', db)
+    os.unlink(db)
     # os.system('rm -rf {}'.format(APP.config['META']['PATH']))
 
 
