@@ -233,16 +233,16 @@ def elections_exception(eid):
     req = (
         SESSION.query(Request)
         .join(Request, Election.requests)
-        .filter(Request.user_id == F.g.user.id)
+        .filter(Request.user_id == F.g.user.id, Election.key == eid)
         .first()
     )
 
     if req:
         return F.render_template(
             "errors/message.html",
-            title="You have already filled the form.",
-            message="please wait for the election's\
-                                 supervisor to view your request.",
+            title="You have already requested an exception.",
+            message="You have already requested an exception for this election;\
+                                 Please wait for the admin to review your request.",
         )
 
     if F.request.method == "POST":
