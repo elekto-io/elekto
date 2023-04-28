@@ -233,7 +233,7 @@ def elections_exception(eid):
     req = (
         SESSION.query(Request)
         .join(Request, Election.requests)
-        .filter(Request.user_id == F.g.user.id, Election.key=eid)
+        .filter(Request.user_id == F.g.user.id, Election.key == eid)
         .first()
     )
 
