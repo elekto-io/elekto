@@ -127,6 +127,7 @@ def get_email(username, api_token):
 
     import requests
     import json
+    import sys
     from dateutil.relativedelta import relativedelta
 
     # Set GitHub GraphQL API variables
@@ -143,6 +144,29 @@ def get_email(username, api_token):
     query = email_query()
     r = requests.post(url=url, json={'query': query, 'variables': variables}, headers=headers)
     json_data = json.loads(r.text)
+
+    # Error checking
+    error = False
+    if r.ok: # the request succeeds and the GH token is valid
+        # check for and print errors returned from API before exiting
+        # insufficient scope for your token would be a common error caught here
+        try: 
+            print("Error:", json_data['errors'][0]['type'])
+            print(json_data['errors'][0]['message'])
+            print( "Exiting ...")
+            error = True
+        except:
+            pass # keep going because there are no errors
+    else: # request failed - often due to invalid GH token
+        try: # request fails with a message
+            print("Error:", json_data['message'])
+            print( "Exiting ...")
+        except: # request failed for some reason that doesn't generate a message
+            print("Unknown Error. Exiting ...")
+        error = True
+
+    if error: # Exit after any request or API error
+        sys.exit(1)
 
     # Get email address
     email = None
