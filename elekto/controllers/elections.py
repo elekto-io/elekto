@@ -149,7 +149,7 @@ def elections_view(eid):
     election = meta.Election(eid)
     voters = election.voters()
     e = SESSION.query(Election).filter_by(key=eid).first()
-    voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id).first()
+    voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id,election_id=e.id).first()
 
     passcode = F.request.form["password"]
 
@@ -175,7 +175,7 @@ def elections_view(eid):
 def elections_edit(eid):
     election = meta.Election(eid)
     e = SESSION.query(Election).filter_by(key=eid).first()
-    voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id).first()
+    voter = SESSION.query(Voter).filter_by(user_id=F.g.user.id,election_id=e.id).first()
 
     passcode = F.request.form["password"]
 
