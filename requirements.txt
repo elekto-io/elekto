@@ -3,7 +3,7 @@ python-dotenv>=0.19.2
 requests>=2.27.1
 PyYAML>=6.0
 authlib>=0.15.5
-SQLAlchemy>=1.4.32
+SQLAlchemy==1.4.49
 mysqlclient>=2.1.0
 psycopg2>=2.9.3
 markdown2>=2.4.2
