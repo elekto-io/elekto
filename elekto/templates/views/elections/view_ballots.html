@@ -37,7 +37,7 @@
         <h4 class="title space-lr mb-1rem">
             Your Ballot
         </h4>
-        <div class="space-lr"> 
+        <div class="space-lr">
             {% for ballot in ballots %}
             <div class="boxed-hover row" style="border: 1px solid #80808012;">
                 <div class="col-10 pt-5px pl-0">
@@ -47,7 +47,11 @@
                 </div>
                 <div class="col-2 text--right">
                     <h6 class="title mt-5px pb-0 mb-0">
+                      {% if ballot.rank = 1000000 %}
+                        No Opinion
+                      {% else %}
                         {{ ballot.rank }}
+                      {% endif %}
                     </h6>
                 </div>
             </div>
