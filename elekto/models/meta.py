@@ -109,6 +109,7 @@ class Election(Meta):
         self.election['key'] = self.key
         self.election['description'] = self.description()
         self.election['results'] = self.results()
+        self.election['election_officers'] = [election_officer.lower() for election_officer in self.election['election_offiers']]
 
         if 'exception_due' not in self.election.keys():
             self.election['exception_due'] = self.election['start_datetime']
@@ -133,7 +134,9 @@ class Election(Meta):
         return utils.parse_md(os.path.join(self.path, Election.RES))
 
     def voters(self):
-        return utils.parse_yaml(os.path.join(self.path, Election.VOT))
+        voters = utils.parse_yaml(os.path.join(self.path, Election.VOT))
+        voters['eligible_voters'] = [voter.lower() for voter in voters['eligible_voters']]
+        return voters
         
     def showfields(self):
         return dict.fromkeys(self.election['show_candidate_fields'], '')
@@ -148,6 +151,7 @@ class Election(Meta):
             md = open(os.path.join(self.path, f)).read()
             try:
                 c = utils.extract_candidate_info(md)
+                c['ID'] = c['ID'].lower()
                 c['key'] = c['ID']
                 candidates.append(c)
             except:

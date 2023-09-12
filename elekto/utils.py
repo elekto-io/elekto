@@ -38,6 +38,7 @@ def set_session(app):
         # if unable to fetch the user's info, set auth to False
         if user and user.token_expires_at and user.token_expires_at > datetime.now():
             F.g.user = user
+            F.g.user.username = F.g.user.username.lower()
             F.g.auth = True
             # Find all the user's past and all upcoming (meta only) elections
             query = SESSION.query(Election).join(
