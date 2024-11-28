@@ -1,34 +1,24 @@
 <div class="sidebar border--right" id="sidebar">
     <div class="sidebar__user border--bottom">
         <!-- <img src="{{ g.user['avatar_url'] }}" alt="" srcset="" class="sidebar__user-img bordered"> -->
-        <a href="https://github.com/{{ g.user.username }}"><h3 class="sidebar__user-title">
-            {{ g.user['name'] }}
-        </h3></a>
+        <a href="https://github.com/{{ g.user.username }}"
+            ><h3 class="sidebar__user-title">{{ g.user['name'] }}</h3></a
+        >
     </div>
     <div class="sidebar-item">
         <a href="{{ url_for('elections') }}">
-            <span>
-                Explore Election
-            </span>
+            <span> Explore Election </span>
         </a>
     </div>
     <div class="sidebar-divider border--bottom mt-2rem">
-        <span>
-            Past Elections
-        </span>
+        <span> Past Elections </span>
     </div>
     {% for e in g.past_elections %}
     <div class="sidebar-item">
-        <span>
-            {{ e['name'] }}
-        </span>
+        <span> {{ e['name'] }} </span>
     </div>
     {% endfor %}
 
-    <div class="sidebar-item sidebar__footer">
-        copyright 2020 © elekto
-    </div>
-    <div class="sidebar-item sidebar__footer_version">
-        version: x.x.x 
-    </div>
+    <div class="sidebar-item sidebar__footer">copyright 2020 © elekto</div>
+    <div class="sidebar-item sidebar__footer_version">version: {{version}}</div>
 </div>
