@@ -25,8 +25,8 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 
-from k8s_elections import APP  # noqa
-from k8s_elections.models.sql import migrate  # noqa
+from elekto import APP  # noqa
+from elekto.models.sql import migrate  # noqa
 
 # ############################################################################
 # suite: main
