@@ -18,10 +18,6 @@ import os
 import sys
 import pytest
 
-currentdir = os.path.dirname(os.path.realpath(__file__))
-parentdir = os.path.dirname(currentdir)
-sys.path.append(parentdir)
-
 from elekto.core import schulze_d, schulze_p, schulze_rank  # noqa
 
 def test_schulze_d():
