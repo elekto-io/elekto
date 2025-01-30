@@ -16,13 +16,18 @@
 
 import flask as F
 from flask_wtf.csrf import CSRFProtect
-
-from elekto.models import sql
+from sqlalchemy.orm import scoped_session
+from werkzeug.local import LocalProxy
+from flask_sqlalchemy.session import Session
+from .models import db
 
 APP = F.Flask(__name__)
 APP.config.from_object('config')
 csrf = CSRFProtect(APP)
-SESSION = sql.create_session(APP.config.get('DATABASE_URL'))  # database
+APP.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:mysecretpassword@localhost:5432/k8s"
+db.init_app(APP)
+
+SESSION: scoped_session[Session] = LocalProxy(db.session)  # database
 
 from elekto.models import meta  # noqa - imports SESSION from here
 from elekto import utils  # noqa - imports SESSION from here
@@ -39,15 +44,9 @@ def before_request():
     if APP.config.get('DEBUG') or 'localhost' in F.request.host_url:
         APP.jinja_env.cache = {}
 
+    F.session.permanent = True
     # Set Session
-    utils.set_session(APP)
-
-
-@APP.teardown_appcontext
-def destroy_session(exception=None):
-    # Remove the database session
-    SESSION.remove()
-
+    utils.set_session()
 
 ####
 # Controllers

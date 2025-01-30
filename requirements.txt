@@ -6,6 +6,7 @@ charset-normalizer==3.4.1
 click==8.1.8
 cryptography==44.0.0
 flask==3.1.0
+flask-sqlalchemy==3.1.1
 flask-wtf==1.2.2
 greenlet==3.1.1
 idna==3.10
@@ -23,13 +24,15 @@ psycopg2==2.9.10
 pycparser==2.22
 pynacl==1.5.0
 pytest==8.3.4
+pytest-mock==3.14.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
 pyyaml==6.0.2
 requests==2.32.3
 six==1.17.0
-sqlalchemy==1.4.49
+sqlalchemy==2.0.37
+typing-extensions==4.12.2
 tzdata==2025.1
 urllib3==2.3.0
 uwsgi==2.0.28
