@@ -24,7 +24,6 @@ from .models import db
 APP = F.Flask(__name__)
 APP.config.from_object('config')
 csrf = CSRFProtect(APP)
-APP.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:mysecretpassword@localhost:5432/k8s"
 db.init_app(APP)
 
 SESSION: scoped_session[Session] = LocalProxy(db.session)  # database

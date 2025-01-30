@@ -50,32 +50,7 @@ TEMPLATES_AUTO_RELOAD = True if DEBUG is True else False
 # supports MySQL and can be extended to any other SQLAlchemy supported data-
 # base, the format for database connection url is
 #   <engine>://<user>:<password>@<host>/<dbname>
-if env('DB_CONNECTION') == 'mysql':
-    DATABASE_URL = "mysql://{user}:{password}@{host}:{port}/{dbname}".format(
-        user=env('DB_USERNAME', 'root'),
-        password=env('DB_PASSWORD', ''),
-        host=env('DB_HOST', 'localhost'),
-        port=env('DB_PORT', 3306),
-        dbname=env('DB_DATABASE'),
-    )
-elif env('DB_CONNECTION') == 'postgresql':
-    DATABASE_URL = "postgresql://{user}:{password}@{host}:{port}/{dbname}".format(
-        user=env('DB_USERNAME', 'root'),
-        password=env('DB_PASSWORD', ''),
-        host=env('DB_HOST', 'localhost'),
-        port=env('DB_PORT', 3306),
-        dbname=env('DB_DATABASE'),
-    )
-elif env('DB_CONNECTION') == 'sqlite':
-    DATABASE_URL = "sqlite:///{path}".format(
-        path=env('DB_PATH', os.path.join(
-            os.path.split(os.path.abspath(__file__))[0],
-            'test',
-            'test.db'
-        ))
-    )
-else:
-    raise "Invalid DB engine"
+SQLALCHEMY_DATABASE_URI=env("SQLALCHEMY_DATABASE_URI")
 
 # Meta repository
 #
