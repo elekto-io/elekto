@@ -17,4 +17,3 @@
 """
 models module is responsible for handling both databases - metafiles and SQL.
 """
-from .sql import db

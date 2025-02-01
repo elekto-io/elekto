@@ -18,18 +18,37 @@ import uuid
 import sqlalchemy as S
 
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy import event
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 
 
+BASE = declarative_base()
 
 """
 schema version, remember to update this
 whenever you make changes to the schema
 """
 schema_version = 2
+
+
+def create_session(url):
+    """
+    Create the session object to use to query the database
+
+    Args:
+        url (string): the URL used to connect the application to the
+            database. The URL contains information with regards to the database
+            engine, the host, user and password and the database name.
+            ie: <engine>://<user>:<password>@<host>/<dbname>
+    Returns:
+        (scoped_session): session for the database
+    """
+    engine = S.create_engine(url, pool_pre_ping=True)
+    session = scoped_session(sessionmaker(bind=engine))
+
+    return session
+
 
 def migrate(url):
     """
@@ -44,7 +63,7 @@ def migrate(url):
     """
     engine = S.create_engine(url)
     update_schema(engine, schema_version)
-    Base.metadata.create_all(bind=engine)
+    BASE.metadata.create_all(bind=engine)
     
 
     session = scoped_session(
@@ -85,7 +104,7 @@ def update_schema(engine, schema_version):
             db_version = update_schema_2(engine)
             continue
             
-    return db_version
+    return db_version;
 
 
 def update_schema_2(engine):
@@ -144,12 +163,8 @@ class UUID(TypeDecorator):
                 value = uuid.UUID(value)
             return value
 
-class Base(DeclarativeBase):
-  pass
 
-db = SQLAlchemy(model_class=Base)
-
-class Version(db.Model):
+class Version(BASE):
     """
     Stores Elekto schema version in the database for ad-hoc upgrades
     """
@@ -162,7 +177,7 @@ class Version(db.Model):
 def create_version(target, connection, **kwargs):
     connection.execute(f"INSERT INTO schema_version ( version ) VALUES ( {schema_version} )")
 
-class User(db.Model):
+class User(BASE):
     """
     User Schema - registered from the oauth external application - github
     """
@@ -192,7 +207,7 @@ class User(db.Model):
         )
 
 
-class Election(db.Model):
+class Election(BASE):
     """
     Election Schema - build and synced from meta repository.
 
@@ -236,7 +251,7 @@ class Election(db.Model):
         )
 
 
-class Voter(db.Model):
+class Voter(BASE):
     """
     Voter Schema - Voters that have already voted for the election.
 
@@ -270,7 +285,7 @@ class Voter(db.Model):
         )
 
 
-class Ballot(db.Model):
+class Ballot(BASE):
     """
     Ballot Schema - stores  the voter's choice, for a given election(E)
     and candidates(C), the voter(V) can have up-to (|C|) ballots(B) for E.
@@ -309,7 +324,7 @@ class Ballot(db.Model):
         )
 
 
-class Request(db.Model):
+class Request(BASE):
     """
     Request Schema - Exception request for voters who are not in the eligible
     voters list.

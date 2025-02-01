@@ -26,7 +26,8 @@ from elekto.models import meta
 from elekto.models.sql import User, Election, Voter
 
 
-def set_session():
+def set_session(app):
+    F.session.permanent = True
     if str(F.request.path).find("static") == -1 and \
             constants.AUTH_STATE in F.session.keys() and \
             F.session[constants.AUTH_STATE] is not None:
