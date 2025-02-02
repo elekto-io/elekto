@@ -19,13 +19,14 @@ def client():
         yield APP.test_client()
 
 def test_dashboard(client: FlaskClient):
+    token="token"
     with APP.app_context():
         SESSION.add(User(username="carson",
                              name="Carson Weeks",
-                             token="token",
+                             token=token,
                              token_expires_at=datetime.max))
         SESSION.commit()
     with client.session_transaction() as session:
-        session[constants.AUTH_STATE] = "token"
+        session[constants.AUTH_STATE] = token
     response = client.get("/app")
     assert response.status_code == 200

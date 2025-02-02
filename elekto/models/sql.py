@@ -17,8 +17,7 @@
 import uuid
 import sqlalchemy as S
 
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
 from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy import event
 
