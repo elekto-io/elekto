@@ -14,13 +14,15 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
+import os
 import flask as F
 from flask_wtf.csrf import CSRFProtect
 
 from elekto.models import sql
 
+config_module = "config.TestingConfig" if "PYTEST_VERSION" in os.environ else "config.ProductionConfig"
 APP = F.Flask(__name__)
-APP.config.from_object('config')
+APP.config.from_object(config_module)
 csrf = CSRFProtect(APP)
 SESSION = sql.create_session(APP.config.get('DATABASE_URL'))  # database
 

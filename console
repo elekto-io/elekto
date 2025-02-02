@@ -63,21 +63,21 @@ if __name__ == "__main__":
         exit()
 
     if args.migrate:
-        from config import DATABASE_URL
+        from config import ProductionConfig
         from elekto.models.sql import migrate
 
         print('# ----- Migrating the database and creating the tables ----- #')
-        migrate(DATABASE_URL)
+        migrate(ProductionConfig.DATABASE_URL)
         exit()
 
     if args.sync:
-        from config import META, DATABASE_URL
+        from config import ProductionConfig
         from elekto.models import meta
         from elekto.models.sql import create_session
         from elekto.models.utils import sync
 
-        SESSION = create_session(DATABASE_URL)
-        backend = meta.Meta(META)
+        SESSION = create_session(ProductionConfig.DATABASE_URL)
+        backend = meta.Meta(ProductionConfig.META)
 
         print('# ----------- Syncing the meta with the database ----------- #')
 
