@@ -14,9 +14,12 @@ def reset_db():
 
 @pytest.fixture()
 def client():
+    print("app")
     with APP.app_context():
         migrate(APP.config.get('DATABASE_URL'))
         yield APP.test_client()
+        SESSION.close() 
+        drop_all(APP.config.get('DATABASE_URL'))
 
 def test_dashboard(client: FlaskClient):
     token="token"
