@@ -30,3 +30,10 @@ def test_dashboard(client: FlaskClient):
         session[constants.AUTH_STATE] = token
     response = client.get("/app")
     assert response.status_code == 200
+    assert b'Welcome! Carson Weeks' in response.data
+
+def test_unauthenticated_dashboard(client: FlaskClient):
+    with client.session_transaction() as session:
+        session[constants.AUTH_STATE] = None
+    response = client.get("/app")
+    assert response.status_code == 302
