@@ -37,9 +37,9 @@ from elekto.middlewares.election import *  # noqa
 @APP.route("/app")
 @auth_guard
 def app():
-    running = meta.Election.where("status", constants.ELEC_STAT_RUNNING)
+    running_elections = meta.Election.where("status", constants.ELEC_STAT_RUNNING)
 
-    return F.render_template("views/dashboard.html", running=running)
+    return F.render_template("views/dashboard.html", running=running_elections)
 
 
 @APP.route("/app/elections")  # Election listing
