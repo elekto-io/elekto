@@ -22,3 +22,5 @@ build/
 
 test/*.db
 test/meta
+
+*.db

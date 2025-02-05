@@ -16,8 +16,8 @@
 
 import os
 
-from utils import env
-from distutils.util import strtobool
+from utils import env, strtobool
+
 
 # Application Name
 #
