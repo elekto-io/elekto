@@ -14,20 +14,23 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
+from typing import List
+from .types import BallotType
+from pandas import DataFrame
 from elekto.core import schulze_d, schulze_p, schulze_rank
 
-
 class Election:
-    def __init__(self, candidates, ballots):
+    def __init__(self, candidates: List[str], ballots: BallotType, no_winners=1):
         self.candidates = candidates
         self.ballots = ballots
+        self.no_winners = no_winners
         self.d = {}
         self.p = {}
 
     def schulze(self):
         self.d = schulze_d(self.candidates, self.ballots)
         self.p = schulze_p(self.candidates, self.d)
-        self.ranks = schulze_rank(self.candidates, self.p)
+        self.ranks = schulze_rank(self.candidates, self.p, self.no_winners)
 
         return self
 
@@ -46,9 +49,9 @@ class Election:
         return Election(candidates, pref)
 
     @ staticmethod
-    def from_csv(df, no_winners):
+    def from_csv(df: DataFrame, no_winners: int):
         candidates = list(df.columns)
-        ballots = {}
+        ballots: BallotType = {}
 
         for v, row in df.iterrows():
             ballots[v] = []

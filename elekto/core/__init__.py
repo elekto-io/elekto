@@ -20,9 +20,11 @@ methods like condorcet, schulze, irv and more.
 """
 
 from collections import defaultdict
+from typing import Dict, List, Tuple
+from .types import BallotType
 
-
-def schulze_d(candidates, ballots):
+# Higher rank numbers receive higher preference
+def schulze_d(candidates: List[str], ballots: BallotType):
     d = {(V, W): 0 for V in candidates for W in candidates if V != W}
     for voter in ballots.keys():
         for V, Vr in ballots[voter]:
@@ -33,7 +35,7 @@ def schulze_d(candidates, ballots):
     return d
 
 
-def schulze_p(candidates, d):
+def schulze_p(candidates: List[str], d: Dict[Tuple[str, str], int]):
     p = {}
     for X in candidates:
         for Y in candidates:
@@ -52,7 +54,7 @@ def schulze_p(candidates, d):
     return p
 
 
-def schulze_rank(candidates, p, no_winners=1):
+def schulze_rank(candidates: List[str], p: Dict[Tuple[str, str], int], no_winners=1):
     wins = defaultdict(list)
 
     for V in candidates:
