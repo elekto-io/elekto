@@ -71,7 +71,7 @@ if __name__ == "__main__":
         exit()
 
     if args.sync:
-        from config import META, DATABASE_URL
+        from config import DATABASE_URL, META
         from elekto.models import meta
         from elekto.models.sql import create_session
         from elekto.models.utils import sync

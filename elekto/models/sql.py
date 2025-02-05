@@ -17,8 +17,7 @@
 import uuid
 import sqlalchemy as S
 
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
 from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy import event
 
@@ -88,10 +87,11 @@ def update_schema(engine, schema_version):
     
     if db_schema.has_table("election"):
         if db_schema.has_table("schema_version"):
-            db_version = engine.execute('select version from schema_version').scalar()
-            if db_version is None:
-                """ intialize the table, if necessary """
-                engine.execute('insert into schema_version ( version ) values ( 2 )')
+            with engine.connect() as connection:
+                db_version = connection.execute(S.text('select version from schema_version')).scalar()
+                if db_version is None:
+                    """ intialize the table, if necessary """
+                    connection.execute(S.text('insert into schema_version ( version ) values ( 2 )'))
     else:
         """ new, empty db """
         return schema_version
@@ -104,7 +104,7 @@ def update_schema(engine, schema_version):
             db_version = update_schema_2(engine)
             continue
             
-    return db_version;
+    return db_version
 
 
 def update_schema_2(engine):
@@ -131,6 +131,9 @@ def update_schema_2(engine):
     
     return 2
 
+def drop_all(url: str):
+    engine = S.create_engine(url)
+    BASE.metadata.drop_all(bind=engine)
 
 class UUID(TypeDecorator):
     """Platform-independent UUID type.
@@ -175,7 +178,7 @@ class Version(BASE):
     
 @event.listens_for(Version.__table__, 'after_create')
 def create_version(target, connection, **kwargs):
-    connection.execute(f"INSERT INTO schema_version ( version ) VALUES ( {schema_version} )")
+    connection.execute(S.text(f"INSERT INTO schema_version ( version ) VALUES ( {schema_version} )"))
 
 class User(BASE):
     """
