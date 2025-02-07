@@ -37,7 +37,6 @@ def test_schulze_d():
     }
 
     result = schulze_d(candidates, ballots)
-    print(result)
     assert result == expected_d
 
 def test_schulze_p():
@@ -67,7 +66,6 @@ def test_schulze_p():
     }
 
     result = schulze_p(candidates, d)
-    print(result)
     assert result == expected_p
 
 def test_schulze_rank_simple():
