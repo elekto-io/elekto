@@ -75,7 +75,7 @@ elif env('DB_CONNECTION') == 'sqlite':
         ))
     )
 else:
-    raise "Invalid DB engine"
+    raise RuntimeError("Invalid DB engine")
 
 # Meta repository
 #
