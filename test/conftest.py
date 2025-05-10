@@ -2,11 +2,6 @@ import os
 
 import pytest
 
-# Inject required environment variables
-# TODO: make this nicer; this injection must happen before the APP and SESSION imports (or any other imports that
-#  trigger APP and SESSION).
-os.environ['DB_CONNECTION'] = 'sqlite'
-
 from elekto import APP, SESSION
 from elekto.models.sql import drop_all, migrate
 

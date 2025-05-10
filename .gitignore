@@ -1,5 +1,7 @@
 .vscode
+.idea
 .venv/
+venv/
 
 # Cache files and directories
 *.pyc
