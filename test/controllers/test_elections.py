@@ -1,25 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask.testing import FlaskClient
-import pytest
 from pytest_mock import MockerFixture
 
 from elekto import APP, SESSION, constants
-from elekto.models import meta
-from elekto.models.sql import User, drop_all, migrate
+from elekto.models.sql import User
 
-@pytest.fixture(scope="module", autouse=True)
-def reset_db():
-    with APP.app_context():
-        drop_all(APP.config.get('DATABASE_URL'))
-
-
-@pytest.fixture()
-def client():
-    with APP.app_context():
-        migrate(APP.config.get('DATABASE_URL'))
-        yield APP.test_client()
-        SESSION.close() 
-        drop_all(APP.config.get('DATABASE_URL'))
 
 def test_dashboard(client: FlaskClient):
     token="token"
