@@ -14,12 +14,19 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
-from typing import List
+from typing import TYPE_CHECKING, List
 from .types import BallotType
 from pandas import DataFrame
 from elekto.core import schulze_d, schulze_p, schulze_rank
 
+if TYPE_CHECKING:
+    from models.sql import Ballot
+
+
 class Election:
+    NO_OPINION = 'No opinion'
+    MAX_RANK = 100_000_000
+
     def __init__(self, candidates: List[str], ballots: BallotType, no_winners=1):
         self.candidates = candidates
         self.ballots = ballots
@@ -35,14 +42,14 @@ class Election:
         return self
 
     @ staticmethod
-    def build(candidates, ballots):
+    def build(candidates: list[dict], ballots: list['Ballot']):
         candidates = [c['ID'] for c in candidates]
         pref = {}
 
         for b in ballots:
             if b.voter not in pref.keys():
                 pref[b.voter] = []
-            if b.rank == 100000000:
+            if b.rank == Election.MAX_RANK:
                 continue
             pref[b.voter].append((b.candidate, int(b.rank)))
 
@@ -56,7 +63,7 @@ class Election:
         for v, row in df.iterrows():
             ballots[v] = []
             for c in candidates:
-                if row[c] == 'No opinion':
+                if row[c] == Election.NO_OPINION:
                     continue
                 ballots[v].append((c, int(row[c])))
 
