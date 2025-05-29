@@ -102,6 +102,13 @@ python console --run
 python console --port 8080 --host 0.0.0.0 --run
 ```
 
+### Running tests
+Commands are available to run the test suite. This suite currently only consists of unit tests. A prerequisite for 
+running the test suite is that you have a virtualenv setup. This can be done by running `make venv`. To run the tests,
+do `make test`.
+
+Coverage is available. A report can be generated with `make cov`.
+
 ### Contact Us
 
 See the website at [Elekto.dev](https://elekto.dev).
