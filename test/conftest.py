@@ -1,5 +1,6 @@
 import os
 import shutil
+import zipfile
 
 import pytest
 
@@ -61,11 +62,20 @@ def metadir(tmpdir):
 
     The generated tmpdir is returned for further use.
     """
-    meta_src = os.path.join(os.path.dirname(__file__), '..', 'meta')
+    zip_path = os.path.join(os.path.dirname(__file__), 'meta.zip')
+    meta_src = os.path.join(os.path.dirname(__file__), 'meta')
+    main_branch_src = os.path.join(meta_src, 'elekto.meta.test-main', 'elections')
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(meta_src)
+
+    shutil.move(main_branch_src, meta_src)
+
     assert os.path.isdir(meta_src), f'{meta_src} is not a directory'
     shutil.copytree(meta_src, str(tmpdir), dirs_exist_ok=True)
     APP.config['META']['PATH'] = str(tmpdir)
-    return tmpdir
+    yield tmpdir
+    shutil.rmtree(meta_src)
 
 
 @pytest.fixture()

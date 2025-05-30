@@ -104,7 +104,7 @@ def oauth_github_redirect():
         F.g.user = None
         F.g.auth = False
 
-        # If GitHub couldn't fetch the user (who just now granted Elekto access to their GitHub profile), try to flushAdd commentMore actions
+        # If GitHub couldn't fetch the user (who just now granted Elekto access to their GitHub profile), try to flush
         # the auth state from the session. Likely this isn't set, so a membership test is performed before doing the
         # pop(...) call.
         if constants.AUTH_STATE in F.session.keys():
