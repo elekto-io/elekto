@@ -136,6 +136,8 @@ class Election(Meta):
         return utils.parse_yaml(os.path.join(self.path, Election.VOT))
         
     def showfields(self):
+        # FIXME: show_candidate_fields could be None (as is the case in the name_the_app example meta), leading to anAdd commentMore actions
+        #  error if showfields() is called.
         return dict.fromkeys(self.election['show_candidate_fields'], '')
 
     def candidates(self):
