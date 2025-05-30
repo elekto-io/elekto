@@ -66,5 +66,3 @@ def len_guard(f):
                 return F.redirect(F.request.url)
         return f(*args, **kwargs)
     return decorated_function
-
-

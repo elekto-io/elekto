@@ -103,7 +103,12 @@ def oauth_github_redirect():
     if resp.status_code != 200:
         F.g.user = None
         F.g.auth = False
-        F.session.pop(constants.AUTH_STATE)
+
+        # If GitHub couldn't fetch the user (who just now granted Elekto access to their GitHub profile), try to flush
+        # the auth state from the session. Likely this isn't set, so a membership test is performed before doing the
+        # pop(...) call.
+        if constants.AUTH_STATE in F.session.keys():
+            F.session.pop(constants.AUTH_STATE)
     else:
         data = resp.json()
         expries = datetime.now() + timedelta(days=1)

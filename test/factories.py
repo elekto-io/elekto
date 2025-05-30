@@ -1,10 +1,15 @@
 import uuid
 
 import factory
-from elekto.models.sql import Election, Ballot, Voter
+from elekto.models.sql import Election, Ballot, Voter, User
 
 
-class VoterFactory(factory.Factory):
+class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = User
+
+
+class VoterFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Voter
 

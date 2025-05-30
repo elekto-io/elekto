@@ -31,4 +31,5 @@ def webhook_sync():
         backend.clone()
     else:
         backend.pull()
+    # FIXME: sync(...) returns a string, not a response.
     return sync(SESSION, meta.Election.all())
