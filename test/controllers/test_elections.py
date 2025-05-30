@@ -8,6 +8,7 @@ from flask.testing import FlaskClient
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 
+from ..conftest import KDF_KEY_MOCK
 from elekto.models import meta
 from .utils import provision_session, vote, get_csrf_token, ENCRYPTED_MESSAGE, create_user
 from elekto import APP, SESSION, constants
@@ -346,7 +347,8 @@ def test_elections_voting_get(client: FlaskClient, load_metadir):
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                          /app/elections/<eid>/vote/view                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
-def test_elections_view(client: FlaskClient, load_metadir):
+@mock.patch('elekto.core.encryption.pwhash.argon2i.kdf', return_value=KDF_KEY_MOCK)
+def test_elections_view(kdf_mock, client: FlaskClient, load_metadir):  # Slow
     provision_session(client, token='...', username='kalkayan')
 
     ballot_votes = {
@@ -400,7 +402,8 @@ def test_elections_view_error(decrypt_mock, client: FlaskClient, load_metadir):
 # -------------------------------------------------------------------------------------------------------------------- #
 #                                          /app/elections/<eid>/vote/edit                                              #
 # -------------------------------------------------------------------------------------------------------------------- #
-def test_elections_edit(client: FlaskClient, load_metadir):
+@mock.patch('elekto.core.encryption.pwhash.argon2i.kdf', return_value=KDF_KEY_MOCK)
+def test_elections_edit(kdf_mock, client: FlaskClient, load_metadir):  # Slow
     provision_session(client, token='...', username='kalkayan')
 
     ballot_votes = {

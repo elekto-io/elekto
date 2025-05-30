@@ -15,6 +15,8 @@ from elekto.models.utils import sync
 
 from test.factories import ElectionFactory, BallotFactory, VoterFactory, UserFactory
 
+KDF_KEY_MOCK = b'\x8f\x85"!17=t\xee7P\x07"\xb4\xe0\x07\x9a\xce\xa4\xef\x96\xcb\x96\x06\x13\xc5\xa0\x8d\xb30\x1al'
+
 
 @pytest.fixture(scope="module", autouse=True)
 def reset_db():
