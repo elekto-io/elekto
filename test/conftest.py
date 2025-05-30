@@ -3,15 +3,15 @@ import shutil
 
 import pytest
 
-
-# Inject required environment variablesMore actions
+# Inject required environment variables
 # TODO: make this nicer; this injection must happen before the APP and SESSION imports (or any other imports that
 #  trigger APP and SESSION).
 os.environ['DB_CONNECTION'] = 'sqlite'
 
-
 from elekto import APP, SESSION
+from elekto.models import meta
 from elekto.models.sql import drop_all, migrate
+from elekto.models.utils import sync
 
 from test.factories import ElectionFactory, BallotFactory, VoterFactory, UserFactory
 
@@ -64,3 +64,11 @@ def metadir(tmpdir):
     shutil.copytree(meta_src, str(tmpdir), dirs_exist_ok=True)
     APP.config['META']['PATH'] = str(tmpdir)
     return tmpdir
+
+
+@pytest.fixture()
+def load_metadir(metadir):
+    with APP.app_context():
+        sync(SESSION, meta.Election.all())
+
+    return metadir
