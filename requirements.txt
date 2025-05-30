@@ -9,6 +9,7 @@ cryptography==44.0.0
 factory_boy==3.3.3
 flask==3.1.0
 flask-wtf==1.2.2
+freezegun==1.5.1
 greenlet==3.1.1
 idna==3.10
 iniconfig==2.0.0
@@ -25,6 +26,7 @@ psycopg2==2.9.10
 pycparser==2.22
 pynacl==1.5.0
 pytest==8.3.4
+pytest-env==1.1.5
 pytest-mock==3.14.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
