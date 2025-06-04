@@ -60,10 +60,11 @@ def metadir(tmpdir):
 
     This also updates the META.PATH value to point to the temporary directory.
 
-    The generated tmpdir is returned for further use.
+    All writing activity happens in the tmpdir, ensuring the logic also works inside containers. The generated tmpdir is
+    returned for further use.
     """
     zip_path = os.path.join(os.path.dirname(__file__), 'meta.zip')
-    meta_src = os.path.join(os.path.dirname(__file__), 'meta')
+    meta_src = os.path.join(str(tmpdir), 'meta')
     main_branch_src = os.path.join(meta_src, 'elekto.meta.test-main', 'elections')
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
