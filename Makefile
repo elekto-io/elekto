@@ -27,3 +27,6 @@ test-build:
 
 test-docker: test-build
 	docker run -it --rm --entrypoint=./test-entrypoint.sh elekto-test
+
+test-docker-notty: test-build
+	docker run --rm --entrypoint=./test-entrypoint.sh elekto-test
