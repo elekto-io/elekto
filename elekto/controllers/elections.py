@@ -292,6 +292,8 @@ def elections_admin_review(eid, rid):
         .filter(Request.id == rid)
         .first()
     )
+    # TODO: Check if a Request was found to prevent rendering errors. If the `rid` does not lead to a Request for this
+    #  Election, send the user to another page (the exact location has to be discussed).
 
     if F.request.method == "POST":
         req.reviewed = False if req.reviewed else True
