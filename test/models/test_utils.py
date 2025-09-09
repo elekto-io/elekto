@@ -55,6 +55,58 @@ def test_extract_candidate_info(candidate_md: str):
     }
 
 
+def test_extract_candidate_info_array_format():
+    # This is the old/non-standard format, but we should still test for it for backwards compatibility.
+    """Test parsing candidate info with array format"""
+    candidate_md_array = """-------------------------------------------------------------
+name: Jane Doe
+ID: jdoe
+info:
+  - employer: Example Corp
+  - slack: jane.doe
+-------------------------------------------------------------
+
+## Bio
+
+Sample bio content here.
+"""
+    info = extract_candidate_info(candidate_md_array)
+    assert info == {
+        'name': 'Jane Doe',
+        'ID': 'jdoe',
+        'info': [
+            {'employer': 'Example Corp'},
+            {'slack': 'jane.doe'}
+        ]
+    }
+
+
+def test_extract_candidate_info_object_format():
+    # This is the proper yaml format
+    """Test parsing candidate info with object format"""
+    candidate_md_object = """-------------------------------------------------------------
+name: John Smith
+ID: jsmith
+info:
+  employer: Tech Company
+  slack: john.smith
+-------------------------------------------------------------
+
+## Bio
+
+Sample bio content here.
+"""
+    info = extract_candidate_info(candidate_md_object)
+    assert info == {
+        'name': 'John Smith',
+        'ID': 'jsmith',
+        'info': {
+            'employer': 'Tech Company',
+            'slack': 'john.smith'
+        }
+    }
+
+
 def test_extract_candidate_description(candidate_md):
     assert extract_candidate_description(candidate_md) == (
         '## Reason for Name\n\n'
