@@ -1,0 +1,25 @@
+name: Go tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate-bios/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/validate-bios/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Run tests
+        working-directory: scripts/validate-bios
+        run: go test -v ./...
