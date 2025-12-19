@@ -27,6 +27,8 @@ cd scripts/validate-bios
 go build -o validate-bios .
 ```
 
+This directory also includes a [sample Github workflow](go-test.yml), which can be added to repositories with election information in order to automatically test bios on merge.
+
 ## Usage
 
 ### Basic Validation
