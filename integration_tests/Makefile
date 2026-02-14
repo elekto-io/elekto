@@ -13,3 +13,7 @@ venv: clean
 .PHONY: test
 test:
 	$(PYTEST)
+
+.PHONY: dctest
+dctest:
+	docker compose --profile test up --abort-on-container-exit --exit-code-from integration_tests

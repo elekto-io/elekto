@@ -1,11 +1,16 @@
+import os
+
 import pytest
 from playwright.sync_api import Page, expect
 
 from utils.github_mock import GithubMockUtilityClient, User
 
 
+ELEKTO_HOST = os.environ.get('ELEKTO_HOST', 'localhost:8000')
+
+
 def logout(page: Page) -> None:
-    page.goto('http://localhost:8000/app')
+    page.goto(f'http://{ELEKTO_HOST}/app')
     logout_link = page.get_by_role('link', name='Logout')
     if logout_link.is_visible():
         logout_link.click()

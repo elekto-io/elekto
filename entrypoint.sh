@@ -12,7 +12,7 @@ if [ "$APP_DEBUG" == "True" ]; then
   echo "in Debug mode"
   ./console --run
 else
-  if [ $APP_CONNECT == "socket" ]; then
+  if [ "$APP_CONNECT" == "socket" ]; then
     # socket mode for fronting by nginx
     echo "with a socket connection on $APP_PORT"
     uwsgi --module elekto:APP --processes 8 --socket :$APP_PORT

@@ -59,6 +59,9 @@ if env('DB_CONNECTION') == 'mysql':
         dbname=env('DB_DATABASE'),
     )
 elif env('DB_CONNECTION') == 'postgresql':
+
+    host = 'db' if env('INTEGRATION_TEST') else env('DB_HOST', 'localhost')
+
     DATABASE_URL = "postgresql://{user}:{password}@{host}:{port}/{dbname}".format(
         user=env('DB_USERNAME', 'root'),
         password=env('DB_PASSWORD', ''),

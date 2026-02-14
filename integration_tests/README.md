@@ -26,3 +26,5 @@ Tests can be run from the `elekto/integration_tests` directory. Tests runner is 
 using Playwright. A virtual environment is required to run the tests. Tests assume all infra runs at the default ports.
 - Create the virtual env with `make venv`. This will also install dependencies.
 - Run tests with `make test`.
+
+To run tests entirely in a Docker Compose setup, use `make dctest`.

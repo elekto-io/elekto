@@ -1,0 +1,42 @@
+include:
+  - ../docker-compose.yml # Defines the `db` service
+  - ../../github-static-mock/docker-compose.yaml
+
+services:
+  integration_tests:
+    build: .
+    environment:
+      ELEKTO_HOST: "elekto:8000"
+      GITHUB_HOST: "github:9000"
+    depends_on:
+      elekto:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    profiles:
+      - test
+    volumes:
+      - "./tests:/app/tests"
+  elekto:
+    build: ../
+    user: "root" # To access /app/meta/.git/FETCH_HEAD
+    ports:
+      # Links will point to `http://elekto:8000/`, so you must manually patch the URLs to localhost in your browser
+      # after each redirect. Exposing the Elekto service allows for manual checking during tests if desired.
+      - "8000:8000"
+    environment:
+      DB_CONNECTION: postgresql
+      DB_PORT: 5432
+      INTEGRATION_TEST: true
+      APP_PORT: 8000
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8000/app/" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - test

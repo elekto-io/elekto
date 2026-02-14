@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from utils.github_mock.client import GithubMockUtilityClient
@@ -5,7 +6,7 @@ from utils.github_mock.client import GithubMockUtilityClient
 
 @pytest.fixture
 def host() -> str:
-    return 'http://localhost:8000'
+    return 'http://' + os.environ.get('ELEKTO_HOST', 'localhost:8000')
 
 
 @pytest.fixture
@@ -25,7 +26,7 @@ def app_url(host: str) -> str:
 
 @pytest.fixture
 def github_mock_host() -> str:
-    return 'http://localhost:9000'
+    return 'http://' + os.environ.get('GITHUB_HOST', 'localhost:9000')
 
 
 @pytest.fixture
