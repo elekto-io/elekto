@@ -1,6 +1,6 @@
 include:
   - ../docker-compose.yml # Defines the `db` service
-  - ../../github-static-mock/docker-compose.yaml
+  - ./services/github-static-mock/docker-compose.yaml # Defines the `github` mock backend service
 
 services:
   integration_tests:

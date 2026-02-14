@@ -1,0 +1,18 @@
+services:
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    profiles:
+      - test
+  github:
+    build: .
+    ports:
+      - '9000:9000'
+    environment:
+      CACHE_HOST: 'cache'
+      ELEKTO_HOST: 'elekto'
+      ELEKTO_PORT: '8000'
+    profiles:
+      - test
