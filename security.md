@@ -6,7 +6,7 @@ For information regarding the security and all other kinds of updates to this pr
 
 * #elekto on [slack.cncf.io](https://slack.cncf.io)
 
-Or simply follow our [releases feed](https://github.com/elekto-io/elekto/releases).
+Or simply follow our [releases feed](https://github.com/elekto-dev/elekto/releases).
 
 ## Reporting a vulnerability
 

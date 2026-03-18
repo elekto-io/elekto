@@ -59,7 +59,7 @@ DB_PASSWORD=password
 Update the meta repository info
 
 ```bash
-META_REPO=https://github.com/elekto-io/elekto.meta.test.git
+META_REPO=https://github.com/elekto-dev/elekto.meta.test.git
 META_DEPLOYMENT=local
 META_PATH=meta
 META_BRANCH=main

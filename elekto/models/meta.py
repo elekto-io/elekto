@@ -137,7 +137,7 @@ class Election(Meta):
         
     def showfields(self):
         # FIXME: show_candidate_fields could be None (as is the case in the name_the_app example meta), leading to an
-        #  error if showfields() is called. See: https://github.com/elekto-io/elekto/issues/98
+        #  error if showfields() is called. See: https://github.com/elekto-dev/elekto/issues/98
         return dict.fromkeys(self.election['show_candidate_fields'], '')
 
     def candidates(self):
