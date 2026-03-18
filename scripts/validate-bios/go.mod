@@ -1,4 +1,4 @@
-module github.com/elekto-io/elekto/scripts/validate-bios
+module github.com/elekto-dev/elekto/scripts/validate-bios
 
 go 1.22
 

@@ -17,7 +17,7 @@ Adapted from the [Kubernetes community's verify-steering-election-tool.go](https
 No installation required! Run directly from GitHub:
 
 ```bash
-go run github.com/elekto-io/elekto/scripts/validate-bios@latest <election-path>
+go run github.com/elekto-dev/elekto/scripts/validate-bios@latest <election-path>
 ```
 
 Or for local development, build from source:
@@ -35,7 +35,7 @@ This directory also includes a [sample Github workflow](go-test.yml), which can 
 
 ```bash
 # Run directly from GitHub (recommended)
-go run github.com/elekto-io/elekto/scripts/validate-bios@latest /path/to/election
+go run github.com/elekto-dev/elekto/scripts/validate-bios@latest /path/to/election
 
 # Or for local development
 cd scripts/validate-bios
@@ -50,18 +50,18 @@ cd scripts/validate-bios
 
 ```bash
 # Enforce word limits
-go run github.com/elekto-io/elekto/scripts/validate-bios@latest \
+go run github.com/elekto-dev/elekto/scripts/validate-bios@latest \
   --max-words=450 \
   --recommended-words=300 \
   /path/to/election
 
 # Require specific markdown sections
-go run github.com/elekto-io/elekto/scripts/validate-bios@latest \
+go run github.com/elekto-dev/elekto/scripts/validate-bios@latest \
   --required-sections="## About Me,## Platform,## Why I'm Running" \
   /path/to/election
 
 # Combine all options
-go run github.com/elekto-io/elekto/scripts/validate-bios@latest \
+go run github.com/elekto-dev/elekto/scripts/validate-bios@latest \
   --max-words=450 \
   --recommended-words=300 \
   --required-sections="## About Me,## Platform" \
