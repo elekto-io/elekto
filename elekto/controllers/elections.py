@@ -22,6 +22,7 @@ import uuid
 import secrets
 import string
 import flask as F
+import subprocess
 
 from nacl import utils, pwhash
 
@@ -33,6 +34,20 @@ from elekto.middlewares.auth import auth_guard, len_guard
 from elekto.core.encryption import encrypt, decrypt
 from elekto.middlewares.election import *  # noqa
 
+
+def get_version():
+    """Retrieve the app version using `git describe --tags`."""
+    try:
+        process = subprocess.Popen(['git', 'describe', '--tags'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout, stderr = process.communicate()
+
+        if process.returncode != 0:
+            return f"Error retrieving version: {stderr.strip()}"
+
+        cleanVersion = stdout.strip().split('-')[0]
+        return cleanVersion
+    except Exception as e:
+        return f"Exception occurred: {str(e)}"
 
 @APP.route("/app")
 @auth_guard
@@ -50,8 +65,8 @@ def elections():
         meta.Election.all() if status is None else meta.Election.where("status", status)
     )
     res.sort(key=lambda e: e["start_datetime"], reverse=True)
-
-    return F.render_template("views/elections/index.html", elections=res, status=status)
+    version = get_version();
+    return F.render_template("views/elections/index.html", elections=res, status=status,version=version)
 
 
 @APP.route("/app/elections/<eid>")  # Particular Election

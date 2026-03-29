@@ -69,12 +69,17 @@
     &__footer {
         position: absolute;
         bottom: 0;
-        width: $sidebar-width;
-        text-align: center;
         color: #a8a8a8;
         font-weight: 300;
         font-size: 10px;
         padding-bottom: 10px;
+        &_version {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
     }
 
     &-active {

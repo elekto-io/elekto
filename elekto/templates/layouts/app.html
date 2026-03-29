@@ -1,56 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.ico') }}"
+        />
+        <title>{% block title %}{% endblock %} | Elekto</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{{ url_for('static', filename='css/main.css') }}"
+        />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <title>{% block title %}{% endblock %} | Elekto</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-
-<body onload="onload()">
-    <section class="d-flex">
-        {% include "components/sidebar.html" %}
-        <div class="content-container content-has-sidebar" id="content">
-            <nav class="nav">
-                <div>
-                    <a href="{{ url_for('app') }}" class="breadcrums">elekto ({{g.NAME}})</a>
-                    {% block breadcrums %}{% endblock %}
-                </div>
-                <div class="">
-                    <a class="text-dark" href="{{ url_for('logout') }}">Logout</a>
-                </div>
-            </nav>
-            <div class="content">
-                <section id="message">
-                    <div class="space--sm">
-                        {% for message in get_flashed_messages() %}
-                        <div class="flash">{{ message }}</div>
-                        {% endfor %}
+    <body onload="onload()">
+        <section class="d-flex">
+            {% include "components/sidebar.html" %}
+            <div class="content-container content-has-sidebar" id="content">
+                <nav class="nav">
+                    <div>
+                        <a href="{{ url_for('app') }}" class="breadcrums"
+                            >elekto ({{g.NAME}})</a
+                        >
+                        {% block breadcrums %}{% endblock %}
                     </div>
-                </section>
-                {% block content %}{% endblock %}
+                    <div class="">
+                        <a class="text-dark" href="{{ url_for('logout') }}"
+                            >Logout</a
+                        >
+                    </div>
+                </nav>
+                <div class="content">
+                    <section id="message">
+                        <div class="space--sm">
+                            {% for message in get_flashed_messages() %}
+                            <div class="flash">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% block content %}{% endblock %}
+                </div>
             </div>
-        </div>
-    </section>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <script>
-        const onload = () => {
-            setTimeout(() => {
-                document.getElementById('message').hidden = true
-            }, 10000);
-        }
-    </script>
-    {% block script %}{% endblock %}
-</body>
-
+        </section>
+        <script
+            src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"
+        ></script>
+        <script>
+            const onload = () => {
+                setTimeout(() => {
+                    document.getElementById("message").hidden = true;
+                }, 10000);
+            };
+        </script>
+        {% block script %}{% endblock %}
+    </body>
 </html>
