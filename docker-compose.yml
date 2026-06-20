@@ -1,15 +1,22 @@
 services:
   db:
-    image: postgres:17
+    hostname: db
+    image: postgres:18
     restart: always
     environment:
       POSTGRES_DB: elekto
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     ports:
       - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
 volumes:
   pgdata:

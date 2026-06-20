@@ -20,7 +20,14 @@ from dotenv import load_dotenv, set_key
 # Load the custom environment file into the program
 isTesting = os.getenv('TESTING') or "PYTEST_VERSION" in os.environ
 targetenv = ".env.testing" if isTesting else ".env"
-load_dotenv(os.path.join(os.path.dirname(__file__), targetenv), override=True)
+
+# By default, values from .env take precedence over variables already set in the environment. This has been and still is
+# the desired behaviour when running Elekto to serve users. When running in Docker, it is crucial that the env vars are
+# honoured (especially DB_HOST as it must point to the Docker host name).
+#
+# Set DONT_OVERRIDE_ENV_VARS=true to prevent env vars from being overridden by .env values.
+override_env_vars = not os.getenv("DONT_OVERRIDE_ENV_VARS", default=False)
+load_dotenv(os.path.join(os.path.dirname(__file__), targetenv), override=override_env_vars)
 
 def strtobool(value: str) -> bool:
   value = value.lower()

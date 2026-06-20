@@ -1,0 +1,25 @@
+[project]
+name = "github-static-mock"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi (>=0.116.1,<0.117.0)",
+    "uvicorn (>=0.35.0,<0.36.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "redis (>=6.4.0,<7.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "github_static_mock", from = "src"}]
+
+[tool.poetry.scripts]
+start = "github_static_mock.app:start"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
