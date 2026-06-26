@@ -256,8 +256,46 @@ def test_elections_candidate(client: FlaskClient, load_metadir):
     for expected_subtitle, subtitle in zip(expected_subtitles, subtitles):
         assert subtitle.text.strip() == expected_subtitle
 
+
     description_text = soup.find('div', attrs={'class': 'description space-lr'}).text.strip()
     assert description_text == 'Davanum Srinivas is a current member of the Steering Committee, and has been a member of the CNCF TOC.'
+
+
+def test_elections_candidate_empty_profile(client: FlaskClient, load_metadir, metadir):
+    """
+    Regression test for https://github.com/elekto-dev/elekto/issues/85
+
+    When a candidate profile file has a valid YAML header but an empty body,
+    visiting the candidate profile page should render the profile page normally
+    with a "No profile submitted." message instead of raising a server error.
+    """
+    import os
+    provision_session(client, token='...')
+
+    # Write a candidate file with a valid header but no body to the test metadir.
+    empty_profile_path = os.path.join(str(metadir), 'elections', '2021', 'GB', 'candidate-emptyprofile.md')
+    with open(empty_profile_path, 'w') as f:
+        f.write(
+            "---\n"
+            "name: Empty Profile Candidate\n"
+            "ID: emptyprofile\n"
+            "info:\n"
+            "  - employer: N/A\n"
+            "---\n"
+        )
+
+    response = client.get('/app/elections/2021---GB/candidates/emptyprofile')
+    assert response.status_code == 200
+
+    soup = BeautifulSoup(response.data, 'html.parser')
+    # The candidate profile page should render normally.
+    title_text = soup.find('h1', attrs={'class': 'banner-title space-lr'}).text.strip()
+    assert title_text == 'Empty Profile Candidate'
+
+    # The description area should show the "No profile submitted." placeholder.
+    description_div = soup.find('div', attrs={'class': 'description space-lr'})
+    assert description_div is not None
+    assert 'No profile submitted.' in description_div.text
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
