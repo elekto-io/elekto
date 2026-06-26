@@ -29,7 +29,11 @@
     </div>
     <div class="space--md  pb-1rem">
         <div class="description space-lr">
-            {{ candidate['description'] | safe }}
+            {% if candidate['description'] %}
+                {{ candidate['description'] | safe }}
+            {% else %}
+                <p class="text-muted"><em>No profile submitted.</em></p>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -168,8 +168,8 @@ class Election(Meta):
         md = open(path).read()
         candidate = utils.extract_candidate_info(md)
         candidate['key'] = cid
-        candidate['description'] = utils.parse_md(
-            utils.extract_candidate_description(md), False)
+        description = utils.extract_candidate_description(md)
+        candidate['description'] = utils.parse_md(description, False) if description.strip() else None
         # return only the candidate optional fields that are listed in show_candidate_fields
         # unfilled fields are returned as '' so the label still displays
         candidate['fields'] = self.showfields()
