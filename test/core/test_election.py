@@ -1,18 +1,16 @@
 import pytest
 
-from pandas.core.frame import DataFrame
-
 from elekto.core.election import Election
 from test.factories import ElectionFactory, BallotFactory
 
 
 @pytest.fixture
-def election_dataframe() -> DataFrame:
-    return DataFrame(data={
+def election_dataframe() -> dict:
+    return {
         'A': [3, 1, 2],
         'B': [2, 3, Election.NO_OPINION],
         'C': [1, 2, 3],
-    })
+    }
 
 
 @pytest.fixture
@@ -33,7 +31,7 @@ def candidates() -> list[dict]:
     ]
 
 
-def test_election_from_csv(election_dataframe: DataFrame):
+def test_election_from_csv(election_dataframe: dict):
     election = Election.from_csv(election_dataframe, no_winners=1)
     assert election.candidates == ['A', 'B', 'C']
     assert election.ballots == {
