@@ -14,6 +14,8 @@
 #
 # Author(s):         Manish Sahani <rec.manish.sahani@gmail.com>
 
+import datetime
+
 import flask as F
 from flask_wtf.csrf import CSRFProtect
 
@@ -52,7 +54,8 @@ def destroy_session(exception=None):
 
 @APP.context_processor
 def inject_version():
-    return dict(elekto_version=__version__)
+    return dict(elekto_version=__version__,
+                current_year=datetime.datetime.now().year)
 
 
 ####
