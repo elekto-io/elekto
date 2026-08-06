@@ -1,0 +1,19 @@
+# Secrets — these are gitignored, so they only exist in local checkouts, but the
+# build context is the filesystem, not the git index. Without this they would be
+# baked into any image built (and pushed) from a developer machine.
+.env
+.env.testing
+
+# Local development artifacts
+venv/
+htmlcov/
+.coverage
+.ruff_cache/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Note: .git is intentionally NOT ignored. setuptools-scm derives the package
+# version from git metadata during `pip install -e .` in the Dockerfile.

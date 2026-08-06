@@ -1,11 +1,15 @@
-FROM python:3.13-bookworm AS base
+ARG PYTHON_VERSION=3.13
+FROM python:${PYTHON_VERSION}-bookworm AS base
 
 WORKDIR /app
 
-ADD requirements.txt /app
+COPY requirements.txt pyproject.toml /app/
 RUN pip install -r requirements.txt
 
-ADD . /app
+COPY . /app
+# --no-deps: requirements.txt above already pins the full set, and resolving
+# again from pyproject.toml can pull different versions than the pinned ones.
+RUN pip install --no-deps -e .
 
 USER 10017
 

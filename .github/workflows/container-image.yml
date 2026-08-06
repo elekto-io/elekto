@@ -1,0 +1,51 @@
+name: Container Image
+
+on:
+  push:
+    branches:
+      - 'main'
+  release:
+    types: [published]
+
+env:
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  container-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: python
+        run: echo "version=$(make print-PYTHON_VERSION)" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python.outputs.version }}
+
+      - run: make version-deps
+
+      - run: make buildx-setup
+
+      - run: make login
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish version tag
+        if: github.event_name == 'push'
+        run: make push-version
+
+      - name: Publish release image
+        if: github.event_name == 'release' && !github.event.release.prerelease
+        run: make push-latest
+
+      - name: Publish pre-release image
+        if: github.event_name == 'release' && github.event.release.prerelease
+        run: make push-version
