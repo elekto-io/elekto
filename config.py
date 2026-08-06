@@ -16,7 +16,7 @@
 
 import os
 
-from utils import env, strtobool
+from elekto._env import env, str_to_bool
 
 
 # Application Name
@@ -36,7 +36,7 @@ SECRET_KEY = env('APP_KEY', 'test')
 # When the application is in debug mode, all the development functionalities
 # like printing detailed error stack trace, reloading css on change etc are
 # enabled.
-DEBUG = bool(strtobool(env('APP_DEBUG', 'False')))
+DEBUG = bool(str_to_bool(env('APP_DEBUG', 'False')))
 
 # Auto Reload Templates
 #

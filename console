@@ -19,7 +19,7 @@
 import os
 import argparse
 
-from utils import env, generate_app_key
+from elekto._env import env, generate_app_key
 
 parser = argparse.ArgumentParser(description='Run the k8s.elections app')
 
